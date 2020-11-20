@@ -50,6 +50,24 @@ echo 'ahoj';`,
 			{token.Semicolon, ";", pos("2:12")},
 			{token.EOF, "", pos("2:13")},
 		},
+	}, {
+		"comments",
+		`<?php // line comment
+namespace /*block */ DateTime/** comments*/;`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.Comment, "// line comment", pos("1:7")},
+			{token.Whitespace, "\n", pos("1:22")},
+			{token.Ident, "namespace", pos("2:1")},
+			{token.Whitespace, " ", pos("2:10")},
+			{token.Comment, "/*block */", pos("2:11")},
+			{token.Whitespace, " ", pos("2:21")},
+			{token.Ident, "DateTime", pos("2:22")},
+			{token.Comment, "/** comments*/", pos("2:30")},
+			{token.Semicolon, ";", pos("2:44")},
+			{token.EOF, "", pos("2:45")},
+		},
 	}}
 
 	for _, tt := range tests {

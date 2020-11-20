@@ -37,6 +37,7 @@ const (
 	Illegal Type = iota
 	EOF
 	Whitespace
+	Comment
 
 	Ident
 	String
@@ -61,6 +62,7 @@ const (
 	Ellipsis  // ...
 	Or        // |
 	And       // &
+	Quo       // /
 	symbolEnd
 )
 
@@ -144,7 +146,16 @@ func (sc *Scanner) scanAny() (tok Token) {
 	switch r := sc.read(); r {
 	case eof:
 		return Token{Type: EOF}
-	// case '/':
+	case '/':
+		switch sc.read() {
+		case '/':
+			return sc.scanLineComment()
+		case '*':
+			return sc.scanBlockComment()
+		default:
+			sc.unread()
+			return Token{Type: Quo}
+		}
 	// case '$':
 	case '\\':
 		return Token{Type: Backslash}
@@ -198,6 +209,9 @@ func (sc *Scanner) scanInlineHTML() (Token, uint) {
 		case rune(openTag[i]):
 			i++
 			if i == len(openTag) {
+				if b.Len() == 0 {
+					return Token{Type: OpenTag, Text: openTag}, inPHP
+				}
 				return Token{Type: InlineHTML, Text: b.String()}, atOpenTag
 			}
 		default:
@@ -210,6 +224,35 @@ func (sc *Scanner) scanInlineHTML() (Token, uint) {
 			}
 			sc.unread()
 			return Token{Type: InlineHTML, Text: b.String()}, inHTML
+		}
+	}
+}
+
+func (sc *Scanner) scanLineComment() Token {
+	var b strings.Builder
+	for {
+		switch r := sc.read(); r {
+		default:
+			b.WriteRune(r)
+		case '\n', eof:
+			sc.unread()
+			return Token{Type: Comment, Text: "//" + b.String()}
+		}
+	}
+}
+
+func (sc *Scanner) scanBlockComment() Token {
+	var b strings.Builder
+	for {
+		switch r := sc.read(); {
+		default:
+			b.WriteRune(r)
+		case r == '*' && sc.peek() == '/':
+			sc.read()
+			return Token{Type: Comment, Text: "/*" + b.String() + "*/"}
+		case r == eof:
+			// TODO: don't panic
+			panic("unterminated block comment")
 		}
 	}
 }
