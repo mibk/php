@@ -191,6 +191,8 @@ func (sc *Scanner) scanAny() (tok Token) {
 		return sc.scanWhitespace(r)
 	case '\'':
 		return sc.scanSingleQuoted()
+	case '"':
+		return sc.scanDoubleQuoted()
 	default:
 		sc.unread()
 		if id := sc.scanIdentName(); id != "" {
@@ -308,6 +310,35 @@ func (sc *Scanner) scanSingleQuoted() Token {
 			}
 		case '\'':
 			return Token{Type: String, Text: "'" + b.String()}
+		case eof:
+			// TODO: Do not panic.
+			panic("string not terminated")
+		}
+	}
+}
+
+func (sc *Scanner) scanDoubleQuoted() Token {
+	var b strings.Builder
+	for {
+		r := sc.read()
+		b.WriteRune(r)
+		switch r {
+		case '\\':
+			switch sc.peek() {
+			// TODO: Add support for
+			// - octal notation: \[0-7]{1,3}
+			// - hex notation: \x[0-9A-Fa-f]{1,2}
+			// - UTF-8 codepoint: \u{[0-9A-Fa-f]+}
+			case '\\', '"', 'n', 'r', 't', 'v', 'e', 'f', '$':
+				b.WriteRune(sc.read())
+			default:
+				// Here we differ from PHP; we don't ignore unknown
+				// escape sequences.
+				// TODO: don't panic
+				//panic("illegal escape char")
+			}
+		case '"':
+			return Token{Type: String, Text: `"` + b.String()}
 		case eof:
 			// TODO: Do not panic.
 			panic("string not terminated")
