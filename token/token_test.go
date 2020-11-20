@@ -68,6 +68,22 @@ namespace /*block */ DateTime/** comments*/;`,
 			{token.Semicolon, ";", pos("2:44")},
 			{token.EOF, "", pos("2:45")},
 		},
+	}, {
+		"single quoted strings",
+		`<?php'\'\\' '\\' '\'' '\\n\\\'''
+\''`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.String, `'\'\\'`, pos("1:6")},
+			{token.Whitespace, " ", pos("1:12")},
+			{token.String, `'\\'`, pos("1:13")},
+			{token.Whitespace, " ", pos("1:17")},
+			{token.String, `'\''`, pos("1:18")},
+			{token.Whitespace, " ", pos("1:22")},
+			{token.String, `'\\n\\\''`, pos("1:23")},
+			{token.String, "'\n\\''", pos("1:32")},
+			{token.EOF, "", pos("2:4")},
+		},
 	}}
 
 	for _, tt := range tests {

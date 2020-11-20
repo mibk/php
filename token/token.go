@@ -296,12 +296,21 @@ func (sc *Scanner) scanSingleQuoted() Token {
 		r := sc.read()
 		b.WriteRune(r)
 		switch r {
-		// TODO: Support escaping ' and \
+		case '\\':
+			switch sc.peek() {
+			case '\\', '\'':
+				b.WriteRune(sc.read())
+			default:
+				// Here we differ from PHP; we don't ignore unknown
+				// escape sequences.
+				// TODO: don't panic
+				panic("illegal escape char")
+			}
+		case '\'':
+			return Token{Type: String, Text: "'" + b.String()}
 		case eof:
 			// TODO: Do not panic.
 			panic("string not terminated")
-		case '\'':
-			return Token{Type: String, Text: "'" + b.String()}
 		}
 	}
 }
