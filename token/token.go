@@ -41,11 +41,12 @@ const (
 
 	Ident
 	String
-	VarName
+	Var
 	InlineHTML
 
 	symbolStart
 	OpenTag   // <?php
+	Dollar    // $
 	Backslash // \
 	Qmark     // ?
 	Lparen    // (
@@ -167,7 +168,11 @@ func (sc *Scanner) scanAny() (tok Token) {
 			sc.unread()
 			return Token{Type: Quo}
 		}
-	// case '$':
+	case '$':
+		if id := sc.scanIdentName(); id != "" {
+			return Token{Type: Var, Text: "$" + id}
+		}
+		return Token{Type: Dollar}
 	case '\\':
 		return Token{Type: Backslash}
 	case '?':

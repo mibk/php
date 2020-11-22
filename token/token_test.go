@@ -103,6 +103,19 @@ namespace /*block */ DateTime/** comments*/;`,
 			{token.String, "\"\\n\\r\\t\\v\\e\\f\\$\"", pos("3:1")},
 			{token.EOF, "", pos("3:17")},
 		},
+	}, {
+		"variables",
+		`<?php $žluťoučký;$$kůň;`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.Var, "$žluťoučký", pos("1:7")},
+			{token.Semicolon, ";", pos("1:17")},
+			{token.Dollar, "$", pos("1:18")},
+			{token.Var, "$kůň", pos("1:19")},
+			{token.Semicolon, ";", pos("1:23")},
+			{token.EOF, "", pos("1:24")},
+		},
 	}}
 
 	for _, tt := range tests {

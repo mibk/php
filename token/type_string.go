@@ -14,33 +14,34 @@ func _() {
 	_ = x[Comment-3]
 	_ = x[Ident-4]
 	_ = x[String-5]
-	_ = x[VarName-6]
+	_ = x[Var-6]
 	_ = x[InlineHTML-7]
 	_ = x[symbolStart-8]
 	_ = x[OpenTag-9]
-	_ = x[Backslash-10]
-	_ = x[Qmark-11]
-	_ = x[Lparen-12]
-	_ = x[Rparen-13]
-	_ = x[Lbrack-14]
-	_ = x[Rbrack-15]
-	_ = x[Lbrace-16]
-	_ = x[Rbrace-17]
-	_ = x[Lt-18]
-	_ = x[Gt-19]
-	_ = x[Comma-20]
-	_ = x[Colon-21]
-	_ = x[Semicolon-22]
-	_ = x[Ellipsis-23]
-	_ = x[Or-24]
-	_ = x[And-25]
-	_ = x[Quo-26]
-	_ = x[symbolEnd-27]
+	_ = x[Dollar-10]
+	_ = x[Backslash-11]
+	_ = x[Qmark-12]
+	_ = x[Lparen-13]
+	_ = x[Rparen-14]
+	_ = x[Lbrack-15]
+	_ = x[Rbrack-16]
+	_ = x[Lbrace-17]
+	_ = x[Rbrace-18]
+	_ = x[Lt-19]
+	_ = x[Gt-20]
+	_ = x[Comma-21]
+	_ = x[Colon-22]
+	_ = x[Semicolon-23]
+	_ = x[Ellipsis-24]
+	_ = x[Or-25]
+	_ = x[And-26]
+	_ = x[Quo-27]
+	_ = x[symbolEnd-28]
 }
 
-const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarNameInlineHTMLsymbolStart<?php\\?()[]{}<>,:;...|&/symbolEnd"
+const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarInlineHTMLsymbolStart<?php$\\?()[]{}<>,:;...|&/symbolEnd"
 
-var _Type_index = [...]uint8{0, 7, 10, 20, 27, 32, 38, 45, 55, 66, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 87, 88, 89, 90, 99}
+var _Type_index = [...]uint8{0, 7, 10, 20, 27, 32, 38, 41, 51, 62, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 86, 87, 96}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {
