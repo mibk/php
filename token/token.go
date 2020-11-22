@@ -95,18 +95,18 @@ func NewScanner(r io.Reader) *Scanner {
 
 const openTag = "<?php"
 
-func (sc *Scanner) Next() Token {
-	pos := Pos{Line: sc.line, Column: sc.col}
+func (s *Scanner) Next() Token {
+	pos := Pos{Line: s.line, Column: s.col}
 	var tok Token
-	switch sc.state {
+	switch s.state {
 	case inHTML:
-		tok, sc.state = sc.scanInlineHTML()
+		tok, s.state = s.scanInlineHTML()
 	case atOpenTag:
 		tok = Token{Type: OpenTag, Text: openTag}
 		pos.Column -= len(tok.Text) // was already read
-		sc.state++
+		s.state++
 	case inPHP:
-		tok = sc.scanAny()
+		tok = s.scanAny()
 		if typ := tok.Type; symbolStart < typ && typ < symbolEnd {
 			tok.Text = typ.String()
 		}
@@ -115,63 +115,63 @@ func (sc *Scanner) Next() Token {
 	return tok
 }
 
-func (sc *Scanner) read() rune {
-	if sc.done {
+func (s *Scanner) read() rune {
+	if s.done {
 		return eof
 	}
-	r, _, err := sc.r.ReadRune()
+	r, _, err := s.r.ReadRune()
 	if err != nil {
-		sc.done = true
+		s.done = true
 		return eof
 	}
 	if r == '\n' {
-		sc.line++
-		sc.lastLineLen, sc.col = sc.col, 1
+		s.line++
+		s.lastLineLen, s.col = s.col, 1
 	} else {
-		sc.col++
+		s.col++
 	}
 	return r
 }
 
-func (sc *Scanner) unread() {
-	if sc.done {
+func (s *Scanner) unread() {
+	if s.done {
 		return
 	}
-	if err := sc.r.UnreadRune(); err != nil {
+	if err := s.r.UnreadRune(); err != nil {
 		// UnreadRune returns an error only on invalid use.
 		panic(err)
 	}
-	sc.col--
-	if sc.col == 0 {
-		sc.col = sc.lastLineLen
-		sc.line--
+	s.col--
+	if s.col == 0 {
+		s.col = s.lastLineLen
+		s.line--
 	}
 }
 
-func (sc *Scanner) peek() rune {
-	r := sc.read()
-	sc.unread()
+func (s *Scanner) peek() rune {
+	r := s.read()
+	s.unread()
 	return r
 }
 
-func (sc *Scanner) scanAny() (tok Token) {
-	switch r := sc.read(); r {
+func (s *Scanner) scanAny() (tok Token) {
+	switch r := s.read(); r {
 	case eof:
 		return Token{Type: EOF}
 	case '/':
-		switch sc.read() {
+		switch s.read() {
 		case '/':
-			return sc.scanLineComment("//")
+			return s.scanLineComment("//")
 		case '*':
-			return sc.scanBlockComment()
+			return s.scanBlockComment()
 		default:
-			sc.unread()
+			s.unread()
 			return Token{Type: Quo}
 		}
 	case '#':
-		return sc.scanLineComment("#")
+		return s.scanLineComment("#")
 	case '$':
-		if id := sc.scanIdentName(); id != "" {
+		if id := s.scanIdentName(); id != "" {
 			return Token{Type: Var, Text: "$" + id}
 		}
 		return Token{Type: Dollar}
@@ -206,26 +206,26 @@ func (sc *Scanner) scanAny() (tok Token) {
 	case '&':
 		return Token{Type: And}
 	case ' ', '\t', '\n':
-		return sc.scanWhitespace(r)
+		return s.scanWhitespace(r)
 	case '\'':
-		return sc.scanSingleQuoted()
+		return s.scanSingleQuoted()
 	case '"':
-		return sc.scanDoubleQuoted()
+		return s.scanDoubleQuoted()
 	default:
-		sc.unread()
-		if id := sc.scanIdentName(); id != "" {
+		s.unread()
+		if id := s.scanIdentName(); id != "" {
 			return Token{Type: Ident, Text: id}
 		}
-		sc.read()
+		s.read()
 		return Token{Type: Illegal, Text: string(r)}
 	}
 }
 
-func (sc *Scanner) scanInlineHTML() (Token, uint) {
+func (s *Scanner) scanInlineHTML() (Token, uint) {
 	var i int
 	var b strings.Builder
 	for {
-		switch r := sc.read(); r {
+		switch r := s.read(); r {
 		case rune(openTag[i]):
 			i++
 			if i == len(openTag) {
@@ -242,33 +242,33 @@ func (sc *Scanner) scanInlineHTML() (Token, uint) {
 			if b.Len() == 0 {
 				return Token{Type: EOF}, inHTML
 			}
-			sc.unread()
+			s.unread()
 			return Token{Type: InlineHTML, Text: b.String()}, inHTML
 		}
 	}
 }
 
-func (sc *Scanner) scanLineComment(start string) Token {
+func (s *Scanner) scanLineComment(start string) Token {
 	var b strings.Builder
 	for {
-		switch r := sc.read(); r {
+		switch r := s.read(); r {
 		default:
 			b.WriteRune(r)
 		case '\n', eof:
-			sc.unread()
+			s.unread()
 			return Token{Type: Comment, Text: start + b.String()}
 		}
 	}
 }
 
-func (sc *Scanner) scanBlockComment() Token {
+func (s *Scanner) scanBlockComment() Token {
 	var b strings.Builder
 	for {
-		switch r := sc.read(); {
+		switch r := s.read(); {
 		default:
 			b.WriteRune(r)
-		case r == '*' && sc.peek() == '/':
-			sc.read()
+		case r == '*' && s.peek() == '/':
+			s.read()
 			return Token{Type: Comment, Text: "/*" + b.String() + "*/"}
 		case r == eof:
 			// TODO: don't panic
@@ -277,10 +277,10 @@ func (sc *Scanner) scanBlockComment() Token {
 	}
 }
 
-func (sc *Scanner) scanIdentName() string {
+func (s *Scanner) scanIdentName() string {
 	var b strings.Builder
 	for {
-		switch r := sc.read(); {
+		switch r := s.read(); {
 		case r == '_' || r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= utf8.RuneSelf:
 			b.WriteRune(r)
 		case r >= '0' && r <= '9':
@@ -290,36 +290,36 @@ func (sc *Scanner) scanIdentName() string {
 			}
 			fallthrough
 		default:
-			sc.unread()
+			s.unread()
 			return b.String()
 		}
 	}
 }
 
-func (sc *Scanner) scanWhitespace(init rune) Token {
+func (s *Scanner) scanWhitespace(init rune) Token {
 	var b strings.Builder
 	b.WriteRune(init)
 	for {
-		switch r := sc.read(); r {
+		switch r := s.read(); r {
 		case ' ', '\t':
 			b.WriteRune(r)
 		default:
-			sc.unread()
+			s.unread()
 			return Token{Type: Whitespace, Text: b.String()}
 		}
 	}
 }
 
-func (sc *Scanner) scanSingleQuoted() Token {
+func (s *Scanner) scanSingleQuoted() Token {
 	var b strings.Builder
 	for {
-		r := sc.read()
+		r := s.read()
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch sc.peek() {
+			switch s.peek() {
 			case '\\', '\'':
-				b.WriteRune(sc.read())
+				b.WriteRune(s.read())
 			default:
 				// Here we differ from PHP; we don't ignore unknown
 				// escape sequences.
@@ -335,20 +335,20 @@ func (sc *Scanner) scanSingleQuoted() Token {
 	}
 }
 
-func (sc *Scanner) scanDoubleQuoted() Token {
+func (s *Scanner) scanDoubleQuoted() Token {
 	var b strings.Builder
 	for {
-		r := sc.read()
+		r := s.read()
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch sc.peek() {
+			switch s.peek() {
 			// TODO: Add support for
 			// - octal notation: \[0-7]{1,3}
 			// - hex notation: \x[0-9A-Fa-f]{1,2}
 			// - UTF-8 codepoint: \u{[0-9A-Fa-f]+}
 			case '\\', '"', 'n', 'r', 't', 'v', 'e', 'f', '$':
-				b.WriteRune(sc.read())
+				b.WriteRune(s.read())
 			default:
 				// Here we differ from PHP; we don't ignore unknown
 				// escape sequences.
