@@ -215,8 +215,9 @@ func (s *Scanner) scanAny() (tok Token) {
 		return Token{Type: Or}
 	case '&':
 		return Token{Type: And}
-	case ' ', '\t', '\n':
-		return s.scanWhitespace(r)
+	case ' ', '\t', '\r', '\n':
+		s.unread()
+		return s.scanWhitespace()
 	case '\'':
 		return s.scanSingleQuoted()
 	case '"':
@@ -306,12 +307,11 @@ func (s *Scanner) scanIdentName() string {
 	}
 }
 
-func (s *Scanner) scanWhitespace(init rune) Token {
+func (s *Scanner) scanWhitespace() Token {
 	var b strings.Builder
-	b.WriteRune(init)
 	for {
 		switch r := s.read(); r {
-		case ' ', '\t':
+		case ' ', '\t', '\r', '\n':
 			b.WriteRune(r)
 		default:
 			s.unread()

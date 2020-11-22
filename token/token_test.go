@@ -39,16 +39,17 @@ actually have to be a <html>`,
 	}, {
 		"basic PHP",
 		`<html> <?php
-echo 'ahoj';`,
+
+   echo 'ahoj';`,
 		[]token.Token{
 			{token.InlineHTML, "<html> ", pos("1:1")},
 			{token.OpenTag, "<?php", pos("1:8")},
-			{token.Whitespace, "\n", pos("1:13")},
-			{token.Ident, "echo", pos("2:1")},
-			{token.Whitespace, " ", pos("2:5")},
-			{token.String, `'ahoj'`, pos("2:6")},
-			{token.Semicolon, ";", pos("2:12")},
-			{token.EOF, "", pos("2:13")},
+			{token.Whitespace, "\n\n   ", pos("1:13")},
+			{token.Ident, "echo", pos("3:4")},
+			{token.Whitespace, " ", pos("3:8")},
+			{token.String, `'ahoj'`, pos("3:9")},
+			{token.Semicolon, ";", pos("3:15")},
+			{token.EOF, "", pos("3:16")},
 		},
 	}, {
 		"comments",
