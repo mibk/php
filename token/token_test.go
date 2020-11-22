@@ -26,7 +26,7 @@ func TestScanner(t *testing.T) {
 actually have to be a <html>`,
 		[]token.Token{
 			{token.InlineHTML, "doesn't\nactually have to be a <html>", pos("1:1")},
-			{token.EOF, "", pos("2:28")},
+			{token.EOF, "", pos("2:29")},
 		},
 	}, {
 		"tease opening",
