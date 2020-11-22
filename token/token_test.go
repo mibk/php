@@ -129,6 +129,27 @@ namespace /*block */ DateTime/** comments*/;# another line comm.`,
 			{token.Shr, ">>", pos("1:10")},
 			{token.EOF, "", pos("1:12")},
 		},
+	}, {
+		"heredoc",
+		`<?php<<<	 END ` + `
+buffalo
+  END
+END:
+END;nic
+END;	` + `
+<<<"HERE"
+there
+HERE
+`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.String, "<<<\t END \nbuffalo\n  END\nEND:\nEND;nic\nEND", pos("1:6")},
+			{token.Semicolon, ";", pos("6:4")},
+			{token.Whitespace, "\t\n", pos("6:5")},
+			{token.String, "<<<\"HERE\"\nthere\nHERE", pos("7:1")},
+			{token.Whitespace, "\n", pos("9:5")},
+			{token.EOF, "", pos("10:1")},
+		},
 	}}
 
 	for _, tt := range tests {
