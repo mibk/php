@@ -64,6 +64,8 @@ const (
 	Or        // |
 	And       // &
 	Quo       // /
+	Shl       // <<
+	Shr       // >>
 	symbolEnd
 )
 
@@ -192,8 +194,16 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '}':
 		return Token{Type: Rbrace}
 	case '<':
+		if s.peek() == r {
+			s.read()
+			return Token{Type: Shl}
+		}
 		return Token{Type: Lt}
 	case '>':
+		if s.peek() == r {
+			s.read()
+			return Token{Type: Shr}
+		}
 		return Token{Type: Gt}
 	case ',':
 		return Token{Type: Comma}

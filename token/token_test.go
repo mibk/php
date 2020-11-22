@@ -117,6 +117,17 @@ namespace /*block */ DateTime/** comments*/;# another line comm.`,
 			{token.Semicolon, ";", pos("1:23")},
 			{token.EOF, "", pos("1:24")},
 		},
+	}, {
+		"binary operators",
+		`<?php<><<>>`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Lt, "<", pos("1:6")},
+			{token.Gt, ">", pos("1:7")},
+			{token.Shl, "<<", pos("1:8")},
+			{token.Shr, ">>", pos("1:10")},
+			{token.EOF, "", pos("1:12")},
+		},
 	}}
 
 	for _, tt := range tests {

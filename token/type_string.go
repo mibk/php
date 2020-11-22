@@ -36,12 +36,14 @@ func _() {
 	_ = x[Or-25]
 	_ = x[And-26]
 	_ = x[Quo-27]
-	_ = x[symbolEnd-28]
+	_ = x[Shl-28]
+	_ = x[Shr-29]
+	_ = x[symbolEnd-30]
 }
 
-const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarInlineHTMLsymbolStart<?php$\\?()[]{}<>,:;...|&/symbolEnd"
+const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarInlineHTMLsymbolStart<?php$\\?()[]{}<>,:;...|&/<<>>symbolEnd"
 
-var _Type_index = [...]uint8{0, 7, 10, 20, 27, 32, 38, 41, 51, 62, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 86, 87, 96}
+var _Type_index = [...]uint8{0, 7, 10, 20, 27, 32, 38, 41, 51, 62, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 86, 87, 89, 91, 100}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {
