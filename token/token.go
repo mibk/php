@@ -73,9 +73,7 @@ const eof = -1
 
 const (
 	inHTML = iota
-	atOpenTag
 	inPHP
-	done
 )
 
 type Scanner struct {
@@ -108,12 +106,10 @@ func (s *Scanner) Next() Token {
 	pos := s.pos()
 	var tok Token
 	switch s.state {
+	default:
+		panic(fmt.Sprintf("unknown state: %d", s.state))
 	case inHTML:
 		tok, s.state = s.scanInlineHTML()
-	case atOpenTag:
-		tok = Token{Type: OpenTag, Text: openTag}
-		pos.Column -= len(tok.Text) // was already read
-		s.state++
 	case inPHP:
 		tok = s.scanAny()
 		if typ := tok.Type; symbolStart < typ && typ < symbolEnd {
@@ -253,10 +249,13 @@ func (s *Scanner) scanInlineHTML() (Token, uint) {
 		case rune(openTag[i]):
 			i++
 			if i == len(openTag) {
-				if b.Len() == 0 {
-					return Token{Type: OpenTag, Text: openTag}, inPHP
+				tok := Token{Type: OpenTag, Text: openTag}
+				if b.Len() > 0 {
+					tok.Pos.Line, tok.Pos.Column = s.line, s.col-i
+					s.queue = append(s.queue, tok)
+					tok = Token{Type: InlineHTML, Text: b.String()}
 				}
-				return Token{Type: InlineHTML, Text: b.String()}, atOpenTag
+				return tok, inPHP
 			}
 		default:
 			b.WriteString(openTag[:i])
