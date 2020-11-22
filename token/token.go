@@ -173,7 +173,7 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '#':
 		return s.scanLineComment("#")
 	case '$':
-		if id := s.scanIdentName(); id != "" {
+		if id := s.scanIdent(); id != "" {
 			return Token{Type: Var, Text: "$" + id}
 		}
 		return Token{Type: Dollar}
@@ -224,7 +224,7 @@ func (s *Scanner) scanAny() (tok Token) {
 		return s.scanDoubleQuoted()
 	default:
 		s.unread()
-		if id := s.scanIdentName(); id != "" {
+		if id := s.scanIdent(); id != "" {
 			return Token{Type: Ident, Text: id}
 		}
 		s.read()
@@ -288,7 +288,7 @@ func (s *Scanner) scanBlockComment() Token {
 	}
 }
 
-func (s *Scanner) scanIdentName() string {
+func (s *Scanner) scanIdent() string {
 	var b strings.Builder
 	for {
 		switch r := s.read(); {
