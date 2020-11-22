@@ -53,7 +53,7 @@ echo 'ahoj';`,
 	}, {
 		"comments",
 		`<?php // line comment
-namespace /*block */ DateTime/** comments*/;`,
+namespace /*block */ DateTime/** comments*/;# another line comm.`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -66,7 +66,8 @@ namespace /*block */ DateTime/** comments*/;`,
 			{token.Ident, "DateTime", pos("2:22")},
 			{token.Comment, "/** comments*/", pos("2:30")},
 			{token.Semicolon, ";", pos("2:44")},
-			{token.EOF, "", pos("2:45")},
+			{token.Comment, "# another line comm.", pos("2:45")},
+			{token.EOF, "", pos("2:65")},
 		},
 	}, {
 		"single quoted strings",

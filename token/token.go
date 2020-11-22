@@ -161,13 +161,15 @@ func (sc *Scanner) scanAny() (tok Token) {
 	case '/':
 		switch sc.read() {
 		case '/':
-			return sc.scanLineComment()
+			return sc.scanLineComment("//")
 		case '*':
 			return sc.scanBlockComment()
 		default:
 			sc.unread()
 			return Token{Type: Quo}
 		}
+	case '#':
+		return sc.scanLineComment("#")
 	case '$':
 		if id := sc.scanIdentName(); id != "" {
 			return Token{Type: Var, Text: "$" + id}
@@ -246,7 +248,7 @@ func (sc *Scanner) scanInlineHTML() (Token, uint) {
 	}
 }
 
-func (sc *Scanner) scanLineComment() Token {
+func (sc *Scanner) scanLineComment(start string) Token {
 	var b strings.Builder
 	for {
 		switch r := sc.read(); r {
@@ -254,7 +256,7 @@ func (sc *Scanner) scanLineComment() Token {
 			b.WriteRune(r)
 		case '\n', eof:
 			sc.unread()
-			return Token{Type: Comment, Text: "//" + b.String()}
+			return Token{Type: Comment, Text: start + b.String()}
 		}
 	}
 }
