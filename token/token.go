@@ -31,7 +31,7 @@ func (t Token) String() string {
 
 //go:generate stringer -type Type -linecomment
 
-type Type int
+type Type uint
 
 const (
 	Illegal Type = iota
@@ -67,7 +67,62 @@ const (
 	Shl       // <<
 	Shr       // >>
 	symbolEnd
+
+	keywordStart
+	Abstract   // abstract
+	As         // as
+	Break      // break
+	Callable   // callable
+	Case       // case
+	Catch      // catch
+	Class      // class
+	Clone      // clone
+	Const      // const
+	Continue   // continue
+	Default    // default
+	Do         // do
+	Else       // else
+	Elseif     // elseif
+	Extends    // extends
+	Final      // final
+	Finally    // finally
+	Fn         // fn
+	For        // for
+	Foreach    // foreach
+	Function   // function
+	Goto       // goto
+	If         // if
+	Implements // implements
+	Instanceof // instanceof
+	Insteadof  // insteadof
+	Interface  // interface
+	Namespace  // namespace
+	New        // new
+	Parent     // parent
+	Private    // private
+	Protected  // protected
+	Public     // public
+	Return     // return
+	Self       // self
+	Static     // static
+	Switch     // switch
+	Throw      // throw
+	Trait      // trait
+	Try        // try
+	Use        // use
+	While      // while
+	keywordEnd
 )
+
+var keywords map[string]Token
+
+func init() {
+	keywords = make(map[string]Token)
+	for typ := keywordStart + 1; typ < keywordEnd; typ++ {
+		s := typ.String()
+		keywords[s] = Token{Type: typ, Text: s}
+	}
+}
 
 const eof = -1
 
@@ -234,6 +289,9 @@ func (s *Scanner) scanAny() (tok Token) {
 	default:
 		s.unread()
 		if id := s.scanIdent(); id != "" {
+			if tok, ok := keywords[id]; ok {
+				return tok
+			}
 			return Token{Type: Ident, Text: id}
 		}
 		s.read()

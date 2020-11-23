@@ -39,14 +39,58 @@ func _() {
 	_ = x[Shl-28]
 	_ = x[Shr-29]
 	_ = x[symbolEnd-30]
+	_ = x[keywordStart-31]
+	_ = x[Abstract-32]
+	_ = x[As-33]
+	_ = x[Break-34]
+	_ = x[Callable-35]
+	_ = x[Case-36]
+	_ = x[Catch-37]
+	_ = x[Class-38]
+	_ = x[Clone-39]
+	_ = x[Const-40]
+	_ = x[Continue-41]
+	_ = x[Default-42]
+	_ = x[Do-43]
+	_ = x[Else-44]
+	_ = x[Elseif-45]
+	_ = x[Extends-46]
+	_ = x[Final-47]
+	_ = x[Finally-48]
+	_ = x[Fn-49]
+	_ = x[For-50]
+	_ = x[Foreach-51]
+	_ = x[Function-52]
+	_ = x[Goto-53]
+	_ = x[If-54]
+	_ = x[Implements-55]
+	_ = x[Instanceof-56]
+	_ = x[Insteadof-57]
+	_ = x[Interface-58]
+	_ = x[Namespace-59]
+	_ = x[New-60]
+	_ = x[Parent-61]
+	_ = x[Private-62]
+	_ = x[Protected-63]
+	_ = x[Public-64]
+	_ = x[Return-65]
+	_ = x[Self-66]
+	_ = x[Static-67]
+	_ = x[Switch-68]
+	_ = x[Throw-69]
+	_ = x[Trait-70]
+	_ = x[Try-71]
+	_ = x[Use-72]
+	_ = x[While-73]
+	_ = x[keywordEnd-74]
 }
 
-const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarInlineHTMLsymbolStart<?php$\\?()[]{}<>,:;...|&/<<>>symbolEnd"
+const _Type_name = "IllegalEOFWhitespaceCommentIdentStringVarInlineHTMLsymbolStart<?php$\\?()[]{}<>,:;...|&/<<>>symbolEndkeywordStartabstractasbreakcallablecasecatchclasscloneconstcontinuedefaultdoelseelseifextendsfinalfinallyfnforforeachfunctiongotoifimplementsinstanceofinsteadofinterfacenamespacenewparentprivateprotectedpublicreturnselfstaticswitchthrowtraittryusewhilekeywordEnd"
 
-var _Type_index = [...]uint8{0, 7, 10, 20, 27, 32, 38, 41, 51, 62, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 86, 87, 89, 91, 100}
+var _Type_index = [...]uint16{0, 7, 10, 20, 27, 32, 38, 41, 51, 62, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 86, 87, 89, 91, 100, 112, 120, 122, 127, 135, 139, 144, 149, 154, 159, 167, 174, 176, 180, 186, 193, 198, 205, 207, 210, 217, 225, 229, 231, 241, 251, 260, 269, 278, 281, 287, 294, 303, 309, 315, 319, 325, 331, 336, 341, 344, 347, 352, 362}
 
 func (i Type) String() string {
-	if i < 0 || i >= Type(len(_Type_index)-1) {
+	if i >= Type(len(_Type_index)-1) {
 		return "Type(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 	return _Type_name[_Type_index[i]:_Type_index[i+1]]
