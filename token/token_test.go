@@ -151,6 +151,22 @@ HERE
 			{token.EOF, "", pos("10:1")},
 		},
 	}, {
+		"nowdoc",
+		`<?php<<<	 'NOWdoc' ` + `
+weather
+  NOWdoc
+NOWdoc:
+NOWdoc;nada
+NOWdoc;	` + `
+`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.String, "<<<\t 'NOWdoc' \nweather\n  NOWdoc\nNOWdoc:\nNOWdoc;nada\nNOWdoc", pos("1:6")},
+			{token.Semicolon, ";", pos("6:7")},
+			{token.Whitespace, "\t\n", pos("6:8")},
+			{token.EOF, "", pos("7:1")},
+		},
+	}, {
 		"keywords",
 		`<?php
 abstract as

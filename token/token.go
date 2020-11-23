@@ -452,21 +452,24 @@ func (s *Scanner) scanHereDoc() Token {
 		panic("missing opening heredoc identifier")
 	}
 	b.WriteString(ws.Text)
-	quoted := false
-	if s.peek() == '"' {
-		b.WriteRune(s.read())
-		quoted = true
+	var quote rune
+	switch r := s.peek(); r {
+	case '"', '\'':
+		s.read()
+		b.WriteRune(r)
+		quote = r
 	}
 	delim := s.scanIdent()
 	if delim == "" {
 		panic("invalid opening identifier")
 	}
 	b.WriteString(delim)
-	if quoted {
-		b.WriteRune('"')
-		if s.read() != '"' {
+	if quote != 0 {
+		if s.read() != quote {
+			// TODO: Different message for nowdoc?
 			panic("quoted heredoc identifier not terminated")
 		}
+		b.WriteRune(quote)
 	}
 	ws = s.scanWhitespace()
 	if !strings.ContainsRune(ws.Text, '\n') {
@@ -474,6 +477,7 @@ func (s *Scanner) scanHereDoc() Token {
 	}
 	b.WriteString(ws.Text)
 	for {
+		// TODO: Check escape characters for heredoc.
 		r := s.read()
 		b.WriteRune(r)
 		switch r {
