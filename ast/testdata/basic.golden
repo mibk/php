@@ -1,0 +1,12 @@
+<?php
+
+namespace Dubax\Foo;
+
+const AA = 'tuzkovy'. 'baterky';
+
+class Bar
+{
+	function cleanup($foo, $bar) {}
+
+	function xx() {}
+}
