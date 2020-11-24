@@ -42,7 +42,8 @@ actually have to be a <html>
 		"basic PHP",
 		`<html> <?php
 
-   echo 'ahoj';`,
+   echo 'ahoj';?>
+<?php endif`,
 		[]token.Token{
 			{token.InlineHTML, "<html> ", pos("1:1")},
 			{token.OpenTag, "<?php", pos("1:8")},
@@ -51,12 +52,18 @@ actually have to be a <html>
 			{token.Whitespace, " ", pos("3:8")},
 			{token.String, `'ahoj'`, pos("3:9")},
 			{token.Semicolon, ";", pos("3:15")},
-			{token.EOF, "", pos("3:16")},
+			{token.CloseTag, "?>", pos("3:16")},
+			{token.InlineHTML, "\n", pos("3:18")},
+			{token.OpenTag, "<?php", pos("4:1")},
+			{token.Whitespace, " ", pos("4:6")},
+			{token.Ident, "endif", pos("4:7")},
+			{token.EOF, "", pos("4:12")},
 		},
 	}, {
 		"comments",
 		`<?php // line comment
-namespace /*block */ DateTime/** comments*/;# another line comm.`,
+namespace /*block ?> */ DateTime/** comments*/;# another line comm.
+// early ?><?php # eof`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -64,13 +71,19 @@ namespace /*block */ DateTime/** comments*/;# another line comm.`,
 			{token.Whitespace, "\n", pos("1:22")},
 			{token.Namespace, "namespace", pos("2:1")},
 			{token.Whitespace, " ", pos("2:10")},
-			{token.Comment, "/*block */", pos("2:11")},
-			{token.Whitespace, " ", pos("2:21")},
-			{token.Ident, "DateTime", pos("2:22")},
-			{token.Comment, "/** comments*/", pos("2:30")},
-			{token.Semicolon, ";", pos("2:44")},
-			{token.Comment, "# another line comm.", pos("2:45")},
-			{token.EOF, "", pos("2:65")},
+			{token.Comment, "/*block ?> */", pos("2:11")},
+			{token.Whitespace, " ", pos("2:24")},
+			{token.Ident, "DateTime", pos("2:25")},
+			{token.Comment, "/** comments*/", pos("2:33")},
+			{token.Semicolon, ";", pos("2:47")},
+			{token.Comment, "# another line comm.", pos("2:48")},
+			{token.Whitespace, "\n", pos("2:68")},
+			{token.Comment, "// early ", pos("3:1")},
+			{token.CloseTag, "?>", pos("3:10")},
+			{token.OpenTag, "<?php", pos("3:12")},
+			{token.Whitespace, " ", pos("3:17")},
+			{token.Comment, "# eof", pos("3:18")},
+			{token.EOF, "", pos("3:23")},
 		},
 	}, {
 		"single quoted strings",

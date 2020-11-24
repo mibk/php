@@ -50,6 +50,7 @@ const (
 
 	symbolStart
 	OpenTag   // <?php
+	CloseTag  // ?>
 	Dollar    // $
 	Backslash // \
 	Qmark     // ?
@@ -156,7 +157,13 @@ func NewScanner(r io.Reader) *Scanner {
 
 const openTag = "<?php"
 
-func (s *Scanner) Next() Token {
+func (s *Scanner) Next() (tok Token) {
+	defer func() {
+		if tok.Type == CloseTag {
+			s.state = inHTML
+		}
+	}()
+
 	if len(s.queue) > 0 {
 		tok := s.queue[0]
 		s.queue = s.queue[1:]
@@ -164,7 +171,6 @@ func (s *Scanner) Next() Token {
 	}
 
 	pos := s.pos()
-	var tok Token
 	switch s.state {
 	default:
 		panic(fmt.Sprintf("unknown state: %d", s.state))
@@ -245,6 +251,10 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '\\':
 		return Token{Type: Backslash}
 	case '?':
+		if s.peek() == '>' {
+			s.read()
+			return Token{Type: CloseTag}
+		}
 		return Token{Type: Qmark}
 	case '(':
 		return Token{Type: Lparen}
@@ -355,6 +365,15 @@ func (s *Scanner) scanLineComment(start string) Token {
 		switch r := s.read(); r {
 		default:
 			b.WriteRune(r)
+		case '?':
+			// Close tags end line comments, too.
+			if s.peek() == '>' {
+				s.read()
+				tok := Token{Type: CloseTag, Text: "?>"}
+				tok.Pos.Line, tok.Pos.Column = s.line, s.col-2
+				s.queue = append(s.queue, tok)
+				return Token{Type: Comment, Text: start + b.String()}
+			}
 		case '\n', eof:
 			s.unread()
 			return Token{Type: Comment, Text: start + b.String()}
