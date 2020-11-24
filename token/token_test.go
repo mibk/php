@@ -387,3 +387,23 @@ HERE ;
 		})
 	}
 }
+
+func TestBadReader(t *testing.T) {
+	sc := token.NewScanner(new(badReader))
+	for sc.Next().Type != token.EOF {
+	}
+	errStr := "<nil>"
+	if err := sc.Err(); err != nil {
+		errStr = err.Error()
+	}
+	const wantErr = "i'm fine"
+	if errStr != wantErr {
+		t.Errorf("\n got %s\nwant %s", errStr, wantErr)
+	}
+}
+
+type badReader struct{}
+
+func (badReader) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("i'm fine")
+}

@@ -213,6 +213,9 @@ func (s *Scanner) read() rune {
 	}
 	r, _, err := s.r.ReadRune()
 	if err != nil {
+		if err != io.EOF {
+			s.err = err
+		}
 		s.done = true
 		return eof
 	}
