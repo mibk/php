@@ -59,6 +59,7 @@ const (
 	Rbrack    // ]
 	Lbrace    // {
 	Rbrace    // }
+	Assign    // =
 	Lt        // <
 	Gt        // >
 	Comma     // ,
@@ -257,6 +258,8 @@ func (s *Scanner) scanAny() (tok Token) {
 		return Token{Type: Lbrace}
 	case '}':
 		return Token{Type: Rbrace}
+	case '=':
+		return Token{Type: Assign}
 	case '<':
 		if s.peek() == r {
 			s.read()
