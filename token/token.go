@@ -308,30 +308,43 @@ func (s *Scanner) scanAny() (tok Token) {
 
 func (s *Scanner) scanInlineHTML() (Token, uint) {
 	var i int
+	var canEnd bool
 	var b strings.Builder
 	for {
 		switch r := s.read(); r {
 		case rune(openTag[i]):
 			i++
 			if i == len(openTag) {
+				canEnd = true
+				i = 0
+			}
+		case ' ', '\t', '\r', '\n':
+			if canEnd {
+				s.unread()
 				tok := Token{Type: OpenTag, Text: openTag}
 				if b.Len() > 0 {
-					tok.Pos.Line, tok.Pos.Column = s.line, s.col-i
+					tok.Pos.Line, tok.Pos.Column = s.line, s.col-len(openTag)
 					s.queue = append(s.queue, tok)
 					tok = Token{Type: InlineHTML, Text: b.String()}
 				}
 				return tok, inPHP
 			}
+			fallthrough
 		default:
+			if canEnd {
+				i = len(openTag)
+			}
+			canEnd = false
 			b.WriteString(openTag[:i])
+			if r == eof {
+				if b.Len() == 0 {
+					return Token{Type: EOF}, inHTML
+				}
+				s.unread()
+				return Token{Type: InlineHTML, Text: b.String()}, inHTML
+			}
 			i = 0
 			b.WriteRune(r)
-		case eof:
-			if b.Len() == 0 {
-				return Token{Type: EOF}, inHTML
-			}
-			s.unread()
-			return Token{Type: InlineHTML, Text: b.String()}, inHTML
 		}
 	}
 }

@@ -23,18 +23,20 @@ func TestScanner(t *testing.T) {
 	}{{
 		"only HTML",
 		`doesn't
-actually have to be a <html>`,
+actually have to be a <html>
+<?phpnamespace <?php`,
 		[]token.Token{
-			{token.InlineHTML, "doesn't\nactually have to be a <html>", pos("1:1")},
-			{token.EOF, "", pos("2:29")},
+			{token.InlineHTML, "doesn't\nactually have to be a <html>\n<?phpnamespace <?php", pos("1:1")},
+			{token.EOF, "", pos("3:21")},
 		},
 	}, {
 		"tease opening",
-		`< <?ph  <?p <?hp nic <?php`,
+		`< <?ph  <?p <?hp nic <?php `,
 		[]token.Token{
 			{token.InlineHTML, "< <?ph  <?p <?hp nic ", pos("1:1")},
 			{token.OpenTag, "<?php", pos("1:22")},
-			{token.EOF, "", pos("1:27")},
+			{token.Whitespace, " ", pos("1:27")},
+			{token.EOF, "", pos("1:28")},
 		},
 	}, {
 		"basic PHP",
@@ -72,35 +74,37 @@ namespace /*block */ DateTime/** comments*/;# another line comm.`,
 		},
 	}, {
 		"single quoted strings",
-		`<?php'\'\\' '\\' '\'' '\\n\\\'''
+		`<?php '\'\\' '\\' '\'' '\\n\\\'''
 \''`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
-			{token.String, `'\'\\'`, pos("1:6")},
-			{token.Whitespace, " ", pos("1:12")},
-			{token.String, `'\\'`, pos("1:13")},
-			{token.Whitespace, " ", pos("1:17")},
-			{token.String, `'\''`, pos("1:18")},
-			{token.Whitespace, " ", pos("1:22")},
-			{token.String, `'\\n\\\''`, pos("1:23")},
-			{token.String, "'\n\\''", pos("1:32")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.String, `'\'\\'`, pos("1:7")},
+			{token.Whitespace, " ", pos("1:13")},
+			{token.String, `'\\'`, pos("1:14")},
+			{token.Whitespace, " ", pos("1:18")},
+			{token.String, `'\''`, pos("1:19")},
+			{token.Whitespace, " ", pos("1:23")},
+			{token.String, `'\\n\\\''`, pos("1:24")},
+			{token.String, "'\n\\''", pos("1:33")},
 			{token.EOF, "", pos("2:4")},
 		},
 	}, {
 		"double quoted strings",
-		`<?php"\"\\" "\\" "\"" "\\'\\\"""
+		`<?php "\"\\" "\\" "\"" "\\'\\\"""
 \""
 "\n\r\t\v\e\f\$"`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
-			{token.String, `"\"\\"`, pos("1:6")},
-			{token.Whitespace, " ", pos("1:12")},
-			{token.String, `"\\"`, pos("1:13")},
-			{token.Whitespace, " ", pos("1:17")},
-			{token.String, `"\""`, pos("1:18")},
-			{token.Whitespace, " ", pos("1:22")},
-			{token.String, `"\\'\\\""`, pos("1:23")},
-			{token.String, "\"\n\\\"\"", pos("1:32")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.String, `"\"\\"`, pos("1:7")},
+			{token.Whitespace, " ", pos("1:13")},
+			{token.String, `"\\"`, pos("1:14")},
+			{token.Whitespace, " ", pos("1:18")},
+			{token.String, `"\""`, pos("1:19")},
+			{token.Whitespace, " ", pos("1:23")},
+			{token.String, `"\\'\\\""`, pos("1:24")},
+			{token.String, "\"\n\\\"\"", pos("1:33")},
 			{token.Whitespace, "\n", pos("2:4")},
 			{token.String, "\"\\n\\r\\t\\v\\e\\f\\$\"", pos("3:1")},
 			{token.EOF, "", pos("3:17")},
@@ -120,18 +124,19 @@ namespace /*block */ DateTime/** comments*/;# another line comm.`,
 		},
 	}, {
 		"binary operators",
-		`<?php<><<>>`,
+		`<?php <><<>>`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
-			{token.Lt, "<", pos("1:6")},
-			{token.Gt, ">", pos("1:7")},
-			{token.Shl, "<<", pos("1:8")},
-			{token.Shr, ">>", pos("1:10")},
-			{token.EOF, "", pos("1:12")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.Lt, "<", pos("1:7")},
+			{token.Gt, ">", pos("1:8")},
+			{token.Shl, "<<", pos("1:9")},
+			{token.Shr, ">>", pos("1:11")},
+			{token.EOF, "", pos("1:13")},
 		},
 	}, {
 		"heredoc",
-		`<?php<<<	 END ` + `
+		`<?php <<<	 END ` + `
 buffalo
   END
 END:
@@ -143,7 +148,8 @@ HERE
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
-			{token.String, "<<<\t END \nbuffalo\n  END\nEND:\nEND;nic\nEND", pos("1:6")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.String, "<<<\t END \nbuffalo\n  END\nEND:\nEND;nic\nEND", pos("1:7")},
 			{token.Semicolon, ";", pos("6:4")},
 			{token.Whitespace, "\t\n", pos("6:5")},
 			{token.String, "<<<\"HERE\"\nthere\nHERE", pos("7:1")},
@@ -152,7 +158,7 @@ HERE
 		},
 	}, {
 		"nowdoc",
-		`<?php<<<	 'NOWdoc' ` + `
+		`<?php	<<<	 'NOWdoc' ` + `
 weather
   NOWdoc
 NOWdoc:
@@ -161,7 +167,8 @@ NOWdoc;	` + `
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
-			{token.String, "<<<\t 'NOWdoc' \nweather\n  NOWdoc\nNOWdoc:\nNOWdoc;nada\nNOWdoc", pos("1:6")},
+			{token.Whitespace, "\t", pos("1:6")},
+			{token.String, "<<<\t 'NOWdoc' \nweather\n  NOWdoc\nNOWdoc:\nNOWdoc;nada\nNOWdoc", pos("1:7")},
 			{token.Semicolon, ";", pos("6:7")},
 			{token.Whitespace, "\t\n", pos("6:8")},
 			{token.EOF, "", pos("7:1")},
