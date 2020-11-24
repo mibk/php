@@ -155,18 +155,18 @@ func NewScanner(r io.Reader) *Scanner {
 	}
 }
 
-const openTag = "<?php"
-
 func (s *Scanner) Next() (tok Token) {
 	defer func() {
-		if tok.Type == CloseTag {
+		switch tok.Type {
+		case OpenTag:
+			s.state = inPHP
+		case CloseTag:
 			s.state = inHTML
 		}
 	}()
 
 	if len(s.queue) > 0 {
-		tok := s.queue[0]
-		s.queue = s.queue[1:]
+		tok, s.queue = s.queue[0], s.queue[1:]
 		return tok
 	}
 
@@ -175,7 +175,7 @@ func (s *Scanner) Next() (tok Token) {
 	default:
 		panic(fmt.Sprintf("unknown state: %d", s.state))
 	case inHTML:
-		tok, s.state = s.scanInlineHTML()
+		tok = s.scanInlineHTML()
 	case inPHP:
 		tok = s.scanAny()
 		if typ := tok.Type; symbolStart < typ && typ < symbolEnd {
@@ -316,7 +316,8 @@ func (s *Scanner) scanAny() (tok Token) {
 	}
 }
 
-func (s *Scanner) scanInlineHTML() (Token, uint) {
+func (s *Scanner) scanInlineHTML() Token {
+	const openTag = "<?php"
 	var i int
 	var canEnd bool
 	var b strings.Builder
@@ -337,7 +338,7 @@ func (s *Scanner) scanInlineHTML() (Token, uint) {
 					s.queue = append(s.queue, tok)
 					tok = Token{Type: InlineHTML, Text: b.String()}
 				}
-				return tok, inPHP
+				return tok
 			}
 			fallthrough
 		default:
@@ -348,10 +349,10 @@ func (s *Scanner) scanInlineHTML() (Token, uint) {
 			b.WriteString(openTag[:i])
 			if r == eof {
 				if b.Len() == 0 {
-					return Token{Type: EOF}, inHTML
+					return Token{Type: EOF}
 				}
 				s.unread()
-				return Token{Type: InlineHTML, Text: b.String()}, inHTML
+				return Token{Type: InlineHTML, Text: b.String()}
 			}
 			i = 0
 			b.WriteRune(r)
