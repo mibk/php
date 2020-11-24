@@ -308,9 +308,81 @@ while
 					break
 				}
 			}
-
+			if err := sc.Err(); err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
 			if diff := cmp.Diff(got, tt.want); diff != "" {
 				t.Errorf("tokens don't match: (-got +want)\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestScanErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr string
+	}{{
+		"unterminated block comment",
+		`<?php /*
+nic
+ `,
+		"line:3:2: unterminated block comment",
+	}, {
+		"unterminated single quoted",
+		`<?php 'foooo…`,
+		"line:1:14: string not terminated",
+	}, {
+		"illegal single quoted esc char",
+		`<?php '\' … \n'`,
+		"line:1:14: illegal escape char: n",
+	}, {
+		"illegal double quoted esc char",
+		`<?php "\t\nmy\Reason`,
+		"line:1:15: illegal escape char: R",
+	}, {
+		"invalid heredoc #1",
+		`<?php <<<`,
+		"line:1:10: missing opening heredoc identifier",
+	}, {
+		"invalid heredoc #2",
+		`<?php <<< 8`,
+		"line:1:11: invalid opening heredoc identifier",
+	}, {
+		"invalid heredoc #3",
+		`<?php <<< HERE x`,
+		"line:1:16: no newline after identifier in heredoc",
+	}, {
+		"invalid heredoc #4",
+		`<?php <<< HERE
+HERE ;
+`,
+		"line:3:1: heredoc not terminated",
+	}, {
+		"invalid heredoc #5",
+		`<?php <<< "HERE
+`,
+		"line:2:1: quoted heredoc identifier not terminated",
+	}, {
+		"invalid heredoc #5",
+		`<?php <<< 'HERE
+`,
+		"line:2:1: quoted heredoc identifier not terminated",
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sc := token.NewScanner(strings.NewReader(tt.input))
+
+			for sc.Next().Type != token.EOF {
+			}
+			errStr := "<nil>"
+			if err := sc.Err(); err != nil {
+				errStr = err.Error()
+			}
+			if errStr != tt.wantErr {
+				t.Errorf("\n got %s\nwant %s", errStr, tt.wantErr)
 			}
 		})
 	}

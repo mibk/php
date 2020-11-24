@@ -8,6 +8,15 @@ import (
 	"unicode/utf8"
 )
 
+type ScanError struct {
+	Pos Pos
+	Err error
+}
+
+func (e *ScanError) Error() string {
+	return fmt.Sprintf("line:%v: %v", e.Pos, e.Err)
+}
+
 type Pos struct {
 	Line, Column int
 }
@@ -142,6 +151,7 @@ type Scanner struct {
 	state uint
 	queue []Token
 	done  bool
+	err   error
 
 	line, col   int
 	lastLineLen int
@@ -184,6 +194,15 @@ func (s *Scanner) Next() (tok Token) {
 	}
 	tok.Pos = pos
 	return tok
+}
+
+func (s *Scanner) Err() error { return s.err }
+
+func (s *Scanner) errorf(format string, args ...interface{}) Token {
+	if s.err == nil {
+		s.err = &ScanError{s.pos(), fmt.Errorf(format, args...)}
+	}
+	return Token{Type: EOF}
 }
 
 func (s *Scanner) pos() Pos { return Pos{Line: s.line, Column: s.col} }
@@ -392,8 +411,7 @@ func (s *Scanner) scanBlockComment() Token {
 			s.read()
 			return Token{Type: Comment, Text: "/*" + b.String() + "*/"}
 		case r == eof:
-			// TODO: don't panic
-			panic("unterminated block comment")
+			return s.errorf("unterminated block comment")
 		}
 	}
 }
@@ -437,20 +455,18 @@ func (s *Scanner) scanSingleQuoted() Token {
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch s.peek() {
+			switch r := s.peek(); r {
 			case '\\', '\'':
 				b.WriteRune(s.read())
 			default:
 				// Here we differ from PHP; we don't ignore unknown
 				// escape sequences.
-				// TODO: don't panic
-				panic("illegal escape char")
+				return s.errorf("illegal escape char: %c", r)
 			}
 		case '\'':
 			return Token{Type: String, Text: "'" + b.String()}
 		case eof:
-			// TODO: Do not panic.
-			panic("string not terminated")
+			return s.errorf("string not terminated")
 		}
 	}
 }
@@ -462,7 +478,7 @@ func (s *Scanner) scanDoubleQuoted() Token {
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch s.peek() {
+			switch r := s.peek(); r {
 			// TODO: Add support for
 			// - octal notation: \[0-7]{1,3}
 			// - hex notation: \x[0-9A-Fa-f]{1,2}
@@ -472,24 +488,22 @@ func (s *Scanner) scanDoubleQuoted() Token {
 			default:
 				// Here we differ from PHP; we don't ignore unknown
 				// escape sequences.
-				// TODO: don't panic
-				//panic("illegal escape char")
+				return s.errorf("illegal escape char: %c", r)
 			}
 		case '"':
 			return Token{Type: String, Text: `"` + b.String()}
 		case eof:
-			// TODO: Do not panic.
-			panic("string not terminated")
+			return s.errorf("string not terminated")
 		}
 	}
 }
 
 func (s *Scanner) scanHereDoc() Token {
-	// TODO: don't panic
 	var b strings.Builder
 	ws := s.scanWhitespace()
-	if strings.ContainsAny(ws.Text, "\r\n") {
-		panic("missing opening heredoc identifier")
+	if strings.ContainsAny(ws.Text, "\r\n") || s.peek() == eof {
+		// TODO: err position might be wrong.
+		return s.errorf("missing opening heredoc identifier")
 	}
 	b.WriteString(ws.Text)
 	var quote rune
@@ -501,19 +515,19 @@ func (s *Scanner) scanHereDoc() Token {
 	}
 	delim := s.scanIdent()
 	if delim == "" {
-		panic("invalid opening identifier")
+		return s.errorf("invalid opening heredoc identifier")
 	}
 	b.WriteString(delim)
 	if quote != 0 {
 		if s.read() != quote {
 			// TODO: Different message for nowdoc?
-			panic("quoted heredoc identifier not terminated")
+			return s.errorf("quoted heredoc identifier not terminated")
 		}
 		b.WriteRune(quote)
 	}
 	ws = s.scanWhitespace()
 	if !strings.ContainsRune(ws.Text, '\n') {
-		panic("no newline after identifier in heredoc")
+		return s.errorf("no newline after identifier in heredoc")
 	}
 	b.WriteString(ws.Text)
 	for {
@@ -548,8 +562,7 @@ func (s *Scanner) scanHereDoc() Token {
 				}
 			}
 		case eof:
-			// TODO: Do not panic.
-			panic("heredoc not terminated")
+			return s.errorf("heredoc not terminated")
 		}
 	}
 }
