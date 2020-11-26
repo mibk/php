@@ -458,14 +458,15 @@ func (s *Scanner) scanSingleQuoted() Token {
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch r := s.peek(); r {
-			case '\\', '\'':
-				b.WriteRune(s.read())
-			default:
-				// Here we differ from PHP; we don't ignore unknown
-				// escape sequences.
-				return s.errorf("illegal escape char: %c", r)
-			}
+			// It would be nice if PHP disallowed unknown escape
+			// sequences. Was tempted to disallow it here but then
+			// realized it would be unnecessary painful to write
+			// regexes, e.g.:
+			//
+			//	'\\d+.\\d{1,2}'
+			//
+			// Be compatible with PHP for now.
+			b.WriteRune(s.read())
 		case '\'':
 			return Token{Type: String, Text: "'" + b.String()}
 		case eof:
@@ -481,18 +482,9 @@ func (s *Scanner) scanDoubleQuoted() Token {
 		b.WriteRune(r)
 		switch r {
 		case '\\':
-			switch r := s.peek(); r {
-			// TODO: Add support for
-			// - octal notation: \[0-7]{1,3}
-			// - hex notation: \x[0-9A-Fa-f]{1,2}
-			// - UTF-8 codepoint: \u{[0-9A-Fa-f]+}
-			case '\\', '"', 'n', 'r', 't', 'v', 'e', 'f', '$':
-				b.WriteRune(s.read())
-			default:
-				// Here we differ from PHP; we don't ignore unknown
-				// escape sequences.
-				return s.errorf("illegal escape char: %c", r)
-			}
+			// Allow all escape sequences, even unknown ones.
+			// Be compatible with PHP for now.
+			b.WriteRune(s.read())
 		case '"':
 			return Token{Type: String, Text: `"` + b.String()}
 		case eof:

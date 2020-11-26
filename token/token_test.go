@@ -88,7 +88,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm.
 	}, {
 		"single quoted strings",
 		`<?php '\'\\' '\\' '\'' '\\n\\\'''
-\''`,
+\'\@'`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -99,14 +99,14 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm.
 			{token.String, `'\''`, pos("1:19")},
 			{token.Whitespace, " ", pos("1:23")},
 			{token.String, `'\\n\\\''`, pos("1:24")},
-			{token.String, "'\n\\''", pos("1:33")},
-			{token.EOF, "", pos("2:4")},
+			{token.String, "'\n\\'\\@'", pos("1:33")},
+			{token.EOF, "", pos("2:6")},
 		},
 	}, {
 		"double quoted strings",
 		`<?php "\"\\" "\\" "\"" "\\'\\\"""
 \""
-"\n\r\t\v\e\f\$"`,
+"\n\r\t\v\e\f\$\xED\u{2030}\%"`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -119,8 +119,8 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm.
 			{token.String, `"\\'\\\""`, pos("1:24")},
 			{token.String, "\"\n\\\"\"", pos("1:33")},
 			{token.Whitespace, "\n", pos("2:4")},
-			{token.String, "\"\\n\\r\\t\\v\\e\\f\\$\"", pos("3:1")},
-			{token.EOF, "", pos("3:17")},
+			{token.String, "\"\\n\\r\\t\\v\\e\\f\\$\\xED\\u{2030}\\%\"", pos("3:1")},
+			{token.EOF, "", pos("3:31")},
 		},
 	}, {
 		"variables",
@@ -333,14 +333,6 @@ nic
 		"unterminated single quoted",
 		`<?php 'foooo…`,
 		"line:1:14: string not terminated",
-	}, {
-		"illegal single quoted esc char",
-		`<?php '\' … \n'`,
-		"line:1:14: illegal escape char: n",
-	}, {
-		"illegal double quoted esc char",
-		`<?php "\t\nmy\Reason`,
-		"line:1:15: illegal escape char: R",
 	}, {
 		"invalid heredoc #1",
 		`<?php <<<`,
