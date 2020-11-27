@@ -386,8 +386,6 @@ func (s *Scanner) scanLineComment(start string) Token {
 	var b strings.Builder
 	for {
 		switch r := s.read(); r {
-		default:
-			b.WriteRune(r)
 		case '?':
 			// Close tags end line comments, too.
 			if s.peek() == '>' {
@@ -397,6 +395,9 @@ func (s *Scanner) scanLineComment(start string) Token {
 				s.queue = append(s.queue, tok)
 				return Token{Type: Comment, Text: start + b.String()}
 			}
+			fallthrough
+		default:
+			b.WriteRune(r)
 		case '\n', eof:
 			s.unread()
 			return Token{Type: Comment, Text: start + b.String()}

@@ -62,7 +62,7 @@ actually have to be a <html>
 	}, {
 		"comments",
 		`<?php // line comment
-namespace /*block ?> */ DateTime/** comments*/;# another line comm.
+namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 // early ?><?php # eof`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
@@ -76,8 +76,8 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm.
 			{token.Ident, "DateTime", pos("2:25")},
 			{token.Comment, "/** comments*/", pos("2:33")},
 			{token.Semicolon, ";", pos("2:47")},
-			{token.Comment, "# another line comm.", pos("2:48")},
-			{token.Whitespace, "\n", pos("2:68")},
+			{token.Comment, "# another line comm? or?", pos("2:48")},
+			{token.Whitespace, "\n", pos("2:72")},
 			{token.Comment, "// early ", pos("3:1")},
 			{token.CloseTag, "?>", pos("3:10")},
 			{token.OpenTag, "<?php", pos("3:12")},
