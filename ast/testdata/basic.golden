@@ -2,6 +2,9 @@
 
 namespace Dubax\Foo;
 
+use DateTime;
+use This\Awesome\Use\Statement;
+
 const AA = 'tuzkovy'. 'baterky';
 
 class Bar

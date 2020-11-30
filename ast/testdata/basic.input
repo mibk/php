@@ -1,5 +1,7 @@
 <?php   namespace \Dubax \
-Foo;const
+Foo;use\
+DateTime  ;use\This
+\Awesome\  Use\Statement;const
 AA = 'tuzkovy'. 'baterky'
 
 ;class

@@ -60,10 +60,20 @@ func (p *printer) print(args ...interface{}) {
 				ns.Global = false // namespaces are global implicitly
 				p.print(token.Namespace, ' ', ns, token.Semicolon, newline)
 			}
+			if len(arg.UseStmts) > 0 {
+				p.print(newline)
+				for _, stmt := range arg.UseStmts {
+					p.print(stmt, newline)
+				}
+			}
 			for _, decl := range arg.Decls {
 				p.print(newline, decl)
 			}
-		case *Const:
+		case *UseStmt:
+			stmt := arg.Name
+			stmt.Global = false // use statements are global implicitly
+			p.print(token.Use, ' ', stmt, token.Semicolon)
+		case *ConstDecl:
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
 			p.print(arg.X, token.Semicolon, newline)
 		case *ClassDecl:

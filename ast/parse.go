@@ -100,15 +100,19 @@ func (p *parser) errorf(format string, args ...interface{}) {
 // https://golang.org/ref/spec#Notation.
 
 // File = "<?php"
-//      = [ "namespace" Name ";" ]
-//      = { Decl } .
+//        [ "namespace" Name ";" ]
+//        { UseStmt }
+//        { Decl } .
 func (p *parser) parseFile() *File {
 	file := new(File)
 	p.expect(token.OpenTag)
 	if p.got(token.Namespace) {
 		file.Namespace = p.parseName()
+		p.expect(token.Semicolon)
 	}
-	p.expect(token.Semicolon)
+	for p.tok.Type == token.Use {
+		file.UseStmts = append(file.UseStmts, p.parseUseStmt())
+	}
 	// TODO: Avoid p.err == nil.
 	for !p.got(token.EOF) && p.err == nil {
 		file.Decls = append(file.Decls, p.parseDecl())
@@ -116,11 +120,20 @@ func (p *parser) parseFile() *File {
 	return file
 }
 
+// UseStmt = "use" Name ";" .
+func (p *parser) parseUseStmt() *UseStmt {
+	stmt := new(UseStmt)
+	p.expect(token.Use)
+	stmt.Name = p.parseName()
+	p.expect(token.Semicolon)
+	return stmt
+}
+
 // Decl = ConstDecl | ClassDecl .
 func (p *parser) parseDecl() Decl {
 	switch p.tok.Type {
 	case token.Const:
-		return p.parseConst()
+		return p.parseConstDecl()
 	case token.Class:
 		return p.parseClassDecl()
 	default:
@@ -129,9 +142,9 @@ func (p *parser) parseDecl() Decl {
 	}
 }
 
-// ConstDecl = "const" ident "=" TokenBlob .
-func (p *parser) parseConst() *Const {
-	cons := new(Const)
+// ConstDecl = "const" ident "=" TokenBlob ";" .
+func (p *parser) parseConstDecl() *ConstDecl {
+	cons := new(ConstDecl)
 	p.expect(token.Const)
 	cons.Name = p.tok.Text
 	p.expect(token.Ident)

@@ -4,7 +4,12 @@ import "mibk.io/php/token"
 
 type File struct {
 	Namespace *Name
+	UseStmts  []*UseStmt
 	Decls     []Decl
+}
+
+type UseStmt struct {
+	Name *Name
 }
 
 type TokenBlob struct {
@@ -13,7 +18,7 @@ type TokenBlob struct {
 
 type Decl interface{}
 
-type Const struct {
+type ConstDecl struct {
 	Name string
 	X    Expr
 }
