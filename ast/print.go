@@ -82,7 +82,7 @@ func (p *printer) print(args ...interface{}) {
 			p.print(p.indent-1, token.Rbrace, newline)
 		case *Method:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
-			p.print(' ', arg.Body)
+			p.print(' ', arg.Body, newline)
 		case []*Param:
 			for i, par := range arg {
 				if i > 0 {
@@ -93,9 +93,9 @@ func (p *printer) print(args ...interface{}) {
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {
-				p.print(p.indent, stmt, token.Semicolon, newline)
+				p.print(p.indent, stmt, newline)
 			}
-			p.print(p.indent-1, token.Rbrace, newline)
+			p.print(p.indent-1, token.Rbrace)
 		case *UnknownStmt:
 			toks := arg.Toks
 			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
@@ -107,6 +107,8 @@ func (p *printer) print(args ...interface{}) {
 			}
 			if arg.Body != nil {
 				p.print(arg.Body)
+			} else {
+				p.print(token.Semicolon)
 			}
 		case *UnknownExpr:
 			toks := arg.Toks

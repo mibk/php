@@ -194,7 +194,7 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
-// BlockStmt = "{" { Stmt ";" } "}" .
+// BlockStmt = "{" { Stmt } "}" .
 func (p *parser) parseBlockStmt() *BlockStmt {
 	block := new(BlockStmt)
 	p.expect(token.Lbrace)
@@ -203,7 +203,6 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 			return block
 		}
 		block.List = append(block.List, p.parseStmt())
-		p.expect(token.Semicolon)
 	}
 }
 
@@ -231,22 +230,24 @@ func (p *parser) parseName() *Name {
 	return id
 }
 
-// UnknownStmt = /* anything except ";" */ [ BlockStmt ] .
+// UnknownStmt = /* pretty much anything */ ( ";" | BlockStmt ) .
 func (p *parser) parseUnknownStmt() *UnknownStmt {
 	stmt := new(UnknownStmt)
 	// TODO: EOF or ?>
 	for {
 		switch p.tok.Type {
-		case token.EOF:
-			p.errorf("unexpected %v", token.EOF)
+		case token.EOF, token.Rbrace:
+			p.errorf("unexpected %v", p.tok)
 			return nil
-		case token.Semicolon, token.Rbrace:
+		case token.Semicolon:
 			if len(stmt.Toks) == 0 {
 				p.errorf("unexpected %v", p.tok)
 			}
+			p.next()
 			return stmt
 		case token.Lbrace:
 			stmt.Body = p.parseBlockStmt()
+			return stmt
 		default:
 			stmt.Toks = append(stmt.Toks, p.tok)
 			p.next0()
