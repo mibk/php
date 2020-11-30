@@ -6,8 +6,11 @@ AA = 'tuzkovy'. 'baterky'
 
 ;class
 Bar {function cleanup(  $foo,  $bar ,
-){
-
+){ echo  'something'
+;  if (/* don't fmt just yet*/ )
+{
+	switch;
+	} ;
 
 
 

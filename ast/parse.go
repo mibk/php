@@ -155,7 +155,7 @@ func (p *parser) parseConstDecl() *ConstDecl {
 }
 
 // ClassDecl   = "class" "{" { ClassMember } "}" .
-// ClassMember = "function" ident "(" ParamList [ "," ] ")" "{" "}" .
+// ClassMember = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
 func (p *parser) parseClassDecl() *ClassDecl {
 	class := new(ClassDecl)
 	p.expect(token.Class)
@@ -170,8 +170,7 @@ func (p *parser) parseClassDecl() *ClassDecl {
 		m.Params = p.parseParamList()
 		p.consume(token.Comma)
 		p.expect(token.Rparen)
-		p.expect(token.Lbrace)
-		p.expect(token.Rbrace)
+		m.Body = p.parseBlockStmt()
 		class.Members = append(class.Members, m)
 	}
 	p.expect(token.Rbrace)
@@ -195,6 +194,27 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
+// BlockStmt = "{" { Stmt ";" } "}" .
+func (p *parser) parseBlockStmt() *BlockStmt {
+	block := new(BlockStmt)
+	p.expect(token.Lbrace)
+	for {
+		if p.got(token.Rbrace) || p.err != nil {
+			return block
+		}
+		block.List = append(block.List, p.parseStmt())
+		p.expect(token.Semicolon)
+	}
+}
+
+// Stmt = BlockStmt | TokenBlob .
+func (p *parser) parseStmt() Stmt {
+	if p.tok.Type == token.Lbrace {
+		return p.parseBlockStmt()
+	}
+	return p.parseTokenBlob()
+}
+
 // Name = [ "\\" ] ident { "\\" ident } .
 func (p *parser) parseName() *Name {
 	id := new(Name)
@@ -211,16 +231,25 @@ func (p *parser) parseName() *Name {
 	return id
 }
 
-// TokenBlob = /* everything except ";" */ .
+// TokenBlob = /* everything except ";", "{" or "}" */ [ BlockStmt ].
 func (p *parser) parseTokenBlob() *TokenBlob {
 	blob := new(TokenBlob)
 	// TODO: EOF or ?>
-	for p.tok.Type != token.Semicolon && p.tok.Type != token.EOF {
-		blob.Toks = append(blob.Toks, p.tok)
-		p.next0()
+	for {
+		switch p.tok.Type {
+		case token.EOF:
+			p.errorf("unexpected %v", token.EOF)
+			return nil
+		case token.Semicolon, token.Rbrace:
+			if len(blob.Toks) == 0 {
+				p.errorf("unexpected %v", p.tok)
+			}
+			return blob
+		case token.Lbrace:
+			blob.Body = p.parseBlockStmt()
+		default:
+			blob.Toks = append(blob.Toks, p.tok)
+			p.next0()
+		}
 	}
-	if len(blob.Toks) == 0 {
-		p.errorf("unexpected %v", p.tok)
-	}
-	return blob
 }

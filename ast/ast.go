@@ -14,6 +14,7 @@ type UseStmt struct {
 
 type TokenBlob struct {
 	Toks []token.Token
+	Body *BlockStmt
 }
 
 type Decl interface{}
@@ -33,10 +34,17 @@ type ClassMember interface{}
 type Method struct {
 	Name   string
 	Params []*Param
+	Body   *BlockStmt
 }
 
 type Param struct {
 	Name string
+}
+
+type Stmt interface{}
+
+type BlockStmt struct {
+	List []Stmt
 }
 
 type Expr interface{}

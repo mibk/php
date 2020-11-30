@@ -54,6 +54,9 @@ func (p *printer) print(args ...interface{}) {
 			for _, tok := range toks {
 				p.print(tok.Text)
 			}
+			if arg.Body != nil {
+				p.print(arg.Body)
+			}
 		case *File:
 			p.print(token.OpenTag, newline, newline)
 			if ns := arg.Namespace; ns != nil {
@@ -88,7 +91,7 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Rbrace, newline)
 		case *Method:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
-			p.print(' ', token.Lbrace, token.Rbrace, newline)
+			p.print(' ', arg.Body)
 		case []*Param:
 			for i, par := range arg {
 				if i > 0 {
@@ -96,6 +99,13 @@ func (p *printer) print(args ...interface{}) {
 				}
 				p.print(par.Name)
 			}
+		case *BlockStmt:
+			p.print(token.Lbrace, newline)
+			for _, stmt := range arg.List {
+				// TODO: indent whitespace('>')
+				p.print('\t', '\t', stmt, token.Semicolon, newline)
+			}
+			p.print(token.Rbrace, newline)
 		case *Name:
 			for i, part := range arg.Parts {
 				if i > 0 || arg.Global {

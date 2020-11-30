@@ -9,7 +9,14 @@ const AA = 'tuzkovy'. 'baterky';
 
 class Bar
 {
-	function cleanup($foo, $bar) {}
+	function cleanup($foo, $bar) {
+		echo  'something';
+		if (/* don't fmt just yet*/ ){
+		switch;
+}
+;
+}
 
-	function xx() {}
+	function xx() {
+}
 }
