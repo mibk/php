@@ -12,11 +12,6 @@ type UseStmt struct {
 	Name *Name
 }
 
-type TokenBlob struct {
-	Toks []token.Token
-	Body *BlockStmt
-}
-
 type Decl interface{}
 
 type ConstDecl struct {
@@ -43,11 +38,20 @@ type Param struct {
 
 type Stmt interface{}
 
+type UnknownStmt struct {
+	Toks []token.Token
+	Body *BlockStmt
+}
+
 type BlockStmt struct {
 	List []Stmt
 }
 
 type Expr interface{}
+
+type UnknownExpr struct {
+	Toks []token.Token
+}
 
 // A Name represents a (possibly qualified or fully qualified) PHP
 // name, which might be a class name, a built-in type, or a special

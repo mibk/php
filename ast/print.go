@@ -49,18 +49,6 @@ func (p *printer) print(args ...interface{}) {
 		}
 
 		switch arg := arg.(type) {
-		case *TokenBlob:
-			toks := arg.Toks
-			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
-				// Avoid trailing whitespaces in a token blob.
-				toks = toks[:len(toks)-1]
-			}
-			for _, tok := range toks {
-				p.print(tok.Text)
-			}
-			if arg.Body != nil {
-				p.print(arg.Body)
-			}
 		case *File:
 			p.print(token.OpenTag, newline, newline)
 			if ns := arg.Namespace; ns != nil {
@@ -108,6 +96,27 @@ func (p *printer) print(args ...interface{}) {
 				p.print(p.indent, stmt, token.Semicolon, newline)
 			}
 			p.print(p.indent-1, token.Rbrace, newline)
+		case *UnknownStmt:
+			toks := arg.Toks
+			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
+				// Avoid trailing whitespaces in a token blob.
+				toks = toks[:len(toks)-1]
+			}
+			for _, tok := range toks {
+				p.print(tok.Text)
+			}
+			if arg.Body != nil {
+				p.print(arg.Body)
+			}
+		case *UnknownExpr:
+			toks := arg.Toks
+			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
+				// Avoid trailing whitespaces in a token blob.
+				toks = toks[:len(toks)-1]
+			}
+			for _, tok := range toks {
+				p.print(tok.Text)
+			}
 		case *Name:
 			for i, part := range arg.Parts {
 				if i > 0 || arg.Global {

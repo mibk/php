@@ -142,14 +142,14 @@ func (p *parser) parseDecl() Decl {
 	}
 }
 
-// ConstDecl = "const" ident "=" TokenBlob ";" .
+// ConstDecl = "const" ident "=" Expr ";" .
 func (p *parser) parseConstDecl() *ConstDecl {
 	cons := new(ConstDecl)
 	p.expect(token.Const)
 	cons.Name = p.tok.Text
 	p.expect(token.Ident)
 	p.expect(token.Assign)
-	cons.X = p.parseTokenBlob()
+	cons.X = p.parseExpr()
 	p.expect(token.Semicolon)
 	return cons
 }
@@ -207,12 +207,12 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 	}
 }
 
-// Stmt = BlockStmt | TokenBlob .
+// Stmt = BlockStmt | UnknownStmt .
 func (p *parser) parseStmt() Stmt {
 	if p.tok.Type == token.Lbrace {
 		return p.parseBlockStmt()
 	}
-	return p.parseTokenBlob()
+	return p.parseUnknownStmt()
 }
 
 // Name = [ "\\" ] ident { "\\" ident } .
@@ -231,9 +231,9 @@ func (p *parser) parseName() *Name {
 	return id
 }
 
-// TokenBlob = /* everything except ";", "{" or "}" */ [ BlockStmt ].
-func (p *parser) parseTokenBlob() *TokenBlob {
-	blob := new(TokenBlob)
+// UnknownStmt = /* anything except ";" */ [ BlockStmt ] .
+func (p *parser) parseUnknownStmt() *UnknownStmt {
+	stmt := new(UnknownStmt)
 	// TODO: EOF or ?>
 	for {
 		switch p.tok.Type {
@@ -241,15 +241,32 @@ func (p *parser) parseTokenBlob() *TokenBlob {
 			p.errorf("unexpected %v", token.EOF)
 			return nil
 		case token.Semicolon, token.Rbrace:
-			if len(blob.Toks) == 0 {
+			if len(stmt.Toks) == 0 {
 				p.errorf("unexpected %v", p.tok)
 			}
-			return blob
+			return stmt
 		case token.Lbrace:
-			blob.Body = p.parseBlockStmt()
+			stmt.Body = p.parseBlockStmt()
 		default:
-			blob.Toks = append(blob.Toks, p.tok)
+			stmt.Toks = append(stmt.Toks, p.tok)
 			p.next0()
 		}
 	}
+}
+
+// Expr = UnknownExpr .
+func (p *parser) parseExpr() Expr { return p.parseUnknownExpr() }
+
+// UnknownExpr = /* anything except ";" */ .
+func (p *parser) parseUnknownExpr() *UnknownExpr {
+	x := new(UnknownExpr)
+	// TODO: EOF or ?>
+	for p.tok.Type != token.Semicolon && p.tok.Type != token.EOF {
+		x.Toks = append(x.Toks, p.tok)
+		p.next0()
+	}
+	if len(x.Toks) == 0 {
+		p.errorf("unexpected %v", p.tok)
+	}
+	return x
 }
