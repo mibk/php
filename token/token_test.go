@@ -74,7 +74,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.Comment, "/*block ?> */", pos("2:11")},
 			{token.Whitespace, " ", pos("2:24")},
 			{token.Ident, "DateTime", pos("2:25")},
-			{token.Comment, "/** comments*/", pos("2:33")},
+			{token.DocComment, "/** comments*/", pos("2:33")},
 			{token.Semicolon, ";", pos("2:47")},
 			{token.Comment, "# another line comm? or?", pos("2:48")},
 			{token.Whitespace, "\n", pos("2:72")},

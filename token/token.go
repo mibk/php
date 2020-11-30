@@ -51,6 +51,7 @@ const (
 	EOF
 	Whitespace
 	Comment
+	DocComment
 
 	Ident
 	String
@@ -413,7 +414,11 @@ func (s *Scanner) scanBlockComment() Token {
 			b.WriteRune(r)
 		case r == '*' && s.peek() == '/':
 			s.read()
-			return Token{Type: Comment, Text: "/*" + b.String() + "*/"}
+			tok := Token{Type: Comment, Text: "/*" + b.String() + "*/"}
+			if strings.HasPrefix(tok.Text, "/**") {
+				tok.Type = DocComment
+			}
+			return tok
 		case r == eof:
 			return s.errorf("unterminated block comment")
 		}
