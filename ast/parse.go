@@ -155,14 +155,30 @@ func (p *parser) parseConstDecl() *ConstDecl {
 }
 
 // ClassDecl   = "class" "{" { ClassMember } "}" .
-// ClassMember = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
+// ClassMember = Method | ConstDecl .
+// Method      = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
 func (p *parser) parseClassDecl() *ClassDecl {
 	class := new(ClassDecl)
 	p.expect(token.Class)
 	class.Name = p.tok.Text
 	p.expect(token.Ident)
 	p.expect(token.Lbrace)
-	for p.got(token.Function) {
+	for !p.got(token.Rbrace) && p.err == nil {
+		m := p.parseClassMember()
+		class.Members = append(class.Members, m)
+	}
+	return class
+}
+
+func (p *parser) parseClassMember() Decl {
+	switch p.tok.Type {
+	default:
+		p.errorf("unexpected %v, expecting class member", p.tok)
+		return nil
+	case token.Const:
+		return p.parseConstDecl()
+	case token.Function:
+		p.next()
 		m := new(Method)
 		m.Name = p.tok.Text
 		p.expect(token.Ident)
@@ -171,10 +187,8 @@ func (p *parser) parseClassDecl() *ClassDecl {
 		p.consume(token.Comma)
 		p.expect(token.Rparen)
 		m.Body = p.parseBlockStmt()
-		class.Members = append(class.Members, m)
+		return m
 	}
-	p.expect(token.Rbrace)
-	return class
 }
 
 // ParamList = Param { "," Param } .

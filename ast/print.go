@@ -50,10 +50,10 @@ func (p *printer) print(args ...interface{}) {
 
 		switch arg := arg.(type) {
 		case *File:
-			p.print(token.OpenTag, newline, newline)
+			p.print(token.OpenTag, newline)
 			if ns := arg.Namespace; ns != nil {
 				ns.Global = false // namespaces are global implicitly
-				p.print(token.Namespace, ' ', ns, token.Semicolon, newline)
+				p.print(newline, token.Namespace, ' ', ns, token.Semicolon, newline)
 			}
 			if len(arg.UseStmts) > 0 {
 				p.print(newline)
