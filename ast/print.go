@@ -25,9 +25,13 @@ func Fprint(w io.Writer, node interface{}) error {
 	return tw.Flush()
 }
 
+type indentation int
+
 type printer struct {
 	buf *bufio.Writer
 	err error // sticky
+
+	indent indentation
 }
 
 type whitespace byte
@@ -85,10 +89,9 @@ func (p *printer) print(args ...interface{}) {
 				if i > 0 {
 					p.print(newline)
 				}
-				// TODO: indent whitespace('>')
-				p.print('\t', m)
+				p.print(p.indent, m)
 			}
-			p.print(token.Rbrace, newline)
+			p.print(p.indent-1, token.Rbrace, newline)
 		case *Method:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
 			p.print(' ', arg.Body)
@@ -102,10 +105,9 @@ func (p *printer) print(args ...interface{}) {
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {
-				// TODO: indent whitespace('>')
-				p.print('\t', '\t', stmt, token.Semicolon, newline)
+				p.print(p.indent, stmt, token.Semicolon, newline)
 			}
-			p.print(token.Rbrace, newline)
+			p.print(p.indent-1, token.Rbrace, newline)
 		case *Name:
 			for i, part := range arg.Parts {
 				if i > 0 || arg.Global {
@@ -114,11 +116,21 @@ func (p *printer) print(args ...interface{}) {
 				p.print(part)
 			}
 		case token.Type:
+			switch arg {
+			case token.Lbrace:
+				p.indent++
+			case token.Rbrace:
+				p.indent--
+			}
 			_, p.err = p.buf.WriteString(arg.String())
 		case string:
 			_, p.err = p.buf.WriteString(arg)
 		case rune:
 			_, p.err = p.buf.WriteRune(arg)
+		case indentation:
+			for i := 0; i < int(arg); i++ {
+				p.buf.WriteByte('\t')
+			}
 		case whitespace:
 			p.err = p.buf.WriteByte(byte(arg))
 		default:
