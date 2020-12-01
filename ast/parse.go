@@ -3,8 +3,10 @@ package ast
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"mibk.io/php/token"
+	"mibk.io/phpdoc"
 )
 
 // SyntaxError records an error and the position it occured on.
@@ -131,11 +133,12 @@ func (p *parser) parseUseStmt() *UseStmt {
 
 // Decl = ConstDecl | ClassDecl .
 func (p *parser) parseDecl() Decl {
+	doc := p.parsePHPDoc()
 	switch p.tok.Type {
 	case token.Const:
-		return p.parseConstDecl()
+		return p.parseConstDecl(doc)
 	case token.Class:
-		return p.parseClassDecl()
+		return p.parseClassDecl(doc)
 	default:
 		p.errorf("unexpected %v", p.tok)
 		return nil
@@ -143,8 +146,9 @@ func (p *parser) parseDecl() Decl {
 }
 
 // ConstDecl = "const" ident "=" Expr ";" .
-func (p *parser) parseConstDecl() *ConstDecl {
+func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	cons := new(ConstDecl)
+	cons.Doc = doc
 	p.expect(token.Const)
 	cons.Name = p.tok.Text
 	p.expect(token.Ident)
@@ -157,8 +161,9 @@ func (p *parser) parseConstDecl() *ConstDecl {
 // ClassDecl   = "class" "{" { ClassMember } "}" .
 // ClassMember = Method | ConstDecl .
 // Method      = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
-func (p *parser) parseClassDecl() *ClassDecl {
+func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
+	class.Doc = doc
 	p.expect(token.Class)
 	class.Name = p.tok.Text
 	p.expect(token.Ident)
@@ -170,16 +175,18 @@ func (p *parser) parseClassDecl() *ClassDecl {
 	return class
 }
 
-func (p *parser) parseClassMember() Decl {
+func (p *parser) parseClassMember() ClassMember {
+	doc := p.parsePHPDoc()
 	switch p.tok.Type {
 	default:
 		p.errorf("unexpected %v, expecting class member", p.tok)
 		return nil
 	case token.Const:
-		return p.parseConstDecl()
+		return p.parseConstDecl(doc)
 	case token.Function:
 		p.next()
-		m := new(Method)
+		m := new(MethodDecl)
+		m.Doc = doc
 		m.Name = p.tok.Text
 		p.expect(token.Ident)
 		p.expect(token.Lparen)
@@ -189,6 +196,19 @@ func (p *parser) parseClassMember() Decl {
 		m.Body = p.parseBlockStmt()
 		return m
 	}
+}
+
+func (p *parser) parsePHPDoc() *phpdoc.Block {
+	if p.tok.Type != token.DocComment {
+		return nil
+	}
+	doc, err := phpdoc.Parse(strings.NewReader(p.tok.Text))
+	if err != nil {
+		// TODO: do not panic
+		panic(err)
+	}
+	p.next()
+	return doc
 }
 
 // ParamList = Param { "," Param } .

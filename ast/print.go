@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
 	"mibk.io/php/token"
+	"mibk.io/phpdoc"
 )
 
 // Fprint "pretty-prints" an AST node to w.
@@ -62,7 +64,7 @@ func (p *printer) print(args ...interface{}) {
 				}
 			}
 			for _, decl := range arg.Decls {
-				p.print(newline, decl)
+				p.print(newline, decl.doc(), p.indent, decl)
 			}
 		case *UseStmt:
 			stmt := arg.Name
@@ -77,10 +79,10 @@ func (p *printer) print(args ...interface{}) {
 				if i > 0 {
 					p.print(newline)
 				}
-				p.print(p.indent, m)
+				p.print(m.doc(), p.indent, m)
 			}
 			p.print(p.indent-1, token.Rbrace, newline)
-		case *Method:
+		case *MethodDecl:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
 			p.print(' ', arg.Body, newline)
 		case []*Param:
@@ -126,6 +128,14 @@ func (p *printer) print(args ...interface{}) {
 				}
 				p.print(part)
 			}
+		case *phpdoc.Block:
+			if arg == nil {
+				continue
+			}
+			doc := new(phpdoc.Block)
+			*doc = *arg
+			doc.Indent = strings.Repeat("\t", int(p.indent))
+			p.err = phpdoc.Fprint(p.buf, doc)
 		case token.Type:
 			switch arg {
 			case token.Lbrace:

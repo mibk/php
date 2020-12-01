@@ -1,0 +1,12 @@
+<?php
+
+  /** @var float*/const PI = 3.14159265359;
+
+	/**
+@extends  B <int > */
+  class A{/**
+@var int Is it really @var?*/const X
+    =-1
+;/**	@return void*/
+function Foo(){
+noop;}}

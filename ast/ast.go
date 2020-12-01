@@ -1,6 +1,9 @@
 package ast
 
-import "mibk.io/php/token"
+import (
+	"mibk.io/php/token"
+	"mibk.io/phpdoc"
+)
 
 type File struct {
 	Namespace *Name
@@ -12,25 +15,33 @@ type UseStmt struct {
 	Name *Name
 }
 
-type Decl interface{}
+type Decl interface{ doc() *phpdoc.Block }
 
 type ConstDecl struct {
+	Doc  *phpdoc.Block // or nil
 	Name string
 	X    Expr
 }
 
 type ClassDecl struct {
+	Doc     *phpdoc.Block // or nil
 	Name    string
 	Members []ClassMember
 }
 
-type ClassMember interface{}
+func (d *ConstDecl) doc() *phpdoc.Block { return d.Doc }
+func (d *ClassDecl) doc() *phpdoc.Block { return d.Doc }
 
-type Method struct {
+type ClassMember interface{ doc() *phpdoc.Block }
+
+type MethodDecl struct {
+	Doc    *phpdoc.Block // or nil
 	Name   string
 	Params []*Param
 	Body   *BlockStmt
 }
+
+func (d *MethodDecl) doc() *phpdoc.Block { return d.Doc }
 
 type Param struct {
 	Name string
