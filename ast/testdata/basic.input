@@ -7,14 +7,13 @@ AA = 'tuzkovy'. 'baterky'
   'auto'
 ;$cc
 
-;class
+;class// ignore
 Bar {function cleanup(  $foo,  $bar ,
 ){ echo  'something'
 ;  if (/* don't fmt just yet*/ )
 {
 	switch;
 	}
-
 
 
 }function xx(){} }function toplevel ($n

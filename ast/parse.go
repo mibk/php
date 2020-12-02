@@ -60,7 +60,7 @@ func (p *parser) next0() {
 func (p *parser) next() {
 	p.prev = p.tok
 	p.next0()
-	p.consume(token.Whitespace)
+	p.consume(token.Whitespace, token.Comment, token.Whitespace)
 }
 
 func (p *parser) expect(typ token.Type) {
@@ -80,7 +80,7 @@ func (p *parser) got(typ token.Type) bool {
 
 func (p *parser) consume(types ...token.Type) {
 	if len(types) == 0 {
-		panic("not token types to consume provided")
+		panic("no token types to consume provided")
 	}
 
 	for ; len(types) > 0; types = types[1:] {
