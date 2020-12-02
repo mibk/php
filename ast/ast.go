@@ -26,6 +26,7 @@ type ConstDecl struct {
 type ClassDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
+	Traits  []*UseStmt
 	Members []ClassMember
 }
 

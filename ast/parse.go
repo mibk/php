@@ -158,7 +158,7 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	return cons
 }
 
-// ClassDecl   = "class" "{" { ClassMember } "}" .
+// ClassDecl   = "class" "{" { UseStmt } { ClassMember } "}" .
 // ClassMember = Method | ConstDecl .
 // Method      = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
@@ -168,6 +168,9 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class.Name = p.tok.Text
 	p.expect(token.Ident)
 	p.expect(token.Lbrace)
+	for p.tok.Type == token.Use {
+		class.Traits = append(class.Traits, p.parseUseStmt())
+	}
 	for !p.got(token.Rbrace) && p.err == nil {
 		m := p.parseClassMember()
 		class.Members = append(class.Members, m)

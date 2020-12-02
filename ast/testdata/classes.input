@@ -1,2 +1,4 @@
-<?php class A{
-  const PI = 3.14159265359 ;}
+<?php class A{use
+This
+\Awesome \Thing
+  ;const PI = 3.14159265359 ;}

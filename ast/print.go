@@ -75,6 +75,12 @@ func (p *printer) print(args ...interface{}) {
 			p.print(arg.X, token.Semicolon, newline)
 		case *ClassDecl:
 			p.print(token.Class, ' ', arg.Name, newline, token.Lbrace, newline)
+			for _, t := range arg.Traits {
+				p.print(p.indent, t, newline)
+			}
+			if len(arg.Traits) > 0 {
+				p.print(newline)
+			}
 			for i, m := range arg.Members {
 				if i > 0 {
 					p.print(newline)

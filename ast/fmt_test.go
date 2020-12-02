@@ -29,6 +29,9 @@ func TestFormatting(t *testing.T) {
 			pf, err := ast.Parse(f)
 			f.Close()
 			if err != nil {
+				if se, ok := err.(*ast.SyntaxError); ok {
+					err = fmt.Errorf("%s:%d:%d: %v", file, se.Line, se.Column, se.Err)
+				}
 				t.Fatal(err)
 			}
 
