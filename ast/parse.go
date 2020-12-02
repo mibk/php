@@ -194,17 +194,36 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	return class
 }
 
-func (p *parser) parseClassMember() ClassMember {
-	doc := p.parsePHPDoc()
+func (p *parser) parseClassMember() *ClassMember {
+	m := new(ClassMember)
+	m.Doc = p.parsePHPDoc()
+	m.Vis = p.parseVisibility()
 	switch p.tok.Type {
 	default:
-		p.errorf("unexpected %v, expecting class member", p.tok)
+		p.errorf("unexpected %v, expecting %v or %v", p.tok, token.Const, token.Function)
 		return nil
 	case token.Const:
-		return p.parseConstDecl(doc)
+		m.Decl = p.parseConstDecl(nil)
 	case token.Function:
-		return p.parseFuncDecl(doc)
+		m.Decl = p.parseFuncDecl(nil)
 	}
+	return m
+}
+
+func (p *parser) parseVisibility() Vis {
+	var v Vis
+	switch p.tok.Type {
+	default:
+		return DefaultVis
+	case token.Public:
+		v = Public
+	case token.Protected:
+		v = Protected
+	case token.Private:
+		v = Private
+	}
+	p.next()
+	return v
 }
 
 func (p *parser) parsePHPDoc() *phpdoc.Block {

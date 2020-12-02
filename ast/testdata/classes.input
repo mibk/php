@@ -1,4 +1,5 @@
 <?php class A{use
 This
 \Awesome \Thing
-  ;const PI = 3.14159265359 ;}
+  ;const PI = 3.14159265359 ;private
+  function    noop(){}}

@@ -38,14 +38,27 @@ type ClassDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
 	Traits  []*UseStmt
-	Members []ClassMember
+	Members []*ClassMember
 }
 
 func (d *ConstDecl) doc() *phpdoc.Block { return d.Doc }
 func (d *FuncDecl) doc() *phpdoc.Block  { return d.Doc }
 func (d *ClassDecl) doc() *phpdoc.Block { return d.Doc }
 
-type ClassMember interface{ doc() *phpdoc.Block }
+type Vis uint
+
+const (
+	DefaultVis Vis = iota
+	Public
+	Protected
+	Private
+)
+
+type ClassMember struct {
+	Doc  *phpdoc.Block // or nil
+	Vis  Vis
+	Decl Decl
+}
 
 type Stmt interface{}
 

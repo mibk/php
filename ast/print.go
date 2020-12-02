@@ -95,9 +95,24 @@ func (p *printer) print(args ...interface{}) {
 				if i > 0 {
 					p.print(newline)
 				}
-				p.print(m.doc(), p.indent, m)
+				p.print(m.Doc, p.indent, m)
 			}
 			p.print(p.indent-1, token.Rbrace, newline)
+		case *ClassMember:
+			p.print(arg.Vis, arg.Decl)
+		case Vis:
+			switch arg {
+			case Public:
+				p.print(token.Public, ' ')
+			case Protected:
+				p.print(token.Protected, ' ')
+			case Private:
+				p.print(token.Private, ' ')
+			case DefaultVis:
+				// Don't print.
+			default:
+				p.err = fmt.Errorf("unknown visibility: %v", arg)
+			}
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {
