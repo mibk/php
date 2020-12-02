@@ -19,3 +19,5 @@ Bar {function cleanup(  $foo,  $bar ,
 
 }function xx(){} }function toplevel ($n
   ){return 0     ;}
+
+function xx1 (  ) :int { return  1 ;}

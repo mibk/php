@@ -183,6 +183,9 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	fn.Name = p.tok.Text
 	p.expect(token.Ident)
 	fn.Params = p.parseParamList()
+	if p.got(token.Colon) {
+		fn.Result = p.parseName()
+	}
 	fn.Body = p.parseBlockStmt()
 	return fn
 }

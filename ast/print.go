@@ -81,6 +81,9 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Semicolon, newline)
 		case *FuncDecl:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
+			if arg.Result != nil {
+				p.print(token.Colon, ' ', arg.Result)
+			}
 			p.print(' ', arg.Body, newline)
 		case []*Param:
 			for i, par := range arg {

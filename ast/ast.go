@@ -33,6 +33,7 @@ type FuncDecl struct {
 	Doc    *phpdoc.Block // or nil
 	Name   string
 	Params []*Param
+	Result *Name // or nil
 	Body   *BlockStmt
 }
 
