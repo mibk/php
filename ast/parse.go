@@ -187,7 +187,7 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	return fn
 }
 
-// ClassDecl   = "class" "{" { UseStmt } { ClassMember } "}" .
+// ClassDecl   = "class" [ "extends" Name ] "{" { UseStmt } { ClassMember } "}" .
 // ClassMember = ConstDecl | FuncDecl .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
@@ -195,6 +195,9 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	p.expect(token.Class)
 	class.Name = p.tok.Text
 	p.expect(token.Ident)
+	if p.got(token.Extends) {
+		class.Extends = p.parseName()
+	}
 	p.expect(token.Lbrace)
 	for p.tok.Type == token.Use {
 		class.Traits = append(class.Traits, p.parseUseStmt())

@@ -93,7 +93,11 @@ func (p *printer) print(args ...interface{}) {
 				p.print(par.Name)
 			}
 		case *ClassDecl:
-			p.print(token.Class, ' ', arg.Name, newline, token.Lbrace, newline)
+			p.print(token.Class, ' ', arg.Name)
+			if arg.Extends != nil {
+				p.print(' ', token.Extends, ' ', arg.Extends)
+			}
+			p.print(newline, token.Lbrace, newline)
 			for _, t := range arg.Traits {
 				p.print(p.indent, t, newline)
 			}

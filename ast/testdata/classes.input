@@ -6,3 +6,8 @@ This
       @var?      My   \  Prop
                      */
 	    protected    $fooProp  =null  ;$another;}
+
+	      class   B
+	    extends \ Other
+	            \ A
+	   {  private $∂ ; }

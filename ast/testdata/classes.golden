@@ -16,3 +16,8 @@ class A
 
 	$another;
 }
+
+class B extends \Other\A
+{
+	private $∂;
+}
