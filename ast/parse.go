@@ -28,7 +28,8 @@ type parser struct {
 	alt  *token.Token // on backup
 }
 
-// Parse parses a single PHP file.
+// Parse parses a single PHP file. If an error occurs while parsing
+// (except io errors), the returned error will be of type *SyntaxError.
 func Parse(r io.Reader) (*File, error) {
 	p := &parser{scan: token.NewScanner(r)}
 	p.next0() // init
@@ -49,11 +50,27 @@ func (p *parser) backup() {
 }
 
 func (p *parser) next0() {
+	if p.tok.Type == token.EOF {
+		return
+	}
 	if p.alt != nil {
 		p.tok, p.alt = *p.alt, nil
 		return
 	}
 	p.tok = p.scan.Next()
+	if p.tok.Type == token.EOF && p.err == nil {
+		err := p.scan.Err()
+		if se, ok := err.(*token.ScanError); ok {
+			// Make sure we always return *SyntaxError.
+			p.err = &SyntaxError{
+				Line:   se.Pos.Line,
+				Column: se.Pos.Column,
+				Err:    se.Err,
+			}
+		} else if err != nil {
+			p.errorf("scan: %v", err)
+		}
+	}
 }
 
 // next is like next0 but skips whitespace.
@@ -78,6 +95,10 @@ func (p *parser) got(typ token.Type) bool {
 	return false
 }
 
+func (p *parser) until(typ token.Type) bool {
+	return p.tok.Type != typ && p.tok.Type != token.EOF
+}
+
 func (p *parser) consume(types ...token.Type) {
 	if len(types) == 0 {
 		panic("no token types to consume provided")
@@ -92,6 +113,7 @@ func (p *parser) consume(types ...token.Type) {
 
 func (p *parser) errorf(format string, args ...interface{}) {
 	if p.err == nil {
+		p.tok.Type = token.EOF
 		se := &SyntaxError{Err: fmt.Errorf(format, args...)}
 		se.Line, se.Column = p.tok.Pos.Line, p.tok.Pos.Column
 		p.err = se
@@ -115,8 +137,7 @@ func (p *parser) parseFile() *File {
 	for p.tok.Type == token.Use {
 		file.UseStmts = append(file.UseStmts, p.parseUseStmt())
 	}
-	// TODO: Avoid p.err == nil.
-	for !p.got(token.EOF) && p.err == nil {
+	for !p.got(token.EOF) {
 		file.Decls = append(file.Decls, p.parseDecl())
 	}
 	return file
@@ -195,7 +216,7 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 func (p *parser) parseParamList() []*Param {
 	var params []*Param
 	p.expect(token.Lparen)
-	for !p.got(token.Rparen) {
+	for p.until(token.Rparen) {
 		par := new(Param)
 		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
 			// TODO: Use better approach.
@@ -210,11 +231,12 @@ func (p *parser) parseParamList() []*Param {
 		par.Name = p.tok.Text
 		p.expect(token.Var)
 		params = append(params, par)
-		if p.got(token.Rparen) {
+		if p.tok.Type == token.Rparen {
 			break
 		}
 		p.expect(token.Comma)
 	}
+	p.expect(token.Rparen)
 	return params
 }
 
@@ -233,10 +255,11 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	for p.tok.Type == token.Use {
 		class.Traits = append(class.Traits, p.parseUseStmt())
 	}
-	for !p.got(token.Rbrace) && p.err == nil {
+	for p.until(token.Rbrace) {
 		m := p.parseClassMember()
 		class.Members = append(class.Members, m)
 	}
+	p.expect(token.Rbrace)
 	return class
 }
 
@@ -279,12 +302,26 @@ func (p *parser) parsePHPDoc() *phpdoc.Block {
 		return nil
 	}
 	doc, err := phpdoc.Parse(strings.NewReader(p.tok.Text))
-	if err != nil {
-		// TODO: do not panic
-		panic(err)
+	if err != nil && p.err == nil {
+		if se, ok := err.(*phpdoc.SyntaxError); ok {
+			p.err = phpDocErr(p.tok.Pos, se)
+		} else {
+			p.errorf("parsing PHPDoc: %v", err)
+		}
 	}
 	p.next()
 	return doc
+}
+
+func phpDocErr(p token.Pos, d *phpdoc.SyntaxError) error {
+	e := &SyntaxError{p.Line, p.Column, fmt.Errorf("parsing PHPDoc: %v", d.Err)}
+	if d.Line == 1 {
+		e.Column += d.Column - 1
+	} else {
+		e.Line += d.Line - 1
+		e.Column = d.Column
+	}
+	return e
 }
 
 // BlockStmt = "{" { Stmt } "}" .
