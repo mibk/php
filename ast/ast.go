@@ -23,6 +23,12 @@ type ConstDecl struct {
 	X    Expr
 }
 
+type VarDecl struct {
+	Doc  *phpdoc.Block // or nil
+	Name string
+	X    Expr
+}
+
 type FuncDecl struct {
 	Doc    *phpdoc.Block // or nil
 	Name   string
@@ -42,6 +48,7 @@ type ClassDecl struct {
 }
 
 func (d *ConstDecl) doc() *phpdoc.Block { return d.Doc }
+func (d *VarDecl) doc() *phpdoc.Block   { return d.Doc }
 func (d *FuncDecl) doc() *phpdoc.Block  { return d.Doc }
 func (d *ClassDecl) doc() *phpdoc.Block { return d.Doc }
 

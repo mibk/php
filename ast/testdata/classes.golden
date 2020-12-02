@@ -8,4 +8,11 @@ class A
 
 	private function noop() {
 	}
+
+	/**
+	 * @var ?My\Prop
+	 */
+	protected $fooProp = null;
+
+	$another;
 }

@@ -131,12 +131,14 @@ func (p *parser) parseUseStmt() *UseStmt {
 	return stmt
 }
 
-// Decl = ConstDecl | FuncDecl | ClassDecl .
+// Decl = ConstDecl | VarDecl | FuncDecl | ClassDecl .
 func (p *parser) parseDecl() Decl {
 	doc := p.parsePHPDoc()
 	switch p.tok.Type {
 	case token.Const:
 		return p.parseConstDecl(doc)
+	case token.Var:
+		return p.parseVarDecl(doc)
 	case token.Function:
 		return p.parseFuncDecl(doc)
 	case token.Class:
@@ -156,6 +158,19 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	p.expect(token.Ident)
 	p.expect(token.Assign)
 	cons.X = p.parseExpr()
+	p.expect(token.Semicolon)
+	return cons
+}
+
+// VarDecl = var [ "=" Expr ] ";" .
+func (p *parser) parseVarDecl(doc *phpdoc.Block) *VarDecl {
+	cons := new(VarDecl)
+	cons.Doc = doc
+	cons.Name = p.tok.Text
+	p.expect(token.Var)
+	if p.got(token.Assign) {
+		cons.X = p.parseExpr()
+	}
 	p.expect(token.Semicolon)
 	return cons
 }
@@ -204,6 +219,8 @@ func (p *parser) parseClassMember() *ClassMember {
 		return nil
 	case token.Const:
 		m.Decl = p.parseConstDecl(nil)
+	case token.Var:
+		m.Decl = p.parseVarDecl(nil)
 	case token.Function:
 		m.Decl = p.parseFuncDecl(nil)
 	}

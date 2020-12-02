@@ -73,6 +73,12 @@ func (p *printer) print(args ...interface{}) {
 		case *ConstDecl:
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
 			p.print(arg.X, token.Semicolon, newline)
+		case *VarDecl:
+			p.print(arg.Name)
+			if arg.X != nil {
+				p.print(' ', token.Assign, ' ', arg.X)
+			}
+			p.print(token.Semicolon, newline)
 		case *FuncDecl:
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
 			p.print(' ', arg.Body, newline)

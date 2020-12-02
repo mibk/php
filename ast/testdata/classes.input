@@ -2,4 +2,7 @@
 This
 \Awesome \Thing
   ;const PI = 3.14159265359 ;private
-  function    noop(){}}
+  function    noop(){}/**
+      @var?      My   \  Prop
+                     */
+	    protected    $fooProp  =null  ;$another;}

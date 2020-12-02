@@ -3,6 +3,9 @@ Foo;use\
 DateTime  ;use\This
 \Awesome\  Use\Statement;const
 AA = 'tuzkovy'. 'baterky'
+;/**@var    string*/$bb    =
+  'auto'
+;$cc
 
 ;class
 Bar {function cleanup(  $foo,  $bar ,
