@@ -187,6 +187,28 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	return fn
 }
 
+// ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
+// Param     = [ Name ] var .
+func (p *parser) parseParamList() []*Param {
+	var params []*Param
+	p.expect(token.Lparen)
+	for !p.got(token.Rparen) {
+		par := new(Param)
+		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
+			// TODO: Use better approach.
+			par.Type = p.parseName()
+		}
+		par.Name = p.tok.Text
+		p.expect(token.Var)
+		params = append(params, par)
+		if p.got(token.Rparen) {
+			break
+		}
+		p.expect(token.Comma)
+	}
+	return params
+}
+
 // ClassDecl   = "class" [ "extends" Name ] "{" { UseStmt } { ClassMember } "}" .
 // ClassMember = ConstDecl | FuncDecl .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
@@ -254,28 +276,6 @@ func (p *parser) parsePHPDoc() *phpdoc.Block {
 	}
 	p.next()
 	return doc
-}
-
-// ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
-// Param     = [ Name ] var .
-func (p *parser) parseParamList() []*Param {
-	var params []*Param
-	p.expect(token.Lparen)
-	for !p.got(token.Rparen) {
-		par := new(Param)
-		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
-			// TODO: Use better approach.
-			par.Type = p.parseName()
-		}
-		par.Name = p.tok.Text
-		p.expect(token.Var)
-		params = append(params, par)
-		if p.got(token.Rparen) {
-			break
-		}
-		p.expect(token.Comma)
-	}
-	return params
 }
 
 // BlockStmt = "{" { Stmt } "}" .
