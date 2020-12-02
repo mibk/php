@@ -175,17 +175,14 @@ func (p *parser) parseVarDecl(doc *phpdoc.Block) *VarDecl {
 	return cons
 }
 
-// FuncDecl = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
+// FuncDecl = "function" ident ParamList BlockStmt .
 func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	fn := new(FuncDecl)
 	fn.Doc = doc
 	p.expect(token.Function)
 	fn.Name = p.tok.Text
 	p.expect(token.Ident)
-	p.expect(token.Lparen)
 	fn.Params = p.parseParamList()
-	p.consume(token.Comma)
-	p.expect(token.Rparen)
 	fn.Body = p.parseBlockStmt()
 	return fn
 }
@@ -256,19 +253,24 @@ func (p *parser) parsePHPDoc() *phpdoc.Block {
 	return doc
 }
 
-// ParamList = Param { "," Param } .
-// Param     = var .
+// ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
+// Param     = [ Name ] var .
 func (p *parser) parseParamList() []*Param {
 	var params []*Param
-	for i := 0; p.tok.Type != token.Rparen; i++ {
-		if i > 0 && !p.got(token.Comma) {
+	p.expect(token.Lparen)
+	for !p.got(token.Rparen) {
+		par := new(Param)
+		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
+			// TODO: Use better approach.
+			par.Type = p.parseName()
+		}
+		par.Name = p.tok.Text
+		p.expect(token.Var)
+		params = append(params, par)
+		if p.got(token.Rparen) {
 			break
 		}
-		if p.tok.Type != token.Var {
-			break
-		}
-		params = append(params, &Param{Name: p.tok.Text})
-		p.next()
+		p.expect(token.Comma)
 	}
 	return params
 }

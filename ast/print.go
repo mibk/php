@@ -87,6 +87,9 @@ func (p *printer) print(args ...interface{}) {
 				if i > 0 {
 					p.print(token.Comma, ' ')
 				}
+				if par.Type != nil {
+					p.print(par.Type, ' ')
+				}
 				p.print(par.Name)
 			}
 		case *ClassDecl:

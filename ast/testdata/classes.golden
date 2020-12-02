@@ -6,7 +6,7 @@ class A
 
 	const PI = 3.14159265359;
 
-	private function noop() {
+	private function noop(int $x, \DateTime $d) {
 	}
 
 	/**

@@ -37,6 +37,7 @@ type FuncDecl struct {
 }
 
 type Param struct {
+	Type *Name // or nil
 	Name string
 }
 
