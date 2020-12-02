@@ -73,6 +73,7 @@ const (
 	Assign    // =
 	Lt        // <
 	Gt        // >
+	Period    // .
 	Comma     // ,
 	Colon     // :
 	Semicolon // ;
@@ -309,6 +310,16 @@ func (s *Scanner) scanAny() (tok Token) {
 			return Token{Type: Shr}
 		}
 		return Token{Type: Gt}
+	case '.':
+		if s.peek() == r {
+			s.read()
+			if s.peek() != r {
+				return Token{Type: Illegal, Text: ".."}
+			}
+			s.read()
+			return Token{Type: Ellipsis}
+		}
+		return Token{Type: Period}
 	case ',':
 		return Token{Type: Comma}
 	case ':':
