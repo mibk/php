@@ -23,6 +23,17 @@ type ConstDecl struct {
 	X    Expr
 }
 
+type FuncDecl struct {
+	Doc    *phpdoc.Block // or nil
+	Name   string
+	Params []*Param
+	Body   *BlockStmt
+}
+
+type Param struct {
+	Name string
+}
+
 type ClassDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
@@ -31,22 +42,10 @@ type ClassDecl struct {
 }
 
 func (d *ConstDecl) doc() *phpdoc.Block { return d.Doc }
+func (d *FuncDecl) doc() *phpdoc.Block  { return d.Doc }
 func (d *ClassDecl) doc() *phpdoc.Block { return d.Doc }
 
 type ClassMember interface{ doc() *phpdoc.Block }
-
-type MethodDecl struct {
-	Doc    *phpdoc.Block // or nil
-	Name   string
-	Params []*Param
-	Body   *BlockStmt
-}
-
-func (d *MethodDecl) doc() *phpdoc.Block { return d.Doc }
-
-type Param struct {
-	Name string
-}
 
 type Stmt interface{}
 

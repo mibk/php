@@ -131,12 +131,14 @@ func (p *parser) parseUseStmt() *UseStmt {
 	return stmt
 }
 
-// Decl = ConstDecl | ClassDecl .
+// Decl = ConstDecl | FuncDecl | ClassDecl .
 func (p *parser) parseDecl() Decl {
 	doc := p.parsePHPDoc()
 	switch p.tok.Type {
 	case token.Const:
 		return p.parseConstDecl(doc)
+	case token.Function:
+		return p.parseFuncDecl(doc)
 	case token.Class:
 		return p.parseClassDecl(doc)
 	default:
@@ -158,9 +160,23 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	return cons
 }
 
+// FuncDecl = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
+func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
+	fn := new(FuncDecl)
+	fn.Doc = doc
+	p.expect(token.Function)
+	fn.Name = p.tok.Text
+	p.expect(token.Ident)
+	p.expect(token.Lparen)
+	fn.Params = p.parseParamList()
+	p.consume(token.Comma)
+	p.expect(token.Rparen)
+	fn.Body = p.parseBlockStmt()
+	return fn
+}
+
 // ClassDecl   = "class" "{" { UseStmt } { ClassMember } "}" .
-// ClassMember = Method | ConstDecl .
-// Method      = "function" ident "(" ParamList [ "," ] ")" BlockStmt .
+// ClassMember = ConstDecl | FuncDecl .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
 	class.Doc = doc
@@ -187,17 +203,7 @@ func (p *parser) parseClassMember() ClassMember {
 	case token.Const:
 		return p.parseConstDecl(doc)
 	case token.Function:
-		p.next()
-		m := new(MethodDecl)
-		m.Doc = doc
-		m.Name = p.tok.Text
-		p.expect(token.Ident)
-		p.expect(token.Lparen)
-		m.Params = p.parseParamList()
-		p.consume(token.Comma)
-		p.expect(token.Rparen)
-		m.Body = p.parseBlockStmt()
-		return m
+		return p.parseFuncDecl(doc)
 	}
 }
 

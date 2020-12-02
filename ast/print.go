@@ -73,6 +73,16 @@ func (p *printer) print(args ...interface{}) {
 		case *ConstDecl:
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
 			p.print(arg.X, token.Semicolon, newline)
+		case *FuncDecl:
+			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
+			p.print(' ', arg.Body, newline)
+		case []*Param:
+			for i, par := range arg {
+				if i > 0 {
+					p.print(token.Comma, ' ')
+				}
+				p.print(par.Name)
+			}
 		case *ClassDecl:
 			p.print(token.Class, ' ', arg.Name, newline, token.Lbrace, newline)
 			for _, t := range arg.Traits {
@@ -88,16 +98,6 @@ func (p *printer) print(args ...interface{}) {
 				p.print(m.doc(), p.indent, m)
 			}
 			p.print(p.indent-1, token.Rbrace, newline)
-		case *MethodDecl:
-			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
-			p.print(' ', arg.Body, newline)
-		case []*Param:
-			for i, par := range arg {
-				if i > 0 {
-					p.print(token.Comma, ' ')
-				}
-				p.print(par.Name)
-			}
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {

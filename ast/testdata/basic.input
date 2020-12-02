@@ -14,4 +14,5 @@ Bar {function cleanup(  $foo,  $bar ,
 
 
 
-}function xx(){}}
+}function xx(){} }function toplevel ($n
+  ){return 0     ;}

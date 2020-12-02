@@ -19,3 +19,7 @@ class Bar
 	function xx() {
 	}
 }
+
+function toplevel($n) {
+	return 0;
+}
