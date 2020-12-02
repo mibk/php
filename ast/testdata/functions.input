@@ -1,0 +1,11 @@
+<?php
+
+    function a
+   (  array  $a
+   ,  int&   $b
+   ,   ...   $c
+   )         {}
+
+	function b (bool & ... $x , & ... $y,
+	        string ... $z   , &     $ž,
+		) :void{/*  */}

@@ -191,7 +191,7 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 }
 
 // ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
-// Param     = [ Name ] var .
+// Param     = [ Name ] [ "&" ] [ "..." ] var .
 func (p *parser) parseParamList() []*Param {
 	var params []*Param
 	p.expect(token.Lparen)
@@ -200,6 +200,12 @@ func (p *parser) parseParamList() []*Param {
 		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
 			// TODO: Use better approach.
 			par.Type = p.parseName()
+		}
+		if p.got(token.And) {
+			par.ByRef = true
+		}
+		if p.got(token.Ellipsis) {
+			par.Variadic = true
 		}
 		par.Name = p.tok.Text
 		p.expect(token.Var)

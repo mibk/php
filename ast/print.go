@@ -93,6 +93,12 @@ func (p *printer) print(args ...interface{}) {
 				if par.Type != nil {
 					p.print(par.Type, ' ')
 				}
+				if par.ByRef {
+					p.print(token.And)
+				}
+				if par.Variadic {
+					p.print(token.Ellipsis)
+				}
 				p.print(par.Name)
 			}
 		case *ClassDecl:

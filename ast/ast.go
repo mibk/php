@@ -38,8 +38,10 @@ type FuncDecl struct {
 }
 
 type Param struct {
-	Type *Name // or nil
-	Name string
+	Type     *Name // or nil
+	ByRef    bool  // pass by reference
+	Variadic bool
+	Name     string
 }
 
 type ClassDecl struct {
