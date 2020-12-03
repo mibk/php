@@ -142,6 +142,16 @@ func (p *printer) print(args ...interface{}) {
 				p.print(m.Doc, p.indent, m)
 			}
 			p.print(p.indent-1, token.Rbrace, newline)
+		case *TraitDecl:
+			p.print(token.Trait, ' ', arg.Name)
+			p.print(newline, token.Lbrace, newline)
+			for i, m := range arg.Members {
+				if i > 0 {
+					p.print(newline)
+				}
+				p.print(m.Doc, p.indent, m)
+			}
+			p.print(p.indent-1, token.Rbrace, newline)
 		case *ClassMember:
 			p.print(arg.Vis, arg.Decl)
 		case Vis:

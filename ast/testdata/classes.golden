@@ -21,3 +21,10 @@ class B extends \Other\A
 {
 	private $∂;
 }
+
+trait TT
+{
+	function uu(int $vv) {
+		echo;
+	}
+}

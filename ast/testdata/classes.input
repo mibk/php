@@ -10,4 +10,10 @@ This
 	      class   B
 	    extends \ Other
 	            \ A
-	   {  private $∂ ; }
+	   {  private $∂ ; }/* Some doc */
+
+trait     TT{
+function  uu(
+int      $vv)
+{    echo;  }
+         }

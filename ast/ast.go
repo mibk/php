@@ -60,11 +60,18 @@ type InterfaceDecl struct {
 	Members []*ClassMember
 }
 
+type TraitDecl struct {
+	Doc     *phpdoc.Block // or nil
+	Name    string
+	Members []*ClassMember
+}
+
 func (d *ConstDecl) doc() *phpdoc.Block     { return d.Doc }
 func (d *VarDecl) doc() *phpdoc.Block       { return d.Doc }
 func (d *FuncDecl) doc() *phpdoc.Block      { return d.Doc }
 func (d *ClassDecl) doc() *phpdoc.Block     { return d.Doc }
 func (d *InterfaceDecl) doc() *phpdoc.Block { return d.Doc }
+func (d *TraitDecl) doc() *phpdoc.Block     { return d.Doc }
 
 type Vis uint
 

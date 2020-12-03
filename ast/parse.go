@@ -170,6 +170,8 @@ func (p *parser) parseDecl() Decl {
 		return p.parseClassDecl(doc)
 	case token.Interface:
 		return p.parseInterfaceDecl(doc)
+	case token.Trait:
+		return p.parseTraitDecl(doc)
 	default:
 		p.errorf("unexpected %v", p.tok)
 		return nil
@@ -291,6 +293,22 @@ func (p *parser) parseInterfaceDecl(doc *phpdoc.Block) *InterfaceDecl {
 	}
 	p.expect(token.Rbrace)
 	return iface
+}
+
+// TraitDecl = "trait" [ "extends" Name ] "{" { ClassMember } "}" .
+func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
+	trait := new(TraitDecl)
+	trait.Doc = doc
+	p.expect(token.Trait)
+	trait.Name = p.tok.Text
+	p.expect(token.Ident)
+	p.expect(token.Lbrace)
+	for p.until(token.Rbrace) {
+		m := p.parseClassMember()
+		trait.Members = append(trait.Members, m)
+	}
+	p.expect(token.Rbrace)
+	return trait
 }
 
 // ClassMember = ConstDecl | VarDecl | FuncDecl .
