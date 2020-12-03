@@ -1,7 +1,7 @@
 <?php
 
-function a(array $a, int &$b, ...$c) {
+function a(array $a = 0xface, int &$b = 'foo  b', ...$c) {
 }
 
-function b(bool &...$x, &...$y, string ...$z, &$ž): void {
+function b(bool &...$x, &...$y, string ...$z, &$ž = null): void {
 }

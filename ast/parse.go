@@ -230,6 +230,9 @@ func (p *parser) parseParamList() []*Param {
 		}
 		par.Name = p.tok.Text
 		p.expect(token.Var)
+		if p.got(token.Assign) {
+			par.Default = p.parseLit()
+		}
 		params = append(params, par)
 		if p.tok.Type == token.Rparen {
 			break
@@ -358,6 +361,20 @@ func (p *parser) parseName() *Name {
 		}
 	}
 	return id
+}
+
+// Lit = string | int | ident .
+func (p *parser) parseLit() Expr {
+	// TODO: This needs some more work.
+	switch p.tok.Type {
+	default:
+		p.errorf("unexpected %v, expecting lit", p.tok.Type)
+		return nil
+	case token.String, token.Int, token.Ident:
+		lit := &UnknownExpr{[]token.Token{p.tok}}
+		p.next()
+		return lit
+	}
 }
 
 // UnknownStmt = /* pretty much anything */ ( ";" | BlockStmt ) .

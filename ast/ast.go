@@ -42,6 +42,7 @@ type Param struct {
 	ByRef    bool  // pass by reference
 	Variadic bool
 	Name     string
+	Default  Expr // or nil
 }
 
 type ClassDecl struct {

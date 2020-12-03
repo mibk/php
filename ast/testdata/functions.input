@@ -1,11 +1,12 @@
 <?php
 
     function a
-   (  array  $a
-   ,  int&   $b
+   (  array  $a  =  0xface
+   ,  int&   $b  =  'foo  b'
    ,   ...   $c
    )         {}
 
 	function b (bool & ... $x , & ... $y,
-	        string ... $z   , &     $ž,
+	        string ... $z   , &     $ž  =
+	           null,
 		) :void{/*  */}

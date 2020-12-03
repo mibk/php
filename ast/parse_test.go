@@ -41,6 +41,10 @@ func TestSyntaxErrors(t *testing.T) {
 		"unterminated class",
 		`<?php class a{`,
 		`syntax:1:15: expecting }, found EOF`,
+	}, {
+		"missing default",
+		`<?php function a($x=,`,
+		`syntax:1:21: unexpected ,, expecting lit`,
 	}}
 
 	for _, tt := range tests {

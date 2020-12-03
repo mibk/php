@@ -100,6 +100,9 @@ func (p *printer) print(args ...interface{}) {
 					p.print(token.Ellipsis)
 				}
 				p.print(par.Name)
+				if par.Default != nil {
+					p.print(' ', token.Assign, ' ', par.Default)
+				}
 			}
 		case *ClassDecl:
 			p.print(token.Class, ' ', arg.Name)
