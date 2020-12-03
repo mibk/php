@@ -1,0 +1,8 @@
+<?php interface XXX
+extends         Ywhy
+{
+function foo();/**
+Don't ask.
+             */public
+function bar(int$x):?
+\DateTime;          }

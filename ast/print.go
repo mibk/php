@@ -84,7 +84,12 @@ func (p *printer) print(args ...interface{}) {
 			if arg.Result != nil {
 				p.print(token.Colon, ' ', arg.Result)
 			}
-			p.print(' ', arg.Body, newline)
+			if arg.Body != nil {
+				p.print(' ', arg.Body)
+			} else {
+				p.print(token.Semicolon)
+			}
+			p.print(newline)
 		case []*Param:
 			for i, par := range arg {
 				if i > 0 {
@@ -116,6 +121,20 @@ func (p *printer) print(args ...interface{}) {
 			if len(arg.Traits) > 0 {
 				p.print(newline)
 			}
+			for i, m := range arg.Members {
+				if i > 0 {
+					p.print(newline)
+				}
+				p.print(m.Doc, p.indent, m)
+			}
+			p.print(p.indent-1, token.Rbrace, newline)
+		case *InterfaceDecl:
+			p.print(token.Interface, ' ', arg.Name)
+			if arg.Extends != nil {
+				p.print(' ', token.Extends, ' ', arg.Extends)
+			}
+			p.print(newline, token.Lbrace, newline)
+			// TODO: Dedup printing members?
 			for i, m := range arg.Members {
 				if i > 0 {
 					p.print(newline)

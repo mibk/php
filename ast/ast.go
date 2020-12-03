@@ -33,8 +33,8 @@ type FuncDecl struct {
 	Doc    *phpdoc.Block // or nil
 	Name   string
 	Params []*Param
-	Result *Type // or nil
-	Body   *BlockStmt
+	Result *Type      // or nil
+	Body   *BlockStmt // or nil (e.g. interfaces)
 }
 
 type Param struct {
@@ -53,10 +53,18 @@ type ClassDecl struct {
 	Members []*ClassMember
 }
 
-func (d *ConstDecl) doc() *phpdoc.Block { return d.Doc }
-func (d *VarDecl) doc() *phpdoc.Block   { return d.Doc }
-func (d *FuncDecl) doc() *phpdoc.Block  { return d.Doc }
-func (d *ClassDecl) doc() *phpdoc.Block { return d.Doc }
+type InterfaceDecl struct {
+	Doc     *phpdoc.Block // or nil
+	Name    string
+	Extends *Name // or nil
+	Members []*ClassMember
+}
+
+func (d *ConstDecl) doc() *phpdoc.Block     { return d.Doc }
+func (d *VarDecl) doc() *phpdoc.Block       { return d.Doc }
+func (d *FuncDecl) doc() *phpdoc.Block      { return d.Doc }
+func (d *ClassDecl) doc() *phpdoc.Block     { return d.Doc }
+func (d *InterfaceDecl) doc() *phpdoc.Block { return d.Doc }
 
 type Vis uint
 

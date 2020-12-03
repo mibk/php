@@ -152,7 +152,11 @@ func (p *parser) parseUseStmt() *UseStmt {
 	return stmt
 }
 
-// Decl = ConstDecl | VarDecl | FuncDecl | ClassDecl .
+// Decl = ConstDecl |
+//        VarDecl |
+//        FuncDecl |
+//        ClassDecl |
+//        InterfaceDecl .
 func (p *parser) parseDecl() Decl {
 	doc := p.parsePHPDoc()
 	switch p.tok.Type {
@@ -164,6 +168,8 @@ func (p *parser) parseDecl() Decl {
 		return p.parseFuncDecl(doc)
 	case token.Class:
 		return p.parseClassDecl(doc)
+	case token.Interface:
+		return p.parseInterfaceDecl(doc)
 	default:
 		p.errorf("unexpected %v", p.tok)
 		return nil
@@ -207,7 +213,12 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	if p.got(token.Colon) {
 		fn.Result = p.parseType()
 	}
-	fn.Body = p.parseBlockStmt()
+	if p.tok.Type == token.Lbrace {
+		// Interfaces need not have bodies.
+		fn.Body = p.parseBlockStmt()
+	} else {
+		p.expect(token.Semicolon)
+	}
 	return fn
 }
 
@@ -240,8 +251,7 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
-// ClassDecl   = "class" [ "extends" Name ] "{" { UseStmt } { ClassMember } "}" .
-// ClassMember = ConstDecl | FuncDecl .
+// ClassDecl = "class" [ "extends" Name ] "{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
 	class.Doc = doc
@@ -263,6 +273,27 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	return class
 }
 
+// InterfaceDecl = "interface" [ "extends" Name ] "{" { ClassMember } "}" .
+func (p *parser) parseInterfaceDecl(doc *phpdoc.Block) *InterfaceDecl {
+	// TODO: Really ClassMember?
+	iface := new(InterfaceDecl)
+	iface.Doc = doc
+	p.expect(token.Interface)
+	iface.Name = p.tok.Text
+	p.expect(token.Ident)
+	if p.got(token.Extends) {
+		iface.Extends = p.parseName()
+	}
+	p.expect(token.Lbrace)
+	for p.until(token.Rbrace) {
+		m := p.parseClassMember()
+		iface.Members = append(iface.Members, m)
+	}
+	p.expect(token.Rbrace)
+	return iface
+}
+
+// ClassMember = ConstDecl | VarDecl | FuncDecl .
 func (p *parser) parseClassMember() *ClassMember {
 	m := new(ClassMember)
 	m.Doc = p.parsePHPDoc()
