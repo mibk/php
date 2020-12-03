@@ -5,3 +5,6 @@ function a(array $a = 0xface, int &$b = 'foo  b', ...$c) {
 
 function b(bool &...$x, &...$y, string ...$z, &$ž = null): void {
 }
+
+function get(?\DateTime $d) {
+}

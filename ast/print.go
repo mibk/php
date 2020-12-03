@@ -167,6 +167,11 @@ func (p *printer) print(args ...interface{}) {
 			for _, tok := range toks {
 				p.print(tok.Text)
 			}
+		case *Type:
+			if arg.Nullable {
+				p.print(token.Qmark)
+			}
+			p.print(arg.Name)
 		case *Name:
 			for i, part := range arg.Parts {
 				if i > 0 || arg.Global {

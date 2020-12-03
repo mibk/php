@@ -205,23 +205,20 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 	p.expect(token.Ident)
 	fn.Params = p.parseParamList()
 	if p.got(token.Colon) {
-		fn.Result = p.parseName()
+		fn.Result = p.parseType()
 	}
 	fn.Body = p.parseBlockStmt()
 	return fn
 }
 
 // ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
-// Param     = [ Name ] [ "&" ] [ "..." ] var .
+// Param     = [ Type ] [ "&" ] [ "..." ] var .
 func (p *parser) parseParamList() []*Param {
 	var params []*Param
 	p.expect(token.Lparen)
 	for p.until(token.Rparen) {
 		par := new(Param)
-		if p.tok.Type == token.Ident || p.tok.Type == token.Backslash {
-			// TODO: Use better approach.
-			par.Type = p.parseName()
-		}
+		par.Type = p.tryParseType()
 		if p.got(token.And) {
 			par.ByRef = true
 		}
@@ -345,6 +342,30 @@ func (p *parser) parseStmt() Stmt {
 		return p.parseBlockStmt()
 	}
 	return p.parseUnknownStmt()
+}
+
+// Type = [ "?" ] Name .
+func (p *parser) parseType() *Type {
+	typ := p.tryParseType()
+	if typ == nil {
+		p.errorf("unexpected %v, expecting type", p.tok.Type)
+	}
+	return typ
+}
+
+func (p *parser) tryParseType() *Type {
+	typ := new(Type)
+	switch p.tok.Type {
+	default:
+		return nil
+	case token.Qmark:
+		typ.Nullable = true
+		p.next()
+		fallthrough
+	case token.Ident, token.Backslash:
+		typ.Name = p.parseName()
+	}
+	return typ
 }
 
 // Name = [ "\\" ] ident { "\\" ident } .

@@ -33,12 +33,12 @@ type FuncDecl struct {
 	Doc    *phpdoc.Block // or nil
 	Name   string
 	Params []*Param
-	Result *Name // or nil
+	Result *Type // or nil
 	Body   *BlockStmt
 }
 
 type Param struct {
-	Type     *Name // or nil
+	Type     *Type // or nil
 	ByRef    bool  // pass by reference
 	Variadic bool
 	Name     string
@@ -88,6 +88,11 @@ type Expr interface{}
 
 type UnknownExpr struct {
 	Toks []token.Token
+}
+
+type Type struct {
+	Nullable bool
+	Name     *Name
 }
 
 // A Name represents a (possibly qualified or fully qualified) PHP

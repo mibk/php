@@ -2,7 +2,7 @@
 This
 \Awesome \Thing
   ;const PI = 3.14159265359 ;private
-  function    noop(int $x,\ DateTime$d ,){}/**
+  function    noop(int $x,\ DateTime$d ,): ? string{}/**
       @var?      My   \  Prop
                      */
 	    protected    $fooProp  =null  ;$another;}
