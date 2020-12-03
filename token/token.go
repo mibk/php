@@ -54,6 +54,7 @@ const (
 	DocComment
 
 	Ident
+	Int
 	String
 	Var
 	InlineHTML
@@ -338,6 +339,9 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '"':
 		return s.scanDoubleQuoted()
 	default:
+		if isDigit(r) {
+			return s.scanInteger(r)
+		}
 		s.unread()
 		if id := s.scanIdent(); id != "" {
 			if tok, ok := keywords[id]; ok {
@@ -578,3 +582,64 @@ func (s *Scanner) scanHereDoc() Token {
 		}
 	}
 }
+
+func (s *Scanner) scanInteger(r rune) Token {
+	// TODO: Add support for _
+	if r == '0' {
+		switch r := s.peek(); {
+		case isDigit(r):
+			return s.scanOctal()
+		case r == 'x' || r == 'X':
+			return s.scanHexa(s.read())
+		case r == 'b' || r == 'B':
+			return s.scanBinary(s.read())
+		}
+	}
+	var b strings.Builder
+	b.WriteRune(r)
+	for isDigit(s.peek()) {
+		b.WriteRune(s.read())
+	}
+
+	return Token{Type: Int, Text: b.String()}
+}
+
+func (s *Scanner) scanOctal() Token {
+	var b strings.Builder
+	for {
+		switch r := s.peek(); r {
+		default:
+			return Token{Type: Int, Text: "0" + b.String()}
+		case '8', '9':
+			return s.errorf("invalid digit %c in octal literal", r)
+		case '0', '1', '2', '3', '4', '5', '6', '7':
+			b.WriteRune(s.read())
+		}
+	}
+}
+
+func (s *Scanner) scanHexa(delim rune) Token {
+	var b strings.Builder
+	for {
+		switch r := s.peek(); {
+		default:
+			return Token{Type: Int, Text: "0" + string(delim) + b.String()}
+		case isDigit(r) || 'a' <= r && r <= 'f' || 'A' <= r && r <= 'F':
+			b.WriteRune(s.read())
+		}
+	}
+}
+
+func (s *Scanner) scanBinary(delim rune) Token {
+	var b strings.Builder
+	for {
+		switch r := s.peek(); r {
+		default:
+			return Token{Type: Int, Text: "0" + string(delim) + b.String()}
+		case '0', '1':
+			b.WriteRune(s.read())
+		}
+	}
+}
+
+func isDigit(r rune) bool { return '0' <= r && r <= '9' }

@@ -307,6 +307,30 @@ while
 			{token.Whitespace, "\n", pos("16:6")},
 			{token.EOF, "", pos("17:1")},
 		},
+	}, {
+		"keywords",
+		`<?php
+0 07 007 34487908803190 0xff 0XFA 0b10
+`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Whitespace, "\n", pos("1:6")},
+			{token.Int, "0", pos("2:1")},
+			{token.Whitespace, " ", pos("2:2")},
+			{token.Int, "07", pos("2:3")},
+			{token.Whitespace, " ", pos("2:5")},
+			{token.Int, "007", pos("2:6")},
+			{token.Whitespace, " ", pos("2:9")},
+			{token.Int, "34487908803190", pos("2:10")},
+			{token.Whitespace, " ", pos("2:24")},
+			{token.Int, "0xff", pos("2:25")},
+			{token.Whitespace, " ", pos("2:29")},
+			{token.Int, "0XFA", pos("2:30")},
+			{token.Whitespace, " ", pos("2:34")},
+			{token.Int, "0b10", pos("2:35")},
+			{token.Whitespace, "\n", pos("2:39")},
+			{token.EOF, "", pos("3:1")},
+		},
 	}}
 
 	for _, tt := range tests {
