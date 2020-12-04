@@ -14,9 +14,10 @@ This
 	    extends \ Other
 	            \ A  implements
 	            \ Iterable
-	   {  private $∂ ; }/* Some doc */
+	   {  private static    $∂ ; }/* Some doc */
 
 trait     TT{
+static
 function  uu(
 int      $vv)
 {    echo;  }
@@ -26,4 +27,5 @@ class      M
 implements N,
            O\
            P{
-use       TT;}
+use       TT;
+static   $uu;}

@@ -19,12 +19,12 @@ class A
 
 class B extends \Other\A implements \Iterable
 {
-	private $∂;
+	private static $∂;
 }
 
 trait TT
 {
-	function uu(int $vv) {
+	static function uu(int $vv) {
 		echo;
 	}
 }
@@ -33,4 +33,5 @@ class M implements N, O\P
 {
 	use TT;
 
+	static $uu;
 }

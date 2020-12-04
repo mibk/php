@@ -31,14 +31,16 @@ type ConstDecl struct {
 }
 
 type VarDecl struct {
-	Doc  *phpdoc.Block // or nil
-	Name string
-	X    Expr
+	Doc    *phpdoc.Block // or nil
+	Name   string
+	Static bool // valid for class props
+	X      Expr
 }
 
 type FuncDecl struct {
 	Doc    *phpdoc.Block // or nil
 	Name   string
+	Static bool // valid for methods
 	Params []*Param
 	Result *Type      // or nil
 	Body   *BlockStmt // or nil (e.g. interfaces)

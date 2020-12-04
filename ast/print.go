@@ -90,12 +90,18 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
 			p.print(arg.X, token.Semicolon, newline)
 		case *VarDecl:
+			if arg.Static {
+				p.print(token.Static, ' ')
+			}
 			p.print(arg.Name)
 			if arg.X != nil {
 				p.print(' ', token.Assign, ' ', arg.X)
 			}
 			p.print(token.Semicolon, newline)
 		case *FuncDecl:
+			if arg.Static {
+				p.print(token.Static, ' ')
+			}
 			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
 			if arg.Result != nil {
 				p.print(token.Colon, ' ', arg.Result)

@@ -185,9 +185,9 @@ func (p *parser) parseDecl() Decl {
 	case token.Const:
 		return p.parseConstDecl(doc)
 	case token.Var:
-		return p.parseVarDecl(doc)
+		return p.parseVarDecl(doc, false)
 	case token.Function:
-		return p.parseFuncDecl(doc)
+		return p.parseFuncDecl(doc, false)
 	case token.Class:
 		return p.parseClassDecl(doc)
 	case token.Interface:
@@ -214,22 +214,24 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 }
 
 // VarDecl = var [ "=" Expr ] ";" .
-func (p *parser) parseVarDecl(doc *phpdoc.Block) *VarDecl {
-	cons := new(VarDecl)
-	cons.Doc = doc
-	cons.Name = p.tok.Text
+func (p *parser) parseVarDecl(doc *phpdoc.Block, static bool) *VarDecl {
+	v := new(VarDecl)
+	v.Doc = doc
+	v.Static = static
+	v.Name = p.tok.Text
 	p.expect(token.Var)
 	if p.got(token.Assign) {
-		cons.X = p.parseExpr()
+		v.X = p.parseExpr()
 	}
 	p.expect(token.Semicolon)
-	return cons
+	return v
 }
 
 // FuncDecl = "function" ident ParamList BlockStmt .
-func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
+func (p *parser) parseFuncDecl(doc *phpdoc.Block, static bool) *FuncDecl {
 	fn := new(FuncDecl)
 	fn.Doc = doc
+	fn.Static = static
 	p.expect(token.Function)
 	fn.Name = p.tok.Text
 	p.expect(token.Ident)
@@ -343,25 +345,31 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 	return trait
 }
 
-// ClassMember = ConstDecl | VarDecl | FuncDecl .
+// ClassMember = [ PHPDoc ] [ Visibility ]
+//               ( ConstDecl | [ "static" ] VarDecl | [ "static" ] FuncDecl ) .
 func (p *parser) parseClassMember() *ClassMember {
 	m := new(ClassMember)
 	m.Doc = p.parsePHPDoc()
 	m.Vis = p.parseVisibility()
+	static := p.got(token.Static)
 	switch p.tok.Type {
 	default:
 		p.errorf("unexpected %v, expecting %v or %v", p.tok, token.Const, token.Function)
 		return nil
 	case token.Const:
+		if static {
+			p.errorf("unexpected %v in constant declaration", token.Static)
+		}
 		m.Decl = p.parseConstDecl(nil)
 	case token.Var:
-		m.Decl = p.parseVarDecl(nil)
+		m.Decl = p.parseVarDecl(nil, static)
 	case token.Function:
-		m.Decl = p.parseFuncDecl(nil)
+		m.Decl = p.parseFuncDecl(nil, static)
 	}
 	return m
 }
 
+// Visibility = "public" | "protected" | "private" .
 func (p *parser) parseVisibility() Vis {
 	var v Vis
 	switch p.tok.Type {
@@ -378,6 +386,7 @@ func (p *parser) parseVisibility() Vis {
 	return v
 }
 
+// PHPDoc = docComment .
 func (p *parser) parsePHPDoc() *phpdoc.Block {
 	if p.tok.Type != token.DocComment {
 		return nil
