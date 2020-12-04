@@ -52,7 +52,19 @@ func (p *printer) print(args ...interface{}) {
 
 		switch arg := arg.(type) {
 		case *File:
-			p.print(token.OpenTag, newline)
+			p.print(token.OpenTag)
+			switch len(arg.Pragmas) {
+			default:
+				p.print(newline)
+				fallthrough
+			case 0:
+				p.print(newline)
+			case 1:
+				p.print(' ')
+			}
+			for _, d := range arg.Pragmas {
+				p.print(d)
+			}
 			if ns := arg.Namespace; ns != nil {
 				ns.Global = false // namespaces are global implicitly
 				p.print(newline, token.Namespace, ' ', ns, token.Semicolon, newline)
@@ -66,6 +78,10 @@ func (p *printer) print(args ...interface{}) {
 			for _, decl := range arg.Decls {
 				p.print(newline, decl.doc(), p.indent, decl)
 			}
+		case *Pragma:
+			p.print(token.Declare, token.Lparen)
+			p.print(arg.Name, token.Assign, arg.Value)
+			p.print(token.Rparen, token.Semicolon, newline)
 		case *UseStmt:
 			stmt := arg.Name
 			stmt.Global = false // use statements are global implicitly

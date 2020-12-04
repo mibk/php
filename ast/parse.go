@@ -124,12 +124,15 @@ func (p *parser) errorf(format string, args ...interface{}) {
 // https://golang.org/ref/spec#Notation.
 
 // File = "<?php"
+//        { Pragma }
 //        [ "namespace" Name ";" ]
 //        { UseStmt }
 //        { Decl } .
 func (p *parser) parseFile() *File {
 	file := new(File)
 	p.expect(token.OpenTag)
+	// TODO: Allow on other places in a file?
+	file.Pragmas = p.parsePragmas()
 	if p.got(token.Namespace) {
 		file.Namespace = p.parseName()
 		p.expect(token.Semicolon)
@@ -141,6 +144,25 @@ func (p *parser) parseFile() *File {
 		file.Decls = append(file.Decls, p.parseDecl())
 	}
 	return file
+}
+
+// Pragma = "declare" "(" Name "=" Lit ")" ";" .
+func (p *parser) parsePragmas() []*Pragma {
+	var pragmas []*Pragma
+	for p.got(token.Declare) {
+		d := new(Pragma)
+		p.expect(token.Lparen)
+		d.Name = p.tok.Text
+		p.expect(token.Ident)
+		p.expect(token.Assign)
+		// TODO: really lit?
+		d.Value = p.parseLit()
+		p.expect(token.Rparen)
+		// TODO: Also parse body?
+		p.expect(token.Semicolon)
+		pragmas = append(pragmas, d)
+	}
+	return pragmas
 }
 
 // UseStmt = "use" Name ";" .

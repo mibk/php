@@ -1,4 +1,7 @@
-<?php class A{use
+<?php
+declare       (
+strict_types
+= 1     )     ;class A{use
 This
 \Awesome \Thing
   ;const PI = 3.14159265359 ;private

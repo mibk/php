@@ -5,9 +5,17 @@ import (
 )
 
 type File struct {
+	Pragmas   []*Pragma
 	Namespace *Name
 	UseStmts  []*UseStmt
 	Decls     []Decl
+}
+
+// TODO: Pragma.X Expr?
+
+type Pragma struct {
+	Name  string
+	Value Expr
 }
 
 type UseStmt struct {
