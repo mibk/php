@@ -473,20 +473,6 @@ func (p *parser) parseName() *Name {
 	return id
 }
 
-// Lit = string | int | ident .
-func (p *parser) parseLit() Expr {
-	// TODO: This needs some more work.
-	switch p.tok.Type {
-	default:
-		p.errorf("unexpected %v, expecting lit", p.tok.Type)
-		return nil
-	case token.String, token.Int, token.Ident:
-		lit := &UnknownExpr{[]interface{}{p.tok}}
-		p.next()
-		return lit
-	}
-}
-
 // UnknownStmt = Expr ( ";" | BlockStmt ) .
 func (p *parser) parseUnknownStmt() *UnknownStmt {
 	stmt := new(UnknownStmt)
@@ -502,6 +488,20 @@ func (p *parser) parseUnknownStmt() *UnknownStmt {
 
 // Expr = UnknownExpr .
 func (p *parser) parseExpr() Expr { return p.parseUnknownExpr() }
+
+// Lit = string | int | ident .
+func (p *parser) parseLit() Expr {
+	// TODO: This needs some more work.
+	switch p.tok.Type {
+	default:
+		p.errorf("unexpected %v, expecting lit", p.tok.Type)
+		return nil
+	case token.String, token.Int, token.Ident:
+		lit := &UnknownExpr{[]interface{}{p.tok}}
+		p.next()
+		return lit
+	}
+}
 
 // UnknownExpr =  ExprElem { ExprElem } .
 // ExprElem    =  /* any token */ | "{" Expr "}" .
