@@ -215,6 +215,15 @@ func (p *printer) print(args ...interface{}) {
 			} else {
 				p.print(token.Semicolon)
 			}
+		case *ArrayLit:
+			p.print(token.Lbrack)
+			for i, elem := range arg.Elems {
+				if i > 0 {
+					p.print(token.Comma, ' ')
+				}
+				p.print(elem)
+			}
+			p.print(token.Rbrack)
 		case *UnknownExpr:
 			for i, elem := range arg.Elems {
 				switch elem := elem.(type) {

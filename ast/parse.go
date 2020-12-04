@@ -148,7 +148,7 @@ func (p *parser) parseFile() *File {
 	return file
 }
 
-// Pragma = "declare" "(" Name "=" Lit ")" ";" .
+// Pragma = "declare" "(" Name "=" BasicLit ")" ";" .
 func (p *parser) parsePragmas() []*Pragma {
 	var pragmas []*Pragma
 	for p.got(token.Declare) {
@@ -156,8 +156,7 @@ func (p *parser) parsePragmas() []*Pragma {
 		p.expect(token.Lparen)
 		d.Name = p.expect(token.Ident)
 		p.expect(token.Assign)
-		// TODO: really lit?
-		d.Value = p.parseLit()
+		d.Value = p.parseBasicLit()
 		p.expect(token.Rparen)
 		// TODO: Also parse body?
 		p.expect(token.Semicolon)
@@ -267,7 +266,7 @@ func (p *parser) parseParamList() []*Param {
 		par.Name = p.tok.Text
 		p.expect(token.Var)
 		if p.got(token.Assign) {
-			par.Default = p.parseLit()
+			par.Default = p.parseConstExpr()
 		}
 		params = append(params, par)
 		if p.tok.Type == token.Rparen {
@@ -489,8 +488,25 @@ func (p *parser) parseUnknownStmt() *UnknownStmt {
 // Expr = UnknownExpr .
 func (p *parser) parseExpr() Expr { return p.parseUnknownExpr() }
 
-// Lit = string | int | ident .
-func (p *parser) parseLit() Expr {
+// ConstExpr = BasicLit | ArrayLit .
+// ArrayLit  = "[" [ ConstExpr { "," ConstExpr } [ "," ] ] "]" .
+func (p *parser) parseConstExpr() Expr {
+	if p.got(token.Lbrack) {
+		a := new(ArrayLit)
+		for !p.got(token.Rbrack) && !p.got(token.EOF) {
+			a.Elems = append(a.Elems, p.parseConstExpr())
+			if p.got(token.Rbrack) {
+				break
+			}
+			p.expect(token.Comma)
+		}
+		return a
+	}
+	return p.parseBasicLit()
+}
+
+// BasicLit = string | int | ident .
+func (p *parser) parseBasicLit() Expr {
 	// TODO: This needs some more work.
 	switch p.tok.Type {
 	default:

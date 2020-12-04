@@ -1,10 +1,13 @@
 <?php
 
-function a(array $a = 0xface, int &$b = 'foo  b', ...$c) {
+function a(array $a = 0xface, int &$b = 'foo  b', ...$c = ['x']) {
 }
 
 function b(bool &...$x, &...$y, string ...$z, &$ž = null): void {
 }
 
 function get(?\DateTime $d) {
+}
+
+function set($v = [0, '1', true]) {
 }

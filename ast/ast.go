@@ -113,6 +113,10 @@ type BlockStmt struct {
 
 type Expr interface{}
 
+type ArrayLit struct {
+	Elems []Expr
+}
+
 type UnknownExpr struct {
 	Elems []interface{}
 }
