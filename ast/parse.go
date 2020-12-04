@@ -77,7 +77,9 @@ func (p *parser) next0() {
 func (p *parser) next() {
 	p.prev = p.tok
 	p.next0()
-	p.consume(token.Whitespace, token.Comment, token.Whitespace)
+	for p.tok.Type == token.Whitespace || p.tok.Type == token.Comment {
+		p.next0()
+	}
 }
 
 func (p *parser) expect(typ token.Type) string {
