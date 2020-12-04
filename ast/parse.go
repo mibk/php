@@ -427,10 +427,35 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 
 // Stmt = BlockStmt | UnknownStmt .
 func (p *parser) parseStmt() Stmt {
-	if p.tok.Type == token.Lbrace {
+	switch p.tok.Type {
+	case token.Lbrace:
 		return p.parseBlockStmt()
+	case token.For:
+		return p.parseForStmt()
+	default:
+		return p.parseUnknownStmt()
 	}
-	return p.parseUnknownStmt()
+}
+
+// ForStmt = "for" "(" [ Expr ] ";" [ Expr ]  ";" [ Expr ]  ) Stmt .
+func (p *parser) parseForStmt() Stmt {
+	f := new(ForStmt)
+	p.expect(token.For)
+	p.expect(token.Lparen)
+	if !p.got(token.Semicolon) {
+		f.Init = p.parseExpr()
+		p.expect(token.Semicolon)
+	}
+	if !p.got(token.Semicolon) {
+		f.Cond = p.parseExpr()
+		p.expect(token.Semicolon)
+	}
+	if !p.got(token.Rparen) {
+		f.Post = p.parseExpr()
+		p.expect(token.Rparen)
+	}
+	f.Body = p.parseStmt()
+	return f
 }
 
 // Type = [ "?" ] Name .
@@ -527,9 +552,9 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 		switch p.tok.Type {
 		// TODO: EOF or ?>
 		case token.EOF:
-			p.errorf("unexpected %v, expecting %v, %v or %v", p.tok, token.Semicolon, token.Lbrace, token.Rbrace)
+			p.errorf("unexpected %v, expecting %v, %v, %v or %v", p.tok, token.Semicolon, token.Lbrace, token.Rbrace, token.Rparen)
 			return nil
-		case token.Semicolon, token.Lbrace, token.Rbrace:
+		case token.Semicolon, token.Lbrace, token.Rbrace, token.Rparen:
 			if len(x.Elems) == 0 {
 				p.errorf("unexpected empty expression")
 			}
@@ -540,9 +565,19 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			if brace := p.tok; brace.Type == token.Lbrace {
 				p.next()
 				x.Elems = append(x.Elems, brace, p.parseExpr())
-				x.Elems = append(x.Elems, p.tok)
-				p.expect(token.Rbrace)
+				x.Elems = append(x.Elems, p.expect(token.Rbrace))
 			}
+		case token.Lparen:
+			x.Elems = append(x.Elems, p.tok)
+			p.next0()
+			if p.tok.Type == token.Rparen {
+				// TODO: Remove special case for empty ()
+				x.Elems = append(x.Elems, p.tok)
+				p.next0()
+				continue
+			}
+			x.Elems = append(x.Elems, p.parseExpr())
+			x.Elems = append(x.Elems, p.expect(token.Rparen))
 		default:
 			x.Elems = append(x.Elems, p.tok)
 			p.next0()

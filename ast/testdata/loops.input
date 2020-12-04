@@ -1,0 +1,13 @@
+<?php function a(){
+
+for    (
+  $i = 0
+; $i < 10
+; $i++ ){
+echo "$i\n"
+;      }for(;;)echo '∞';
+
+for ($x;;)$x++;
+for (;$y;)$y++;
+for (;;next())prev();
+}

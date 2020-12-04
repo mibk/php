@@ -111,6 +111,15 @@ type BlockStmt struct {
 	List []Stmt
 }
 
+// TODO: Init and Post should be statements.
+
+type ForStmt struct {
+	Init Expr // or nil
+	Cond Expr // or nil
+	Post Expr // or nil
+	Body Stmt
+}
+
 type Expr interface{}
 
 type ArrayLit struct {

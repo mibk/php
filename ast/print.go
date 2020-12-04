@@ -208,6 +208,20 @@ func (p *printer) print(args ...interface{}) {
 				p.print(p.indent, stmt, newline)
 			}
 			p.print(p.indent-1, token.Rbrace)
+		case *ForStmt:
+			p.print(token.For, ' ', token.Lparen)
+			if arg.Init != nil {
+				p.print(arg.Init)
+			}
+			p.print(token.Semicolon)
+			if arg.Cond != nil {
+				p.print(' ', arg.Cond)
+			}
+			p.print(token.Semicolon)
+			if arg.Post != nil {
+				p.print(' ', arg.Post)
+			}
+			p.print(token.Rparen, ' ', arg.Body)
 		case *UnknownStmt:
 			p.print(arg.X)
 			if arg.Body != nil {
