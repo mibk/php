@@ -80,11 +80,13 @@ func (p *parser) next() {
 	p.consume(token.Whitespace, token.Comment, token.Whitespace)
 }
 
-func (p *parser) expect(typ token.Type) {
+func (p *parser) expect(typ token.Type) string {
 	if p.tok.Type != typ {
 		p.errorf("expecting %v, found %v", typ, p.tok)
 	}
+	text := p.tok.Text
 	p.next()
+	return text
 }
 
 func (p *parser) got(typ token.Type) bool {
@@ -152,8 +154,7 @@ func (p *parser) parsePragmas() []*Pragma {
 	for p.got(token.Declare) {
 		d := new(Pragma)
 		p.expect(token.Lparen)
-		d.Name = p.tok.Text
-		p.expect(token.Ident)
+		d.Name = p.expect(token.Ident)
 		p.expect(token.Assign)
 		// TODO: really lit?
 		d.Value = p.parseLit()
@@ -171,8 +172,7 @@ func (p *parser) parseUseStmt() *UseStmt {
 	p.expect(token.Use)
 	stmt.Name = p.parseName()
 	if p.got(token.As) {
-		stmt.Alias = p.tok.Text
-		p.expect(token.Ident)
+		stmt.Alias = p.expect(token.Ident)
 	}
 	p.expect(token.Semicolon)
 	return stmt
@@ -209,8 +209,7 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	cons := new(ConstDecl)
 	cons.Doc = doc
 	p.expect(token.Const)
-	cons.Name = p.tok.Text
-	p.expect(token.Ident)
+	cons.Name = p.expect(token.Ident)
 	p.expect(token.Assign)
 	cons.X = p.parseExpr()
 	p.expect(token.Semicolon)
@@ -237,8 +236,7 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block, static bool) *FuncDecl {
 	fn.Doc = doc
 	fn.Static = static
 	p.expect(token.Function)
-	fn.Name = p.tok.Text
-	p.expect(token.Ident)
+	fn.Name = p.expect(token.Ident)
 	fn.Params = p.parseParamList()
 	if p.got(token.Colon) {
 		fn.Result = p.parseType()
@@ -289,8 +287,7 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class.Doc = doc
 	class.Abstract = p.got(token.Abstract)
 	p.expect(token.Class)
-	class.Name = p.tok.Text
-	p.expect(token.Ident)
+	class.Name = p.expect(token.Ident)
 	if p.got(token.Extends) {
 		class.Extends = p.parseName()
 	}
@@ -320,8 +317,7 @@ func (p *parser) parseInterfaceDecl(doc *phpdoc.Block) *InterfaceDecl {
 	iface := new(InterfaceDecl)
 	iface.Doc = doc
 	p.expect(token.Interface)
-	iface.Name = p.tok.Text
-	p.expect(token.Ident)
+	iface.Name = p.expect(token.Ident)
 	if p.got(token.Extends) {
 		iface.Extends = p.parseName()
 	}
@@ -339,8 +335,7 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 	trait := new(TraitDecl)
 	trait.Doc = doc
 	p.expect(token.Trait)
-	trait.Name = p.tok.Text
-	p.expect(token.Ident)
+	trait.Name = p.expect(token.Ident)
 	p.expect(token.Lbrace)
 	for p.until(token.Rbrace) {
 		m := p.parseClassMember()
@@ -470,8 +465,7 @@ func (p *parser) parseName() *Name {
 		id.Global = true
 	}
 	for {
-		id.Parts = append(id.Parts, p.tok.Text)
-		p.expect(token.Ident)
+		id.Parts = append(id.Parts, p.expect(token.Ident))
 		if !p.got(token.Backslash) {
 			break
 		}
