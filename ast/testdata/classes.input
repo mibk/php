@@ -1,7 +1,10 @@
 <?php
 declare       (
 strict_types
-= 1     )     ;class A{use
+= 1     )     ;use
+Your \ Name \ Space
+       as     Mine
+       ;class A{use
 This
 \Awesome \Thing
   ;const PI = 3.14159265359 ;private

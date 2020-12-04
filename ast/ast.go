@@ -19,7 +19,8 @@ type Pragma struct {
 }
 
 type UseStmt struct {
-	Name *Name
+	Name  *Name
+	Alias string // or ""
 }
 
 type Decl interface{ doc() *phpdoc.Block }

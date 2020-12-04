@@ -83,9 +83,13 @@ func (p *printer) print(args ...interface{}) {
 			p.print(arg.Name, token.Assign, arg.Value)
 			p.print(token.Rparen, token.Semicolon, newline)
 		case *UseStmt:
-			stmt := arg.Name
-			stmt.Global = false // use statements are global implicitly
-			p.print(token.Use, ' ', stmt, token.Semicolon)
+			name := arg.Name
+			name.Global = false // use statements are global implicitly
+			p.print(token.Use, ' ', name)
+			if arg.Alias != "" {
+				p.print(' ', token.As, ' ', arg.Alias)
+			}
+			p.print(token.Semicolon)
 		case *ConstDecl:
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
 			p.print(arg.X, token.Semicolon, newline)

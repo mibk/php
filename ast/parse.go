@@ -165,11 +165,15 @@ func (p *parser) parsePragmas() []*Pragma {
 	return pragmas
 }
 
-// UseStmt = "use" Name ";" .
+// UseStmt = "use" Name [ "as" ident ] ";" .
 func (p *parser) parseUseStmt() *UseStmt {
 	stmt := new(UseStmt)
 	p.expect(token.Use)
 	stmt.Name = p.parseName()
+	if p.got(token.As) {
+		stmt.Alias = p.tok.Text
+		p.expect(token.Ident)
+	}
 	p.expect(token.Semicolon)
 	return stmt
 }
