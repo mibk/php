@@ -174,14 +174,7 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(p.indent-1, token.Rbrace)
 		case *UnknownStmt:
-			toks := arg.Toks
-			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
-				// Avoid trailing whitespaces in a token blob.
-				toks = toks[:len(toks)-1]
-			}
-			for _, tok := range toks {
-				p.print(tok.Text)
-			}
+			p.print(arg.X)
 			if arg.Body != nil {
 				p.print(arg.Body)
 			} else {

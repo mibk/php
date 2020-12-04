@@ -91,7 +91,7 @@ type ClassMember struct {
 type Stmt interface{}
 
 type UnknownStmt struct {
-	Toks []token.Token
+	X    Expr
 	Body *BlockStmt
 }
 

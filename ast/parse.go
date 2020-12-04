@@ -447,44 +447,39 @@ func (p *parser) parseLit() Expr {
 	}
 }
 
-// UnknownStmt = /* pretty much anything */ ( ";" | BlockStmt ) .
+// UnknownStmt = Expr ( ";" | BlockStmt ) .
 func (p *parser) parseUnknownStmt() *UnknownStmt {
 	stmt := new(UnknownStmt)
-	// TODO: EOF or ?>
-	for {
-		switch p.tok.Type {
-		case token.EOF, token.Rbrace:
-			p.errorf("unexpected %v", p.tok)
-			return nil
-		case token.Semicolon:
-			if len(stmt.Toks) == 0 {
-				p.errorf("unexpected %v", p.tok)
-			}
-			p.next()
-			return stmt
-		case token.Lbrace:
-			stmt.Body = p.parseBlockStmt()
-			return stmt
-		default:
-			stmt.Toks = append(stmt.Toks, p.tok)
-			p.next0()
-		}
+	stmt.X = p.parseUnknownExpr()
+	switch p.tok.Type {
+	case token.Semicolon:
+		p.next()
+	case token.Lbrace:
+		stmt.Body = p.parseBlockStmt()
 	}
+	return stmt
 }
 
 // Expr = UnknownExpr .
 func (p *parser) parseExpr() Expr { return p.parseUnknownExpr() }
 
-// UnknownExpr = /* anything except ";" */ .
+// UnknownExpr =  /* anything */ { /* anything */ } .
 func (p *parser) parseUnknownExpr() *UnknownExpr {
 	x := new(UnknownExpr)
-	// TODO: EOF or ?>
-	for p.tok.Type != token.Semicolon && p.tok.Type != token.EOF {
-		x.Toks = append(x.Toks, p.tok)
-		p.next0()
+	for {
+		switch p.tok.Type {
+		// TODO: EOF or ?>
+		case token.EOF:
+			p.errorf("unexpected %v, expecting %v, %v or %v", p.tok, token.Semicolon, token.Lbrace, token.Rbrace)
+			return nil
+		case token.Semicolon, token.Lbrace, token.Rbrace:
+			if len(x.Toks) == 0 {
+				p.errorf("unexpected empty expression")
+			}
+			return x
+		default:
+			x.Toks = append(x.Toks, p.tok)
+			p.next0()
+		}
 	}
-	if len(x.Toks) == 0 {
-		p.errorf("unexpected %v", p.tok)
-	}
-	return x
 }
