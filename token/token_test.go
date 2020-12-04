@@ -205,7 +205,7 @@ NOWdoc;	` + `
 abstract as
 break
 callable case catch class clone const continue
-default do
+declare default do
 else elseif extends
 final finally fn for foreach function
 goto
@@ -241,10 +241,12 @@ while
 			{token.Whitespace, " ", pos("4:38")},
 			{token.Continue, "continue", pos("4:39")},
 			{token.Whitespace, "\n", pos("4:47")},
-			{token.Default, "default", pos("5:1")},
+			{token.Declare, "declare", pos("5:1")},
 			{token.Whitespace, " ", pos("5:8")},
-			{token.Do, "do", pos("5:9")},
-			{token.Whitespace, "\n", pos("5:11")},
+			{token.Default, "default", pos("5:9")},
+			{token.Whitespace, " ", pos("5:16")},
+			{token.Do, "do", pos("5:17")},
+			{token.Whitespace, "\n", pos("5:19")},
 			{token.Else, "else", pos("6:1")},
 			{token.Whitespace, " ", pos("6:5")},
 			{token.Elseif, "elseif", pos("6:6")},

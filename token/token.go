@@ -101,6 +101,7 @@ const (
 	Clone      // clone
 	Const      // const
 	Continue   // continue
+	Declare    // declare
 	Default    // default
 	Do         // do
 	Else       // else
