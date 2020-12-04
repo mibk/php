@@ -60,30 +60,34 @@ const (
 	InlineHTML
 
 	symbolStart
-	OpenTag   // <?php
-	CloseTag  // ?>
-	Dollar    // $
-	Backslash // \
-	Qmark     // ?
-	Lparen    // (
-	Rparen    // )
-	Lbrack    // [
-	Rbrack    // ]
-	Lbrace    // {
-	Rbrace    // }
-	Assign    // =
-	Lt        // <
-	Gt        // >
-	Period    // .
-	Comma     // ,
-	Colon     // :
-	Semicolon // ;
-	Ellipsis  // ...
-	Or        // |
-	And       // &
-	Quo       // /
-	Shl       // <<
-	Shr       // >>
+	OpenTag     // <?php
+	CloseTag    // ?>
+	Dollar      // $
+	Backslash   // \
+	Qmark       // ?
+	Lparen      // (
+	Rparen      // )
+	Lbrack      // [
+	Rbrack      // ]
+	Lbrace      // {
+	Rbrace      // }
+	Add         // +
+	Sub         // -
+	Assign      // =
+	Lt          // <
+	Gt          // >
+	Period      // .
+	Comma       // ,
+	Colon       // :
+	Semicolon   // ;
+	Ellipsis    // ...
+	Or          // |
+	And         // &
+	Quo         // /
+	Shl         // <<
+	Shr         // >>
+	Arrow       // ->
+	DoubleArrow // =>
 	symbolEnd
 
 	keywordStart
@@ -294,7 +298,19 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '}':
 		return Token{Type: Rbrace}
 	case '=':
+		if s.peek() == '>' {
+			s.read()
+			return Token{Type: DoubleArrow}
+		}
 		return Token{Type: Assign}
+	case '+':
+		return Token{Type: Add}
+	case '-':
+		if s.peek() == '>' {
+			s.read()
+			return Token{Type: Arrow}
+		}
+		return Token{Type: Sub}
 	case '<':
 		if s.peek() == r {
 			s.read()
