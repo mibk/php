@@ -247,7 +247,7 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block) *FuncDecl {
 }
 
 // ParamList = "(" [ Param { "," Param } [ "," ] ] ")" .
-// Param     = [ Type ] [ "&" ] [ "..." ] var .
+// Param     = [ Type ] [ "&" ] [ "..." ] var [ "=" Lit ] .
 func (p *parser) parseParamList() []*Param {
 	var params []*Param
 	p.expect(token.Lparen)
