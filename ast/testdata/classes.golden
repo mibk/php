@@ -19,7 +19,7 @@ class A
 	$another;
 }
 
-class B extends \Other\A implements \Iterable
+abstract class B extends \Other\A implements \Iterable
 {
 	private static $∂;
 }

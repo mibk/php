@@ -58,6 +58,7 @@ type Param struct {
 type ClassDecl struct {
 	Doc        *phpdoc.Block // or nil
 	Name       string
+	Abstract   bool
 	Extends    *Name // or nil
 	Implements []*Name
 	Traits     []*UseStmt

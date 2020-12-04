@@ -11,7 +11,7 @@ This
   function    noop(int $x,\ DateTime$d ,): ? string{}/**
       @var?      My   \  Prop
                      */
-	    protected    $fooProp  =null  ;$another;}
+	    protected    $fooProp  =null  ;$another;}abstract
 
 	      class   B
 	    extends \ Other

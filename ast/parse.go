@@ -192,7 +192,7 @@ func (p *parser) parseDecl() Decl {
 		return p.parseVarDecl(doc, false)
 	case token.Function:
 		return p.parseFuncDecl(doc, false)
-	case token.Class:
+	case token.Class, token.Abstract:
 		return p.parseClassDecl(doc)
 	case token.Interface:
 		return p.parseInterfaceDecl(doc)
@@ -281,12 +281,13 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
-// ClassDecl = "class" [ "extends" Name ]
+// ClassDecl = [ "abstract" ] "class" [ "extends" Name ]
 //             [ "implements" Name { "," Name } ]
 //             "{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
 	class.Doc = doc
+	class.Abstract = p.got(token.Abstract)
 	p.expect(token.Class)
 	class.Name = p.tok.Text
 	p.expect(token.Ident)

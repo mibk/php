@@ -136,6 +136,9 @@ func (p *printer) print(args ...interface{}) {
 				}
 			}
 		case *ClassDecl:
+			if arg.Abstract {
+				p.print(token.Abstract, ' ')
+			}
 			p.print(token.Class, ' ', arg.Name)
 			if arg.Extends != nil {
 				p.print(' ', token.Extends, ' ', arg.Extends)
