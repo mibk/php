@@ -275,7 +275,9 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
-// ClassDecl = "class" [ "extends" Name ] "{" { UseStmt } { ClassMember } "}" .
+// ClassDecl = "class" [ "extends" Name ]
+//             [ "implements" Name { "," Name } ]
+//             "{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	class := new(ClassDecl)
 	class.Doc = doc
@@ -284,6 +286,14 @@ func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	p.expect(token.Ident)
 	if p.got(token.Extends) {
 		class.Extends = p.parseName()
+	}
+	if p.got(token.Implements) {
+		for {
+			class.Implements = append(class.Implements, p.parseName())
+			if !p.got(token.Comma) {
+				break
+			}
+		}
 	}
 	p.expect(token.Lbrace)
 	for p.tok.Type == token.Use {

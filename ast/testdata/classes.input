@@ -12,7 +12,8 @@ This
 
 	      class   B
 	    extends \ Other
-	            \ A
+	            \ A  implements
+	            \ Iterable
 	   {  private $∂ ; }/* Some doc */
 
 trait     TT{
@@ -20,3 +21,9 @@ function  uu(
 int      $vv)
 {    echo;  }
          }
+
+class      M
+implements N,
+           O\
+           P{
+use       TT;}

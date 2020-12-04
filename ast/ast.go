@@ -53,11 +53,12 @@ type Param struct {
 }
 
 type ClassDecl struct {
-	Doc     *phpdoc.Block // or nil
-	Name    string
-	Extends *Name // or nil
-	Traits  []*UseStmt
-	Members []*ClassMember
+	Doc        *phpdoc.Block // or nil
+	Name       string
+	Extends    *Name // or nil
+	Implements []*Name
+	Traits     []*UseStmt
+	Members    []*ClassMember
 }
 
 type InterfaceDecl struct {

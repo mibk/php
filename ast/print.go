@@ -130,6 +130,12 @@ func (p *printer) print(args ...interface{}) {
 			if arg.Extends != nil {
 				p.print(' ', token.Extends, ' ', arg.Extends)
 			}
+			if len(arg.Implements) > 0 {
+				p.print(' ', token.Implements, ' ', arg.Implements[0])
+				for _, n := range arg.Implements[1:] {
+					p.print(token.Comma, ' ', n)
+				}
+			}
 			p.print(newline, token.Lbrace, newline)
 			for _, t := range arg.Traits {
 				p.print(p.indent, t, newline)

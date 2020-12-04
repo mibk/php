@@ -17,7 +17,7 @@ class A
 	$another;
 }
 
-class B extends \Other\A
+class B extends \Other\A implements \Iterable
 {
 	private $∂;
 }
@@ -27,4 +27,10 @@ trait TT
 	function uu(int $vv) {
 		echo;
 	}
+}
+
+class M implements N, O\P
+{
+	use TT;
+
 }
