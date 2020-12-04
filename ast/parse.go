@@ -441,7 +441,7 @@ func (p *parser) parseLit() Expr {
 		p.errorf("unexpected %v, expecting lit", p.tok.Type)
 		return nil
 	case token.String, token.Int, token.Ident:
-		lit := &UnknownExpr{[]token.Token{p.tok}}
+		lit := &UnknownExpr{[]interface{}{p.tok}}
 		p.next()
 		return lit
 	}
@@ -463,7 +463,8 @@ func (p *parser) parseUnknownStmt() *UnknownStmt {
 // Expr = UnknownExpr .
 func (p *parser) parseExpr() Expr { return p.parseUnknownExpr() }
 
-// UnknownExpr =  /* anything */ { /* anything */ } .
+// UnknownExpr =  ExprElem { ExprElem } .
+// ExprElem    =  /* any token */ | "{" Expr "}" .
 func (p *parser) parseUnknownExpr() *UnknownExpr {
 	x := new(UnknownExpr)
 	for {
@@ -473,12 +474,21 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			p.errorf("unexpected %v, expecting %v, %v or %v", p.tok, token.Semicolon, token.Lbrace, token.Rbrace)
 			return nil
 		case token.Semicolon, token.Lbrace, token.Rbrace:
-			if len(x.Toks) == 0 {
+			if len(x.Elems) == 0 {
 				p.errorf("unexpected empty expression")
 			}
 			return x
+		case token.Arrow:
+			x.Elems = append(x.Elems, p.tok)
+			p.next()
+			if brace := p.tok; brace.Type == token.Lbrace {
+				p.next()
+				x.Elems = append(x.Elems, brace, p.parseExpr())
+				x.Elems = append(x.Elems, p.tok)
+				p.expect(token.Rbrace)
+			}
 		default:
-			x.Toks = append(x.Toks, p.tok)
+			x.Elems = append(x.Elems, p.tok)
 			p.next0()
 		}
 	}

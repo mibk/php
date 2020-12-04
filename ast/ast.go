@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"mibk.io/php/token"
 	"mibk.io/phpdoc"
 )
 
@@ -102,7 +101,7 @@ type BlockStmt struct {
 type Expr interface{}
 
 type UnknownExpr struct {
-	Toks []token.Token
+	Elems []interface{}
 }
 
 type Type struct {

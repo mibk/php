@@ -181,13 +181,15 @@ func (p *printer) print(args ...interface{}) {
 				p.print(token.Semicolon)
 			}
 		case *UnknownExpr:
-			toks := arg.Toks
-			for len(toks) > 0 && toks[len(toks)-1].Type == token.Whitespace {
-				// Avoid trailing whitespaces in a token blob.
-				toks = toks[:len(toks)-1]
-			}
-			for _, tok := range toks {
-				p.print(tok.Text)
+			for i, elem := range arg.Elems {
+				switch elem := elem.(type) {
+				case token.Token:
+					if i < len(arg.Elems)-1 || elem.Type != token.Whitespace {
+						p.print(elem.Text)
+					}
+				default:
+					p.print(elem)
+				}
 			}
 		case *Type:
 			if arg.Nullable {
