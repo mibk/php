@@ -222,8 +222,7 @@ func (p *parser) parseVarDecl(doc *phpdoc.Block, static bool) *VarDecl {
 	v := new(VarDecl)
 	v.Doc = doc
 	v.Static = static
-	v.Name = p.tok.Text
-	p.expect(token.Var)
+	v.Name = p.expect(token.Var)
 	if p.got(token.Assign) {
 		v.X = p.parseExpr()
 	}
@@ -259,14 +258,9 @@ func (p *parser) parseParamList() []*Param {
 	for p.until(token.Rparen) {
 		par := new(Param)
 		par.Type = p.tryParseType()
-		if p.got(token.And) {
-			par.ByRef = true
-		}
-		if p.got(token.Ellipsis) {
-			par.Variadic = true
-		}
-		par.Name = p.tok.Text
-		p.expect(token.Var)
+		par.ByRef = p.got(token.And)
+		par.Variadic = p.got(token.Ellipsis)
+		par.Name = p.expect(token.Var)
 		if p.got(token.Assign) {
 			par.Default = p.parseConstExpr()
 		}
