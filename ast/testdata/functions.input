@@ -12,7 +12,9 @@
 		) :void{/*  */}
 
 function get  ( ?   \
-         DateTime  $d
+         DateTime  $d  =  Another
+                   \      Foo
+                   ::     T_BAR
                    ,
          )         {
          $x = function()use(){};

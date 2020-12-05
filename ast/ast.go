@@ -122,6 +122,11 @@ type ForStmt struct {
 
 type Expr interface{}
 
+type StaticSelectorExpr struct {
+	X   Expr
+	Sel string
+}
+
 type ArrayLit struct {
 	Elems []Expr
 }

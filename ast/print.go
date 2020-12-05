@@ -231,6 +231,8 @@ func (p *printer) print(args ...interface{}) {
 			} else {
 				p.print(token.Semicolon)
 			}
+		case *StaticSelectorExpr:
+			p.print(arg.X, token.DoubleColon, arg.Sel)
 		case *ArrayLit:
 			p.print(token.Lbrack)
 			for i, elem := range arg.Elems {

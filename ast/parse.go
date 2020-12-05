@@ -523,6 +523,16 @@ func (p *parser) parseConstExpr() Expr {
 		}
 		return a
 	}
+	if p.tok.Type == token.Ident {
+		// TODO: This needs some rethinking.
+		n := p.parseName()
+		if p.got(token.DoubleColon) {
+			x := &StaticSelectorExpr{X: n}
+			x.Sel = p.expect(token.Ident)
+			return x
+		}
+		return n
+	}
 	return p.parseBasicLit()
 }
 
