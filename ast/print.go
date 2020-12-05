@@ -106,7 +106,7 @@ func (p *printer) print(args ...interface{}) {
 			if arg.Static {
 				p.print(token.Static, ' ')
 			}
-			p.print(token.Function, ' ', arg.Name, token.Lparen, arg.Params, token.Rparen)
+			p.print(token.Function, ' ', arg.Name, arg.Params)
 			if arg.Result != nil {
 				p.print(token.Colon, ' ', arg.Result)
 			}
@@ -117,6 +117,7 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(newline)
 		case []*Param:
+			p.print(token.Lparen)
 			for i, par := range arg {
 				if i > 0 {
 					p.print(token.Comma, ' ')
@@ -135,6 +136,7 @@ func (p *printer) print(args ...interface{}) {
 					p.print(' ', token.Assign, ' ', par.Default)
 				}
 			}
+			p.print(token.Rparen)
 		case *ClassDecl:
 			if arg.Abstract {
 				p.print(token.Abstract, ' ')
@@ -238,6 +240,15 @@ func (p *printer) print(args ...interface{}) {
 				p.print(elem)
 			}
 			p.print(token.Rbrack)
+		case *FuncLit:
+			p.print(token.Function, ' ', arg.Params)
+			if len(arg.Scope) > 0 {
+				p.print(' ', token.Use, ' ', arg.Scope)
+			}
+			if arg.Result != nil {
+				p.print(token.Colon, ' ', arg.Result)
+			}
+			p.print(' ', arg.Body)
 		case *UnknownExpr:
 			for i, elem := range arg.Elems {
 				switch elem := elem.(type) {

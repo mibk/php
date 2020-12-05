@@ -15,7 +15,14 @@ function get  ( ?   \
          DateTime  $d
                    ,
          )         {
-         }
+         $x = function()use(){};
+         x(function(int$y)  :int
+         { echo $y;      }      )
+         ; $this->call(function()use
+         (& $that,  $w   , ) : \
+                  DateTime      {
+           static $m ;return $m ;}   )
+         ;}
 
 function  set ($v =[
           0

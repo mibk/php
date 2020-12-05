@@ -126,6 +126,15 @@ type ArrayLit struct {
 	Elems []Expr
 }
 
+// TODO: Separate type for scope?
+
+type FuncLit struct {
+	Params []*Param
+	Scope  []*Param
+	Result *Type // or nil
+	Body   *BlockStmt
+}
+
 type UnknownExpr struct {
 	Elems []interface{}
 }

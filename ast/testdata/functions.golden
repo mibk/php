@@ -7,6 +7,15 @@ function b(bool &...$x, &...$y, string ...$z, &$ž = null): void {
 }
 
 function get(?\DateTime $d) {
+	$x = function () {
+	};
+	x(function (int $y): int {
+		echo $y;
+	});
+	$this->call(function () use (&$that, $w): \DateTime {
+		static $m;
+		return $m;
+	});
 }
 
 function set($v = [0, '1', true]) {

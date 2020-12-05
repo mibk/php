@@ -231,7 +231,7 @@ func (p *parser) parseVarDecl(doc *phpdoc.Block, static bool) *VarDecl {
 	return v
 }
 
-// FuncDecl = "function" ident ParamList BlockStmt .
+// FuncDecl = "function" ident ParamList [ ":" Type ] BlockStmt .
 func (p *parser) parseFuncDecl(doc *phpdoc.Block, static bool) *FuncDecl {
 	fn := new(FuncDecl)
 	fn.Doc = doc
@@ -532,6 +532,24 @@ func (p *parser) parseConstExpr() Expr {
 	return p.parseBasicLit()
 }
 
+// FuncLit      = "function" ParamList [ FuncLitScope ] [ ":" Type ] BlockStmt .
+// FuncLitScope = "use" ParamList .
+func (p *parser) parseFuncLit() *FuncLit {
+	fn := new(FuncLit)
+	p.expect(token.Function)
+	fn.Params = p.parseParamList()
+	if p.got(token.Use) {
+		// TODO: This is easier, but enables invalid
+		// syntax.
+		fn.Scope = p.parseParamList()
+	}
+	if p.got(token.Colon) {
+		fn.Result = p.parseType()
+	}
+	fn.Body = p.parseBlockStmt()
+	return fn
+}
+
 // BasicLit = string | int | ident .
 func (p *parser) parseBasicLit() Expr {
 	// TODO: This needs some more work.
@@ -547,7 +565,7 @@ func (p *parser) parseBasicLit() Expr {
 }
 
 // UnknownExpr =  ExprElem { ExprElem } .
-// ExprElem    =  /* any token */ | "{" Expr "}" .
+// ExprElem    =  /* any token */ | "{" Expr "}" | FuncLit .
 func (p *parser) parseUnknownExpr() *UnknownExpr {
 	x := new(UnknownExpr)
 	for {
@@ -580,6 +598,8 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			}
 			x.Elems = append(x.Elems, p.parseExpr())
 			x.Elems = append(x.Elems, p.expect(token.Rparen))
+		case token.Function:
+			x.Elems = append(x.Elems, p.parseFuncLit())
 		default:
 			x.Elems = append(x.Elems, p.tok)
 			p.next0()
