@@ -79,6 +79,7 @@ const (
 	Period      // .
 	Comma       // ,
 	Colon       // :
+	DoubleColon // ::
 	Semicolon   // ;
 	Ellipsis    // ...
 	Or          // |
@@ -339,6 +340,10 @@ func (s *Scanner) scanAny() (tok Token) {
 	case ',':
 		return Token{Type: Comma}
 	case ':':
+		if s.peek() == r {
+			s.read()
+			return Token{Type: DoubleColon}
+		}
 		return Token{Type: Colon}
 	case ';':
 		return Token{Type: Semicolon}

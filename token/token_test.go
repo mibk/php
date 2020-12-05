@@ -334,8 +334,8 @@ while
 			{token.EOF, "", pos("3:1")},
 		},
 	}, {
-		"operators",
-		`<?php = > => - ->+-+`,
+		"symbols",
+		`<?php = > => - ->+-+:::,`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -351,7 +351,10 @@ while
 			{token.Add, "+", pos("1:18")},
 			{token.Sub, "-", pos("1:19")},
 			{token.Add, "+", pos("1:20")},
-			{token.EOF, "", pos("1:21")},
+			{token.DoubleColon, "::", pos("1:21")},
+			{token.Colon, ":", pos("1:23")},
+			{token.Comma, ",", pos("1:24")},
+			{token.EOF, "", pos("1:25")},
 		},
 	}}
 
