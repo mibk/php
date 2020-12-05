@@ -79,25 +79,23 @@ func _() {
 	_ = x[Interface-68]
 	_ = x[Namespace-69]
 	_ = x[New-70]
-	_ = x[Parent-71]
-	_ = x[Private-72]
-	_ = x[Protected-73]
-	_ = x[Public-74]
-	_ = x[Return-75]
-	_ = x[Self-76]
-	_ = x[Static-77]
-	_ = x[Switch-78]
-	_ = x[Throw-79]
-	_ = x[Trait-80]
-	_ = x[Try-81]
-	_ = x[Use-82]
-	_ = x[While-83]
-	_ = x[keywordEnd-84]
+	_ = x[Private-71]
+	_ = x[Protected-72]
+	_ = x[Public-73]
+	_ = x[Return-74]
+	_ = x[Static-75]
+	_ = x[Switch-76]
+	_ = x[Throw-77]
+	_ = x[Trait-78]
+	_ = x[Try-79]
+	_ = x[Use-80]
+	_ = x[While-81]
+	_ = x[keywordEnd-82]
 }
 
-const _Type_name = "IllegalEOFWhitespaceCommentDocCommentIdentIntStringVarInlineHTMLsymbolStart<?php?>$\\?()[]{}+-=<>.,:;...|&/<<>>->=>symbolEndkeywordStartabstractasbreakcallablecasecatchclasscloneconstcontinuedeclaredefaultdoelseelseifextendsfinalfinallyfnforforeachfunctiongotoifimplementsinstanceofinsteadofinterfacenamespacenewparentprivateprotectedpublicreturnselfstaticswitchthrowtraittryusewhilekeywordEnd"
+const _Type_name = "IllegalEOFWhitespaceCommentDocCommentIdentIntStringVarInlineHTMLsymbolStart<?php?>$\\?()[]{}+-=<>.,:;...|&/<<>>->=>symbolEndkeywordStartabstractasbreakcallablecasecatchclasscloneconstcontinuedeclaredefaultdoelseelseifextendsfinalfinallyfnforforeachfunctiongotoifimplementsinstanceofinsteadofinterfacenamespacenewprivateprotectedpublicreturnstaticswitchthrowtraittryusewhilekeywordEnd"
 
-var _Type_index = [...]uint16{0, 7, 10, 20, 27, 37, 42, 45, 51, 54, 64, 75, 80, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 103, 104, 105, 106, 108, 110, 112, 114, 123, 135, 143, 145, 150, 158, 162, 167, 172, 177, 182, 190, 197, 204, 206, 210, 216, 223, 228, 235, 237, 240, 247, 255, 259, 261, 271, 281, 290, 299, 308, 311, 317, 324, 333, 339, 345, 349, 355, 361, 366, 371, 374, 377, 382, 392}
+var _Type_index = [...]uint16{0, 7, 10, 20, 27, 37, 42, 45, 51, 54, 64, 75, 80, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 103, 104, 105, 106, 108, 110, 112, 114, 123, 135, 143, 145, 150, 158, 162, 167, 172, 177, 182, 190, 197, 204, 206, 210, 216, 223, 228, 235, 237, 240, 247, 255, 259, 261, 271, 281, 290, 299, 308, 311, 318, 327, 333, 339, 345, 351, 356, 361, 364, 367, 372, 382}
 
 func (i Type) String() string {
 	if i >= Type(len(_Type_index)-1) {

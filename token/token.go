@@ -121,12 +121,10 @@ const (
 	Interface  // interface
 	Namespace  // namespace
 	New        // new
-	Parent     // parent
 	Private    // private
 	Protected  // protected
 	Public     // public
 	Return     // return
-	Self       // self
 	Static     // static
 	Switch     // switch
 	Throw      // throw
