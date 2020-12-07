@@ -27,7 +27,7 @@ abstract class B extends \Other\A implements \Iterable
 trait TT
 {
 	static function uu(int $vv) {
-		echo;
+		echo $vv::class;
 	}
 }
 
@@ -36,4 +36,16 @@ class M implements N, O\P
 	use TT;
 
 	static $uu;
+}
+
+class Outer
+{
+	function theres() {
+		$inner     = new
+		class extends Outer
+		{
+			function noname() {
+			}
+		};
+	}
 }

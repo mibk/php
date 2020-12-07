@@ -77,6 +77,10 @@ func (p *printer) print(args ...interface{}) {
 			}
 			for _, decl := range arg.Decls {
 				p.print(newline, decl.doc(), p.indent, decl)
+				if _, ok := decl.(*ClassDecl); ok {
+					// TODO: Come up with better heuristics.
+					p.print(newline)
+				}
 			}
 		case *Pragma:
 			p.print(token.Declare, token.Lparen)
@@ -141,7 +145,12 @@ func (p *printer) print(args ...interface{}) {
 			if arg.Abstract {
 				p.print(token.Abstract, ' ')
 			}
-			p.print(token.Class, ' ', arg.Name)
+			p.print(p.indent, token.Class)
+			if arg.Name != "" {
+				// TODO: Consider printing Lbrace on same line for
+				// anonymous classes
+				p.print(' ', arg.Name)
+			}
 			if arg.Extends != nil {
 				p.print(' ', token.Extends, ' ', arg.Extends)
 			}
@@ -151,7 +160,7 @@ func (p *printer) print(args ...interface{}) {
 					p.print(token.Comma, ' ', n)
 				}
 			}
-			p.print(newline, token.Lbrace, newline)
+			p.print(newline, p.indent, token.Lbrace, newline)
 			for _, t := range arg.Traits {
 				p.print(p.indent, t, newline)
 			}
@@ -164,7 +173,7 @@ func (p *printer) print(args ...interface{}) {
 				}
 				p.print(m.Doc, p.indent, m)
 			}
-			p.print(p.indent-1, token.Rbrace, newline)
+			p.print(p.indent-1, token.Rbrace)
 		case *InterfaceDecl:
 			p.print(token.Interface, ' ', arg.Name)
 			if arg.Extends != nil {

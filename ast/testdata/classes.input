@@ -23,7 +23,7 @@ trait     TT{
 static
 function  uu(
 int      $vv)
-{    echo;  }
+{    echo $vv:: class;  }
          }
 
 class      M
@@ -32,3 +32,12 @@ implements N,
            P{
 use       TT;
 static   $uu;}
+
+class      Outer{
+function   theres(){
+$inner     = new
+class      extends
+Outer      {function
+noname     (        )
+{           }       }
+;           }       }

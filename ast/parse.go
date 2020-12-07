@@ -274,15 +274,28 @@ func (p *parser) parseParamList() []*Param {
 	return params
 }
 
-// ClassDecl = [ "abstract" ] "class" [ "extends" Name ]
+// ClassDecl = [ "abstract" ] "class" ident [ "extends" Name ]
 //             [ "implements" Name { "," Name } ]
 //             "{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
+	return p.parseClassDeclaration(doc, false)
+}
+
+// AnonymClassDecl = "class" [ "extends" Name ]
+//                   [ "implements" Name { "," Name } ]
+//                   "{" { UseStmt } { ClassMember } "}" .
+func (p *parser) parseAnonymClassDecl() *ClassDecl {
+	return p.parseClassDeclaration(nil, true)
+}
+
+func (p *parser) parseClassDeclaration(doc *phpdoc.Block, anonymous bool) *ClassDecl {
 	class := new(ClassDecl)
 	class.Doc = doc
 	class.Abstract = p.got(token.Abstract)
 	p.expect(token.Class)
-	class.Name = p.expect(token.Ident)
+	if !anonymous {
+		class.Name = p.expect(token.Ident)
+	}
 	if p.got(token.Extends) {
 		class.Extends = p.parseName()
 	}
@@ -591,6 +604,13 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 				x.Elems = append(x.Elems, brace, p.parseExpr())
 				x.Elems = append(x.Elems, p.expect(token.Rbrace))
 			}
+		case token.DoubleColon:
+			// The next token might be "class", so we want
+			// to consume 2 tokens (ignoring whitespace).
+			x.Elems = append(x.Elems, p.tok)
+			p.next()
+			x.Elems = append(x.Elems, p.tok)
+			p.next()
 		case token.Lparen:
 			x.Elems = append(x.Elems, p.tok)
 			p.next0()
@@ -602,6 +622,8 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			}
 			x.Elems = append(x.Elems, p.parseExpr())
 			x.Elems = append(x.Elems, p.expect(token.Rparen))
+		case token.Class:
+			x.Elems = append(x.Elems, p.parseAnonymClassDecl())
 		case token.Function:
 			x.Elems = append(x.Elems, p.parseFuncLit())
 		default:
