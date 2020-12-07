@@ -14,8 +14,9 @@ Bar {function cleanup(  $foo,  $bar ,
 {
 	$this ->{ $foo
 }	;switch;
-lookup();
-	}
+lookup();$x->
+         class( 'y' )
+;	}
 
 
 }function xx(){} }function toplevel ($n

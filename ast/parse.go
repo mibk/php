@@ -599,10 +599,14 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 		case token.Arrow:
 			x.Elems = append(x.Elems, p.tok)
 			p.next()
-			if brace := p.tok; brace.Type == token.Lbrace {
-				p.next()
-				x.Elems = append(x.Elems, brace, p.parseExpr())
-				x.Elems = append(x.Elems, p.expect(token.Rbrace))
+			tok := p.tok
+			// Take any token that comes. Apparently you can
+			// call a method that has a keyword as a name (e.g.
+			// (expr)->class(args)).
+			x.Elems = append(x.Elems, p.tok)
+			p.next()
+			if tok.Type == token.Lbrace {
+				x.Elems = append(x.Elems, p.parseExpr(), p.expect(token.Rbrace))
 			}
 		case token.DoubleColon:
 			// The next token might be "class", so we want
