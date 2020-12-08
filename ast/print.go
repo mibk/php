@@ -75,9 +75,13 @@ func (p *printer) print(args ...interface{}) {
 					p.print(stmt, newline)
 				}
 			}
-			for _, decl := range arg.Decls {
-				p.print(newline, decl.doc(), p.indent, decl)
-				if _, ok := decl.(*ClassDecl); ok {
+			for _, stmt := range arg.Stmts {
+				p.print(newline)
+				if decl, ok := stmt.(Decl); ok {
+					p.print(decl.doc())
+				}
+				p.print(p.indent, stmt)
+				if _, ok := stmt.(*ClassDecl); ok {
 					// TODO: Come up with better heuristics.
 					p.print(newline)
 				}
@@ -240,6 +244,7 @@ func (p *printer) print(args ...interface{}) {
 			} else {
 				p.print(token.Semicolon)
 			}
+			p.print()
 		case *StaticSelectorExpr:
 			p.print(arg.X, token.DoubleColon, arg.Sel)
 		case *ArrayLit:

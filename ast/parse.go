@@ -131,7 +131,7 @@ func (p *parser) errorf(format string, args ...interface{}) {
 //        { Pragma }
 //        [ "namespace" Name ";" ]
 //        { UseStmt }
-//        { Decl } .
+//        { TopLevelStmt } .
 func (p *parser) parseFile() *File {
 	file := new(File)
 	p.expect(token.OpenTag)
@@ -145,7 +145,7 @@ func (p *parser) parseFile() *File {
 		file.UseStmts = append(file.UseStmts, p.parseUseStmt())
 	}
 	for !p.got(token.EOF) {
-		file.Decls = append(file.Decls, p.parseDecl())
+		file.Stmts = append(file.Stmts, p.parseTopLevelStmt())
 	}
 	return file
 }
@@ -179,12 +179,13 @@ func (p *parser) parseUseStmt() *UseStmt {
 	return stmt
 }
 
-// Decl = ConstDecl |
-//        VarDecl |
-//        FuncDecl |
-//        ClassDecl |
-//        InterfaceDecl .
-func (p *parser) parseDecl() Decl {
+// TopLevelStmt = ConstDecl |
+//                VarDecl |
+//                FuncDecl |
+//                ClassDecl |
+//                InterfaceDecl |
+//                Stmt .
+func (p *parser) parseTopLevelStmt() Stmt {
 	doc := p.parsePHPDoc()
 	switch p.tok.Type {
 	case token.Const:
@@ -200,8 +201,11 @@ func (p *parser) parseDecl() Decl {
 	case token.Trait:
 		return p.parseTraitDecl(doc)
 	default:
-		p.errorf("unexpected %v", p.tok)
-		return nil
+		if doc != nil {
+			p.errorf("unexpected %v, expecting top-level statement", token.DocComment)
+			return nil
+		}
+		return p.parseStmt()
 	}
 }
 

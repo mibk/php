@@ -32,7 +32,7 @@ func TestSyntaxErrors(t *testing.T) {
 	}, {
 		"unexpected /",
 		`<?php /`,
-		`syntax:1:7: unexpected /`,
+		`syntax:1:8: unexpected EOF, expecting ;, {, } or )`,
 	}, {
 		"unterminated param list",
 		`<?php function a(`,

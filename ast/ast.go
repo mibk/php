@@ -8,7 +8,7 @@ type File struct {
 	Pragmas   []*Pragma
 	Namespace *Name
 	UseStmts  []*UseStmt
-	Decls     []Decl
+	Stmts     []Stmt
 }
 
 // TODO: Pragma.X Expr?
