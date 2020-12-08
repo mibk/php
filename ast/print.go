@@ -52,15 +52,9 @@ func (p *printer) print(args ...interface{}) {
 
 		switch arg := arg.(type) {
 		case *File:
-			p.print(token.OpenTag)
-			switch len(arg.Pragmas) {
-			default:
+			p.print(token.OpenTag, newline)
+			if len(arg.Pragmas) > 0 {
 				p.print(newline)
-				fallthrough
-			case 0:
-				p.print(newline)
-			case 1:
-				p.print(' ')
 			}
 			for _, d := range arg.Pragmas {
 				p.print(d)
