@@ -32,7 +32,7 @@ implements N,
            P{
 use       TT;
 static   $uu;}
-
+           final
 class      Outer{
 function   theres(){
 $inner     = new

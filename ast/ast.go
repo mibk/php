@@ -55,10 +55,13 @@ type Param struct {
 	Default  Expr // or nil
 }
 
+// TODO: Make abstract and final mutually exclusive?
+
 type ClassDecl struct {
 	Doc        *phpdoc.Block // or nil
 	Name       string
 	Abstract   bool
+	Final      bool
 	Extends    *Name // or nil
 	Implements []*Name
 	Traits     []*UseStmt

@@ -148,6 +148,8 @@ func (p *printer) print(args ...interface{}) {
 		case *ClassDecl:
 			if arg.Abstract {
 				p.print(token.Abstract, ' ')
+			} else if arg.Final {
+				p.print(token.Final, ' ')
 			}
 			p.print(p.indent, token.Class)
 			if arg.Name != "" {

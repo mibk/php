@@ -194,7 +194,7 @@ func (p *parser) parseTopLevelStmt() Stmt {
 		return p.parseVarDecl(doc, false)
 	case token.Function:
 		return p.parseFuncDecl(doc, false)
-	case token.Class, token.Abstract:
+	case token.Class, token.Abstract, token.Final:
 		return p.parseClassDecl(doc)
 	case token.Interface:
 		return p.parseInterfaceDecl(doc)
@@ -296,6 +296,9 @@ func (p *parser) parseClassDeclaration(doc *phpdoc.Block, anonymous bool) *Class
 	class := new(ClassDecl)
 	class.Doc = doc
 	class.Abstract = p.got(token.Abstract)
+	if !class.Abstract {
+		class.Final = p.got(token.Final)
+	}
 	p.expect(token.Class)
 	if !anonymous {
 		class.Name = p.expect(token.Ident)

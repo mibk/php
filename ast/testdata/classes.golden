@@ -38,7 +38,7 @@ class M implements N, O\P
 	static $uu;
 }
 
-class Outer
+final class Outer
 {
 	function theres() {
 		$inner     = new
