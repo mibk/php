@@ -313,6 +313,7 @@ while
 		"numbers",
 		`<?php
 0 07 007 34487908803190 0xff 0XFA 0b10
+3.14 0.09 -0.0014e-13-.14
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
@@ -331,7 +332,16 @@ while
 			{token.Whitespace, " ", pos("2:34")},
 			{token.Int, "0b10", pos("2:35")},
 			{token.Whitespace, "\n", pos("2:39")},
-			{token.EOF, "", pos("3:1")},
+			{token.Float, "3.14", pos("3:1")},
+			{token.Whitespace, " ", pos("3:5")},
+			{token.Float, "0.09", pos("3:6")},
+			{token.Whitespace, " ", pos("3:10")},
+			{token.Sub, "-", pos("3:11")},
+			{token.Float, "0.0014e-13", pos("3:12")},
+			{token.Sub, "-", pos("3:22")},
+			{token.Float, ".14", pos("3:23")},
+			{token.Whitespace, "\n", pos("3:26")},
+			{token.EOF, "", pos("4:1")},
 		},
 	}, {
 		"symbols",

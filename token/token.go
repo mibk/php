@@ -55,6 +55,7 @@ const (
 
 	Ident
 	Int
+	Float
 	String
 	Var
 	InlineHTML
@@ -328,15 +329,21 @@ func (s *Scanner) scanAny() (tok Token) {
 		}
 		return Token{Type: Gt}
 	case '.':
-		if s.peek() == r {
+		switch r2 := s.peek(); {
+		case r2 == r:
 			s.read()
 			if s.peek() != r {
 				return Token{Type: Illegal, Text: ".."}
 			}
 			s.read()
 			return Token{Type: Ellipsis}
+		case isDigit(r2):
+			b := new(strings.Builder)
+			b.WriteRune(r)
+			return s.scanFloat(b)
+		default:
+			return Token{Type: Period}
 		}
-		return Token{Type: Period}
 	case ',':
 		return Token{Type: Comma}
 	case ':':
@@ -360,7 +367,7 @@ func (s *Scanner) scanAny() (tok Token) {
 		return s.scanDoubleQuoted()
 	default:
 		if isDigit(r) {
-			return s.scanInteger(r)
+			return s.scanNumber(r)
 		}
 		s.unread()
 		if id := s.scanIdent(); id != "" {
@@ -603,7 +610,7 @@ func (s *Scanner) scanHereDoc() Token {
 	}
 }
 
-func (s *Scanner) scanInteger(r rune) Token {
+func (s *Scanner) scanNumber(r rune) Token {
 	// TODO: Add support for _
 	if r == '0' {
 		switch r := s.peek(); {
@@ -615,13 +622,19 @@ func (s *Scanner) scanInteger(r rune) Token {
 			return s.scanBinary(s.read())
 		}
 	}
-	var b strings.Builder
+	b := new(strings.Builder)
 	b.WriteRune(r)
+	s.scanDecimal(b)
+	if s.peek() == '.' {
+		return s.scanFloat(b)
+	}
+	return Token{Type: Int, Text: b.String()}
+}
+
+func (s *Scanner) scanDecimal(b *strings.Builder) {
 	for isDigit(s.peek()) {
 		b.WriteRune(s.read())
 	}
-
-	return Token{Type: Int, Text: b.String()}
 }
 
 func (s *Scanner) scanOctal() Token {
@@ -660,6 +673,19 @@ func (s *Scanner) scanBinary(delim rune) Token {
 			b.WriteRune(s.read())
 		}
 	}
+}
+
+func (s *Scanner) scanFloat(b *strings.Builder) Token {
+	b.WriteRune(s.read())
+	s.scanDecimal(b)
+	if r := s.peek(); r == 'e' || r == 'E' {
+		b.WriteRune(s.read())
+		if r := s.peek(); r == '+' || r == '-' {
+			b.WriteRune(s.read())
+		}
+		s.scanDecimal(b)
+	}
+	return Token{Type: Float, Text: b.String()}
 }
 
 func isDigit(r rune) bool { return '0' <= r && r <= '9' }
