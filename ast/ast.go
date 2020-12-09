@@ -105,10 +105,15 @@ type ClassMember struct {
 
 type Stmt interface{}
 
+type CommentStmt struct {
+	Text string
+}
+
 type UnknownStmt struct {
-	Doc  *phpdoc.Block // or nil
-	X    Expr
-	Body *BlockStmt
+	Doc     *phpdoc.Block // or nil
+	X       Expr
+	Body    *BlockStmt
+	Comment string // or ""
 }
 
 type BlockStmt struct {

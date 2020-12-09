@@ -218,6 +218,8 @@ func (p *printer) print(args ...interface{}) {
 			default:
 				p.err = fmt.Errorf("unknown visibility: %v", arg)
 			}
+		case *CommentStmt:
+			p.print(arg.Text)
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {
@@ -248,7 +250,9 @@ func (p *printer) print(args ...interface{}) {
 			} else {
 				p.print(token.Semicolon)
 			}
-			p.print()
+			if arg.Comment != "" {
+				p.print(' ', arg.Comment)
+			}
 		case *StaticSelectorExpr:
 			p.print(arg.X, token.DoubleColon, arg.Sel)
 		case *ArrayLit:

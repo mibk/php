@@ -27,6 +27,7 @@ abstract class B extends \Other\A implements \Iterable
 	private static $∂;
 }
 
+/** Some doc */
 trait TT
 {
 	static function uu(int $vv)

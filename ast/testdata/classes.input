@@ -17,7 +17,7 @@ This
 	    extends \ Other
 	            \ A  implements
 	            \ Iterable
-	   {  private static    $∂ ; }/* Some doc */
+	   {  private static    $∂ ; }/** Some doc */
 
 trait     TT{
 static

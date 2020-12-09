@@ -77,9 +77,7 @@ func (p *parser) next0() {
 func (p *parser) next() {
 	p.prev = p.tok
 	p.next0()
-	for p.tok.Type == token.Whitespace || p.tok.Type == token.Comment {
-		p.next0()
-	}
+	p.consume(token.Whitespace)
 }
 
 func (p *parser) expect(typ token.Type) string {
@@ -434,17 +432,25 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 	}
 }
 
-// Stmt = BlockStmt | UnknownStmt .
+// Stmt = CommentStmt |
+//        BlockStmt |
+//        ForStmt |
+//        UnknownStmt .
 func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	switch p.tok.Type {
+	case token.Comment:
+		if doc != nil {
+			p.errorf("unexpected %v after %v", token.Lbrace, token.DocComment)
+		}
+		return &CommentStmt{Text: p.expect(token.Comment)}
 	case token.Lbrace:
 		if doc != nil {
-			p.errorf("unexpected %v", token.DocComment)
+			p.errorf("unexpected %v after %v", token.Lbrace, token.DocComment)
 		}
 		return p.parseBlockStmt()
 	case token.For:
 		if doc != nil {
-			p.errorf("unexpected %v", token.DocComment)
+			p.errorf("unexpected %v after %v", token.For, token.DocComment)
 		}
 		return p.parseForStmt()
 	default:
@@ -519,7 +525,17 @@ func (p *parser) parseUnknownStmt(doc *phpdoc.Block) *UnknownStmt {
 	stmt.X = p.parseUnknownExpr()
 	switch p.tok.Type {
 	case token.Semicolon:
-		p.next()
+		p.next0()
+		if ws := p.tok; ws.Type == token.Whitespace {
+			p.next()
+			if strings.ContainsRune(ws.Text, '\n') {
+				break
+			}
+		}
+		if p.tok.Type == token.Comment {
+			stmt.Comment = p.tok.Text
+			p.next()
+		}
 	case token.Lbrace:
 		stmt.Body = p.parseBlockStmt()
 	}

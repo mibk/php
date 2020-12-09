@@ -6,6 +6,7 @@ function a(array $a = 0xface, int &$b = 'foo  b', ...$c = ['x'])
 
 function b(bool &...$x, &...$y, string ...$z, &$ž = null): void
 {
+	/*  */
 }
 
 function get(?\DateTime $d = Another\Foo::T_BAR)
