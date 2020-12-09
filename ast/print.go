@@ -234,6 +234,9 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(token.Rparen, ' ', arg.Body)
 		case *UnknownStmt:
+			if arg.Doc != nil {
+				p.print(arg.Doc, p.indent)
+			}
 			p.print(arg.X)
 			if arg.Body != nil {
 				p.print(arg.Body)

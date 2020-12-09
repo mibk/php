@@ -180,7 +180,6 @@ func (p *parser) parseUseStmt() *UseStmt {
 }
 
 // TopLevelStmt = ConstDecl |
-//                VarDecl |
 //                FuncDecl |
 //                ClassDecl |
 //                InterfaceDecl |
@@ -190,8 +189,6 @@ func (p *parser) parseTopLevelStmt() Stmt {
 	switch p.tok.Type {
 	case token.Const:
 		return p.parseConstDecl(doc)
-	case token.Var:
-		return p.parseVarDecl(doc, false)
 	case token.Function:
 		return p.parseFuncDecl(doc, false)
 	case token.Class, token.Abstract, token.Final:
@@ -201,11 +198,7 @@ func (p *parser) parseTopLevelStmt() Stmt {
 	case token.Trait:
 		return p.parseTraitDecl(doc)
 	default:
-		if doc != nil {
-			p.errorf("unexpected %v, expecting top-level statement", token.DocComment)
-			return nil
-		}
-		return p.parseStmt()
+		return p.parseStmt(doc)
 	}
 }
 
@@ -437,19 +430,25 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 		if p.got(token.Rbrace) || p.err != nil {
 			return block
 		}
-		block.List = append(block.List, p.parseStmt())
+		block.List = append(block.List, p.parseStmt(nil))
 	}
 }
 
 // Stmt = BlockStmt | UnknownStmt .
-func (p *parser) parseStmt() Stmt {
+func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	switch p.tok.Type {
 	case token.Lbrace:
+		if doc != nil {
+			p.errorf("unexpected %v", token.DocComment)
+		}
 		return p.parseBlockStmt()
 	case token.For:
+		if doc != nil {
+			p.errorf("unexpected %v", token.DocComment)
+		}
 		return p.parseForStmt()
 	default:
-		return p.parseUnknownStmt()
+		return p.parseUnknownStmt(doc)
 	}
 }
 
@@ -470,7 +469,7 @@ func (p *parser) parseForStmt() Stmt {
 		f.Post = p.parseExpr()
 		p.expect(token.Rparen)
 	}
-	f.Body = p.parseStmt()
+	f.Body = p.parseStmt(nil)
 	return f
 }
 
@@ -514,8 +513,9 @@ func (p *parser) parseName() *Name {
 }
 
 // UnknownStmt = Expr ( ";" | BlockStmt ) .
-func (p *parser) parseUnknownStmt() *UnknownStmt {
+func (p *parser) parseUnknownStmt(doc *phpdoc.Block) *UnknownStmt {
 	stmt := new(UnknownStmt)
+	stmt.Doc = doc
 	stmt.X = p.parseUnknownExpr()
 	switch p.tok.Type {
 	case token.Semicolon:
