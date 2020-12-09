@@ -10,7 +10,8 @@ class A
 
 	const PI = 3.14159265359;
 
-	private function noop(int $x, \DateTime $d): ?string {
+	private function noop(int $x, \DateTime $d): ?string
+	{
 	}
 
 	/**
@@ -28,7 +29,8 @@ abstract class B extends \Other\A implements \Iterable
 
 trait TT
 {
-	static function uu(int $vv) {
+	static function uu(int $vv)
+	{
 		echo $vv::class;
 	}
 }
@@ -42,11 +44,12 @@ class M implements N, O\P
 
 final class Outer
 {
-	function theres() {
+	function theres()
+	{
 		$inner     = new
-		class extends Outer
-		{
-			function noname() {
+		class extends Outer {
+			function noname()
+			{
 			}
 		};
 	}

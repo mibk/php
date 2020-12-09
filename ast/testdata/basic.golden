@@ -13,7 +13,8 @@ $bb    =
 $cc;
 class Bar
 {
-	function cleanup($foo, $bar) {
+	function cleanup($foo, $bar)
+	{
 		echo  'something';
 		if (/* don't fmt just yet*/){
 			$this ->{$foo};
@@ -23,14 +24,17 @@ class Bar
 		}
 	}
 
-	function xx() {
+	function xx()
+	{
 	}
 }
 
-function toplevel($n) {
+function toplevel($n)
+{
 	return 0;
 }
 
-function xx1(): int {
+function xx1(): int
+{
 	return  1;
 }

@@ -1,12 +1,15 @@
 <?php
 
-function a(array $a = 0xface, int &$b = 'foo  b', ...$c = ['x']) {
+function a(array $a = 0xface, int &$b = 'foo  b', ...$c = ['x'])
+{
 }
 
-function b(bool &...$x, &...$y, string ...$z, &$ž = null): void {
+function b(bool &...$x, &...$y, string ...$z, &$ž = null): void
+{
 }
 
-function get(?\DateTime $d = Another\Foo::T_BAR) {
+function get(?\DateTime $d = Another\Foo::T_BAR)
+{
 	$x = function () {
 	};
 	x(function (int $y): int {
@@ -18,5 +21,6 @@ function get(?\DateTime $d = Another\Foo::T_BAR) {
 	});
 }
 
-function set($v = [0, '1', true]) {
+function set($v = [0, '1', true])
+{
 }

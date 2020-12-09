@@ -14,7 +14,8 @@ class A
 	const X = -1;
 
 	/** @return void */
-	function Foo() {
+	function Foo()
+	{
 		noop;
 	}
 }

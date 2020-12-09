@@ -113,7 +113,7 @@ func (p *printer) print(args ...interface{}) {
 				p.print(token.Colon, ' ', arg.Result)
 			}
 			if arg.Body != nil {
-				p.print(' ', arg.Body)
+				p.print(newline, p.indent, arg.Body)
 			} else {
 				p.print(token.Semicolon)
 			}
@@ -147,8 +147,6 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(p.indent, token.Class)
 			if arg.Name != "" {
-				// TODO: Consider printing Lbrace on same line for
-				// anonymous classes
 				p.print(' ', arg.Name)
 			}
 			if arg.Extends != nil {
@@ -160,7 +158,14 @@ func (p *printer) print(args ...interface{}) {
 					p.print(token.Comma, ' ', n)
 				}
 			}
-			p.print(newline, p.indent, token.Lbrace, newline)
+			if arg.Name != "" {
+				p.print(newline, p.indent)
+			} else {
+				// Like anonymous functions, anonymous classes have
+				// the Lbrace on the same line.
+				p.print(' ')
+			}
+			p.print(token.Lbrace, newline)
 			for _, t := range arg.Traits {
 				p.print(p.indent, t, newline)
 			}
