@@ -246,7 +246,7 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(arg.X)
 			if arg.Body != nil {
-				p.print(arg.Body)
+				p.print(' ', arg.Body)
 			} else {
 				p.print(token.Semicolon)
 			}
