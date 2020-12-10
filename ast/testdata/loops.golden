@@ -9,4 +9,6 @@ function a()
 	for ($x;;) $x++;
 	for (; $y;) $y++;
 	for (;; next()) prev();
+	foreach ( $this->elems as $el)$el();
+	foreach ( self::$x as $y) $y?;
 }

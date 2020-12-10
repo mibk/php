@@ -627,8 +627,9 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			// call a method that has a keyword as a name (e.g.
 			// (expr)->class(args)).
 			x.Elems = append(x.Elems, p.tok)
-			p.next()
+			p.next0()
 			if tok.Type == token.Lbrace {
+				p.consume(token.Whitespace)
 				x.Elems = append(x.Elems, p.parseExpr(), p.expect(token.Rbrace))
 			}
 		case token.DoubleColon:
@@ -637,7 +638,7 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 			x.Elems = append(x.Elems, p.tok)
 			p.next()
 			x.Elems = append(x.Elems, p.tok)
-			p.next()
+			p.next0()
 		case token.Lparen:
 			x.Elems = append(x.Elems, p.tok)
 			p.next0()
@@ -648,7 +649,13 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 				continue
 			}
 			x.Elems = append(x.Elems, p.parseExpr())
-			x.Elems = append(x.Elems, p.expect(token.Rparen))
+			if p.tok.Type != token.Rparen {
+				// Avoid using p.expect so we don't eat a whitespace token.
+				p.errorf("unexpected %v, expecting %v", p.tok, token.Rparen)
+				return nil
+			}
+			x.Elems = append(x.Elems, p.tok.Text)
+			p.next0()
 		case token.Class:
 			x.Elems = append(x.Elems, p.parseAnonymClassDecl())
 		case token.Function:
