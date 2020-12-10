@@ -94,7 +94,11 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Semicolon)
 		case *ConstDecl:
 			p.print(token.Const, ' ', arg.Name, ' ', token.Assign, ' ')
-			p.print(arg.X, token.Semicolon, newline)
+			p.print(arg.X, token.Semicolon)
+			if arg.Comment != "" {
+				p.print(' ', arg.Comment)
+			}
+			p.print(newline)
 		case *VarDecl:
 			if arg.Static {
 				p.print(token.Static, ' ')
@@ -103,7 +107,11 @@ func (p *printer) print(args ...interface{}) {
 			if arg.X != nil {
 				p.print(' ', token.Assign, ' ', arg.X)
 			}
-			p.print(token.Semicolon, newline)
+			p.print(token.Semicolon)
+			if arg.Comment != "" {
+				p.print(' ', arg.Comment)
+			}
+			p.print(newline)
 		case *FuncDecl:
 			if arg.Static {
 				p.print(token.Static, ' ')
@@ -184,12 +192,18 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Trait, ' ', arg.Name)
 			p.print(newline, token.Lbrace, newline, arg.Members)
 			p.print(p.indent-1, token.Rbrace, newline)
-		case []*ClassMember:
+		case []ClassMember:
 			for i, m := range arg {
 				if i > 0 {
 					p.print(newline)
 				}
-				p.print(m.Doc, p.indent, m.Vis, m.Decl)
+				// TODO: Refactor handling indentation.
+				switch m := m.(type) {
+				case *ClassMemberDecl:
+					p.print(m.Doc, p.indent, m.Vis, m.Decl)
+				case *CommentStmt:
+					p.print(p.indent, m, newline)
+				}
 			}
 		case Vis:
 			switch arg {

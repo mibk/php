@@ -41,3 +41,13 @@ Outer      {function
 noname     (        )
 {           }       }
 ;           }       }
+
+class
+Comm{  // 1. comment
+
+/*2.
+comment*/
+$a ='property'
+;// with comment
+const A = 'b' ;     // or C?
+/*last comment*/}

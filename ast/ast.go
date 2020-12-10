@@ -26,16 +26,18 @@ type UseStmt struct {
 type Decl interface{ doc() *phpdoc.Block }
 
 type ConstDecl struct {
-	Doc  *phpdoc.Block // or nil
-	Name string
-	X    Expr
+	Doc     *phpdoc.Block // or nil
+	Name    string
+	X       Expr
+	Comment string // or ""
 }
 
 type VarDecl struct {
-	Doc    *phpdoc.Block // or nil
-	Name   string
-	Static bool // valid for class props
-	X      Expr
+	Doc     *phpdoc.Block // or nil
+	Name    string
+	Static  bool // valid for class props
+	X       Expr
+	Comment string // or ""
 }
 
 type FuncDecl struct {
@@ -65,20 +67,20 @@ type ClassDecl struct {
 	Extends    *Name // or nil
 	Implements []*Name
 	Traits     []*UseStmt
-	Members    []*ClassMember
+	Members    []ClassMember
 }
 
 type InterfaceDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
 	Extends *Name // or nil
-	Members []*ClassMember
+	Members []ClassMember
 }
 
 type TraitDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
-	Members []*ClassMember
+	Members []ClassMember
 }
 
 func (d *ConstDecl) doc() *phpdoc.Block     { return d.Doc }
@@ -87,6 +89,8 @@ func (d *FuncDecl) doc() *phpdoc.Block      { return d.Doc }
 func (d *ClassDecl) doc() *phpdoc.Block     { return d.Doc }
 func (d *InterfaceDecl) doc() *phpdoc.Block { return d.Doc }
 func (d *TraitDecl) doc() *phpdoc.Block     { return d.Doc }
+
+type ClassMember interface{}
 
 type Vis uint
 
@@ -97,7 +101,7 @@ const (
 	Private
 )
 
-type ClassMember struct {
+type ClassMemberDecl struct {
 	Doc  *phpdoc.Block // or nil
 	Vis  Vis
 	Decl Decl

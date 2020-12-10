@@ -81,11 +81,17 @@ func (p *parser) next() {
 }
 
 func (p *parser) expect(typ token.Type) string {
+	v := p.expect0(typ)
+	p.consume(token.Whitespace)
+	return v
+}
+
+func (p *parser) expect0(typ token.Type) string {
 	if p.tok.Type != typ {
 		p.errorf("expecting %v, found %v", typ, p.tok)
 	}
 	text := p.tok.Text
-	p.next()
+	p.next0()
 	return text
 }
 
@@ -202,14 +208,15 @@ func (p *parser) parseTopLevelStmt() Stmt {
 
 // ConstDecl = "const" ident "=" Expr ";" .
 func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
-	cons := new(ConstDecl)
-	cons.Doc = doc
+	c := new(ConstDecl)
+	c.Doc = doc
 	p.expect(token.Const)
-	cons.Name = p.expect(token.Ident)
+	c.Name = p.expect(token.Ident)
 	p.expect(token.Assign)
-	cons.X = p.parseExpr()
-	p.expect(token.Semicolon)
-	return cons
+	c.X = p.parseExpr()
+	p.expect0(token.Semicolon)
+	c.Comment = p.parseOptComment()
+	return c
 }
 
 // VarDecl = var [ "=" Expr ] ";" .
@@ -221,8 +228,23 @@ func (p *parser) parseVarDecl(doc *phpdoc.Block, static bool) *VarDecl {
 	if p.got(token.Assign) {
 		v.X = p.parseExpr()
 	}
-	p.expect(token.Semicolon)
+	p.expect0(token.Semicolon)
+	v.Comment = p.parseOptComment()
 	return v
+}
+
+func (p *parser) parseOptComment() string {
+	if ws := p.tok; ws.Type == token.Whitespace {
+		p.next()
+		if strings.ContainsRune(ws.Text, '\n') {
+			return ""
+		}
+	}
+	if p.tok.Type == token.Comment {
+		defer p.next()
+		return p.tok.Text
+	}
+	return ""
 }
 
 // FuncDecl = "function" ident ParamList [ ":" Type ] BlockStmt .
@@ -351,10 +373,17 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 	return trait
 }
 
-// ClassMember = [ PHPDoc ] [ Visibility ]
+// ClassMember = comment |
+//               [ PHPDoc ] [ Visibility ]
 //               ( ConstDecl | [ "static" ] VarDecl | [ "static" ] FuncDecl ) .
-func (p *parser) parseClassMember() *ClassMember {
-	m := new(ClassMember)
+func (p *parser) parseClassMember() ClassMember {
+	if p.tok.Type == token.Comment {
+		c := &CommentStmt{Text: p.tok.Text}
+		p.next()
+		return c
+	}
+
+	m := new(ClassMemberDecl)
 	m.Doc = p.parsePHPDoc()
 	m.Vis = p.parseVisibility()
 	static := p.got(token.Static)
@@ -518,7 +547,7 @@ func (p *parser) parseName() *Name {
 	return id
 }
 
-// UnknownStmt = Expr ( ";" | BlockStmt ) .
+// UnknownStmt = Expr ( ";" [ comment ] | BlockStmt ) .
 func (p *parser) parseUnknownStmt(doc *phpdoc.Block) *UnknownStmt {
 	stmt := new(UnknownStmt)
 	stmt.Doc = doc
