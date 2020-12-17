@@ -332,16 +332,15 @@ func (p *parser) parseClassDeclaration(doc *phpdoc.Block, anonymous bool) *Class
 		class.Traits = append(class.Traits, p.parseUseStmt())
 	}
 	for p.until(token.Rbrace) {
-		m := p.parseClassMember()
+		m := p.parseMember()
 		class.Members = append(class.Members, m)
 	}
 	p.expect(token.Rbrace)
 	return class
 }
 
-// InterfaceDecl = "interface" [ "extends" Name ] "{" { ClassMember } "}" .
+// InterfaceDecl = "interface" [ "extends" Name ] "{" { Member } "}" .
 func (p *parser) parseInterfaceDecl(doc *phpdoc.Block) *InterfaceDecl {
-	// TODO: Really ClassMember?
 	iface := new(InterfaceDecl)
 	iface.Doc = doc
 	p.expect(token.Interface)
@@ -351,7 +350,7 @@ func (p *parser) parseInterfaceDecl(doc *phpdoc.Block) *InterfaceDecl {
 	}
 	p.expect(token.Lbrace)
 	for p.until(token.Rbrace) {
-		m := p.parseClassMember()
+		m := p.parseMember()
 		iface.Members = append(iface.Members, m)
 	}
 	p.expect(token.Rbrace)
@@ -366,7 +365,7 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 	trait.Name = p.expect(token.Ident)
 	p.expect(token.Lbrace)
 	for p.until(token.Rbrace) {
-		m := p.parseClassMember()
+		m := p.parseMember()
 		trait.Members = append(trait.Members, m)
 	}
 	p.expect(token.Rbrace)
@@ -376,7 +375,7 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 // ClassMember = comment |
 //               [ PHPDoc ] [ Visibility ]
 //               ( ConstDecl | [ "static" ] VarDecl | [ "static" ] FuncDecl ) .
-func (p *parser) parseClassMember() ClassMember {
+func (p *parser) parseMember() Member {
 	if p.tok.Type == token.Comment {
 		c := &CommentStmt{Text: p.tok.Text}
 		p.next()

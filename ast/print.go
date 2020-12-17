@@ -192,7 +192,7 @@ func (p *printer) print(args ...interface{}) {
 			p.print(token.Trait, ' ', arg.Name)
 			p.print(newline, token.Lbrace, newline, arg.Members)
 			p.print(p.indent-1, token.Rbrace, newline)
-		case []ClassMember:
+		case []Member:
 			for i, m := range arg {
 				if i > 0 {
 					p.print(newline)

@@ -67,20 +67,20 @@ type ClassDecl struct {
 	Extends    *Name // or nil
 	Implements []*Name
 	Traits     []*UseStmt
-	Members    []ClassMember
+	Members    []Member
 }
 
 type InterfaceDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
 	Extends *Name // or nil
-	Members []ClassMember
+	Members []Member
 }
 
 type TraitDecl struct {
 	Doc     *phpdoc.Block // or nil
 	Name    string
-	Members []ClassMember
+	Members []Member
 }
 
 func (d *ConstDecl) doc() *phpdoc.Block     { return d.Doc }
@@ -90,7 +90,7 @@ func (d *ClassDecl) doc() *phpdoc.Block     { return d.Doc }
 func (d *InterfaceDecl) doc() *phpdoc.Block { return d.Doc }
 func (d *TraitDecl) doc() *phpdoc.Block     { return d.Doc }
 
-type ClassMember interface{}
+type Member interface{}
 
 type Vis uint
 
