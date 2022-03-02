@@ -107,7 +107,6 @@ const (
 	Default    // default
 	Do         // do
 	Else       // else
-	Elseif     // elseif
 	Extends    // extends
 	Final      // final
 	Finally    // finally
@@ -373,6 +372,14 @@ func (s *Scanner) scanAny() (tok Token) {
 		if id := s.scanIdent(); id != "" {
 			if tok, ok := keywords[id]; ok {
 				return tok
+			}
+			if id == "elseif" {
+				// Ugly special case.
+				t := keywords["if"]
+				t.Pos = s.pos()
+				t.Pos.Column -= 2
+				s.queue = append(s.queue, t)
+				return keywords["else"]
 			}
 			return Token{Type: Ident, Text: id}
 		}

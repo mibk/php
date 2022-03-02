@@ -233,7 +233,12 @@ func (p *printer) print(args ...interface{}) {
 			}
 			p.print(token.Rparen, ' ', arg.Body)
 			if arg.Else != nil {
-				p.print(' ', token.Else, ' ', arg.Else)
+				p.print(' ', token.Else)
+				// Is it elseif?
+				if _, ok := arg.Else.(*IfStmt); !ok {
+					p.print(' ')
+				}
+				p.print(arg.Else)
 			}
 		case *ForStmt:
 			p.print(token.For, ' ', token.Lparen)
