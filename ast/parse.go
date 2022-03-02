@@ -428,6 +428,7 @@ func (p *parser) parsePHPDoc() *phpdoc.Block {
 	doc, err := phpdoc.Parse(strings.NewReader(p.tok.Text))
 	if err != nil && p.err == nil {
 		if se, ok := err.(*phpdoc.SyntaxError); ok {
+			p.tok.Type = token.EOF
 			p.err = phpDocErr(p.tok.Pos, se)
 		} else {
 			p.errorf("parsing PHPDoc: %v", err)
