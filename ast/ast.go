@@ -124,6 +124,12 @@ type BlockStmt struct {
 	List []Stmt
 }
 
+type IfStmt struct {
+	Cond Expr // or nil
+	Body Stmt
+	Else Stmt // or nil
+}
+
 // TODO: Init and Post should be statements.
 
 type ForStmt struct {

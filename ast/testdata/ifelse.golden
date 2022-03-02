@@ -1,0 +1,17 @@
+<?php
+
+if ($isTrue) {
+	doThis();
+}
+if (0 < 1) {
+	ok();
+} else {
+	notOK();
+}
+if (1) {
+	$x = 1;
+} elseif (2) {
+	$x = 2;
+} elseif (3) {
+	$x=3;
+}

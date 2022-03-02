@@ -462,6 +462,7 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 
 // Stmt = CommentStmt |
 //        BlockStmt |
+//        IfStmt |
 //        ForStmt |
 //        UnknownStmt .
 func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
@@ -476,6 +477,11 @@ func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 			p.errorf("unexpected %v after %v", token.Lbrace, token.DocComment)
 		}
 		return p.parseBlockStmt()
+	case token.If:
+		if doc != nil {
+			p.errorf("unexpected %v after %v", token.If, token.DocComment)
+		}
+		return p.parseIfStmt()
 	case token.For:
 		if doc != nil {
 			p.errorf("unexpected %v after %v", token.For, token.DocComment)
@@ -486,7 +492,23 @@ func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	}
 }
 
-// ForStmt = "for" "(" [ Expr ] ";" [ Expr ]  ";" [ Expr ]  ) Stmt .
+// IfStmt = "if" "(" [ Expr ]  ")" Stmt [ "else" Stmt ] .
+func (p *parser) parseIfStmt() Stmt {
+	i := new(IfStmt)
+	p.expect(token.If)
+	p.expect(token.Lparen)
+	if !p.got(token.Rparen) {
+		i.Cond = p.parseExpr()
+		p.expect(token.Rparen)
+	}
+	i.Body = p.parseStmt(nil)
+	if p.got(token.Else) {
+		i.Else = p.parseStmt(nil)
+	}
+	return i
+}
+
+// ForStmt = "for" "(" [ Expr ] ";" [ Expr ]  ";" [ Expr ]  ")" Stmt .
 func (p *parser) parseForStmt() Stmt {
 	f := new(ForStmt)
 	p.expect(token.For)
