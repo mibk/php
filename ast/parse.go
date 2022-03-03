@@ -464,6 +464,7 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 // Stmt = CommentStmt |
 //        BlockStmt |
 //        IfStmt |
+//        SwitchStmt |
 //        ForStmt |
 //        TryStmt |
 //        UnknownStmt .
@@ -484,6 +485,11 @@ func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 			p.errorf("unexpected %v after %v", token.If, token.DocComment)
 		}
 		return p.parseIfStmt()
+	case token.Switch:
+		if doc != nil {
+			p.errorf("unexpected %v after %v", token.Switch, token.DocComment)
+		}
+		return p.parseSwitchStmt()
 	case token.For:
 		if doc != nil {
 			p.errorf("unexpected %v after %v", token.For, token.DocComment)
@@ -511,6 +517,47 @@ func (p *parser) parseIfStmt() Stmt {
 		i.Else = p.parseStmt(nil)
 	}
 	return i
+}
+
+// IfStmt = "switch" "(" Expr ")" CaseBlockStmt .
+func (p *parser) parseSwitchStmt() Stmt {
+	s := new(SwitchStmt)
+	p.expect(token.Switch)
+	p.expect(token.Lparen)
+	s.Tag = p.parseExpr()
+	p.expect(token.Rparen)
+	s.Body = p.parseCaseBlockStmt()
+	return s
+}
+
+// CaseBlockStmt = "{" { CaseLabel | Stmt } "}" .
+func (p *parser) parseCaseBlockStmt() *BlockStmt {
+	block := new(BlockStmt)
+	p.expect(token.Lbrace)
+	for {
+		if p.got(token.Rbrace) || p.err != nil {
+			return block
+		}
+		var stmt Stmt
+		if c := p.tryParseCaseClause(); c != nil {
+			stmt = c
+		} else {
+			stmt = p.parseStmt(nil)
+		}
+		block.List = append(block.List, stmt)
+	}
+}
+
+// CaseLabel = ( "case" Expr | "default" ) ":" .
+func (p *parser) tryParseCaseClause() *CaseLabel {
+	c := new(CaseLabel)
+	if p.got(token.Case) {
+		c.Matches = p.parseExpr()
+	} else if !p.got(token.Default) {
+		return nil
+	}
+	p.expect(token.Colon)
+	return c
 }
 
 // ForStmt = "for" "(" [ Expr ] ";" [ Expr ]  ";" [ Expr ]  ")" Stmt .
@@ -678,6 +725,7 @@ func (p *parser) parseBasicLit() Expr {
 // UnknownExpr =  ExprElem { ExprElem } .
 // ExprElem    =  /* any token */ | "{" Expr "}" | FuncLit .
 func (p *parser) parseUnknownExpr() *UnknownExpr {
+	var allowedColons int
 	x := new(UnknownExpr)
 	for {
 		switch p.tok.Type {
@@ -690,6 +738,20 @@ func (p *parser) parseUnknownExpr() *UnknownExpr {
 				p.errorf("unexpected empty expression")
 			}
 			return x
+
+		// Hacky way to disambiguate between case clauses and ternary expr.
+		case token.Qmark:
+			allowedColons++
+			x.Elems = append(x.Elems, p.tok)
+			p.next0()
+		case token.Colon:
+			if allowedColons == 0 {
+				return x
+			}
+			allowedColons--
+			x.Elems = append(x.Elems, p.tok)
+			p.next0()
+
 		case token.Arrow:
 			x.Elems = append(x.Elems, p.tok)
 			p.next()

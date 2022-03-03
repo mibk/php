@@ -13,7 +13,7 @@ Bar {function cleanup(  $foo,  $bar ,
 ;  if (/* don't fmt just yet*/ )
 {
 	$this ->{ $foo
-}	;switch;
+}	;$switch;
 lookup();$x->
          class( 'y' )
 ;	}

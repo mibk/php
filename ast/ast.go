@@ -130,6 +130,15 @@ type IfStmt struct {
 	Else Stmt // or nil
 }
 
+type SwitchStmt struct {
+	Tag  Expr
+	Body Stmt
+}
+
+type CaseLabel struct {
+	Matches Expr // nil means default case
+}
+
 // TODO: Init and Post should be statements.
 
 type ForStmt struct {

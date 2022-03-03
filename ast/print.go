@@ -223,7 +223,11 @@ func (p *printer) print(args ...interface{}) {
 		case *BlockStmt:
 			p.print(token.Lbrace, newline)
 			for _, stmt := range arg.List {
-				p.print(p.indent, stmt, newline)
+				indent := p.indent
+				if _, ok := stmt.(*CaseLabel); ok {
+					indent -= 1
+				}
+				p.print(indent, stmt, newline)
 			}
 			p.print(p.indent-1, token.Rbrace)
 		case *IfStmt:
@@ -238,6 +242,17 @@ func (p *printer) print(args ...interface{}) {
 				}
 				p.print(arg.Else)
 			}
+		case *SwitchStmt:
+			p.print(token.Switch, ' ', token.Lparen)
+			p.print(arg.Tag)
+			p.print(token.Rparen, ' ', arg.Body)
+		case *CaseLabel:
+			if arg.Matches == nil {
+				p.print(token.Default)
+			} else {
+				p.print(token.Case, ' ', arg.Matches)
+			}
+			p.print(token.Colon)
 		case *ForStmt:
 			p.print(token.For, ' ', token.Lparen)
 			if arg.Init != nil {
