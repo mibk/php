@@ -139,6 +139,18 @@ type ForStmt struct {
 	Body Stmt
 }
 
+// TODO: Finally
+
+type TryStmt struct {
+	Body    *BlockStmt
+	Catches []*Catch
+}
+
+type Catch struct {
+	Cond Expr
+	Body *BlockStmt
+}
+
 type Expr interface{}
 
 type StaticSelectorExpr struct {

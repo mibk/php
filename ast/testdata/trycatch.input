@@ -1,0 +1,6 @@
+<?php
+
+try{   callMe ( ); }
+catch (    \ SoftException $e)
+{     $pillow=1     ;}   catch(\HardException $e2)
+{     $burn=true               }

@@ -465,6 +465,7 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 //        BlockStmt |
 //        IfStmt |
 //        ForStmt |
+//        TryStmt |
 //        UnknownStmt .
 func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	switch p.tok.Type {
@@ -488,6 +489,11 @@ func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 			p.errorf("unexpected %v after %v", token.For, token.DocComment)
 		}
 		return p.parseForStmt()
+	case token.Try:
+		if doc != nil {
+			p.errorf("unexpected %v after %v", token.Try, token.DocComment)
+		}
+		return p.parseTryStmt()
 	default:
 		return p.parseUnknownStmt(doc)
 	}
@@ -528,6 +534,22 @@ func (p *parser) parseForStmt() Stmt {
 	}
 	f.Body = p.parseStmt(nil)
 	return f
+}
+
+// ForStmt = "try" BlockStmt { Catch } .
+func (p *parser) parseTryStmt() Stmt {
+	t := new(TryStmt)
+	p.expect(token.Try)
+	t.Body = p.parseBlockStmt()
+	for p.got(token.Catch) {
+		c := new(Catch)
+		p.expect(token.Lparen)
+		c.Cond = p.parseExpr()
+		p.expect(token.Rparen)
+		c.Body = p.parseBlockStmt()
+		t.Catches = append(t.Catches, c)
+	}
+	return t
 }
 
 // Type = [ "?" ] Name .

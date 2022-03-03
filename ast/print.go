@@ -254,6 +254,12 @@ func (p *printer) print(args ...interface{}) {
 				p.print(' ', arg.Post)
 			}
 			p.print(token.Rparen, ' ', arg.Body)
+		case *TryStmt:
+			p.print(token.Try, ' ', arg.Body)
+			for _, c := range arg.Catches {
+				p.print(' ', token.Catch, ' ', token.Lparen, c.Cond, token.Rparen)
+				p.print(' ', c.Body)
+			}
 		case *UnknownStmt:
 			if arg.Doc != nil {
 				p.print(arg.Doc, p.indent)
