@@ -173,7 +173,6 @@ there
 HERE
 
 (<<<XX
-x
 XX,
 )
 `,
@@ -186,12 +185,12 @@ XX,
 			{token.String, "<<<\"HERE\"\nthere\nHERE", pos("7:1")},
 			{token.Whitespace, "\n\n", pos("9:5")},
 			{token.Lparen, "(", pos("11:1")},
-			{token.String, "<<<XX\nx\nXX", pos("11:2")},
-			{token.Comma, ",", pos("13:3")},
-			{token.Whitespace, "\n", pos("13:4")},
-			{token.Rparen, ")", pos("14:1")},
-			{token.Whitespace, "\n", pos("14:2")},
-			{token.EOF, "", pos("15:1")},
+			{token.String, "<<<XX\nXX", pos("11:2")},
+			{token.Comma, ",", pos("12:3")},
+			{token.Whitespace, "\n", pos("12:4")},
+			{token.Rparen, ")", pos("13:1")},
+			{token.Whitespace, "\n", pos("13:2")},
+			{token.EOF, "", pos("14:1")},
 		},
 	}, {
 		"nowdoc",
@@ -428,7 +427,7 @@ nic
 	}, {
 		"invalid heredoc #3",
 		`<?php <<< HERE x`,
-		"line:1:16: no newline after identifier in heredoc",
+		"line:1:16: unexpected 'x' after heredoc identifier, expecting newline",
 	}, {
 		"invalid heredoc #4",
 		`<?php <<< HERE

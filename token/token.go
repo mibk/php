@@ -574,11 +574,21 @@ func (s *Scanner) scanHereDoc() Token {
 		}
 		b.WriteRune(quote)
 	}
-	ws = s.scanWhitespace()
-	if !strings.ContainsRune(ws.Text, '\n') {
-		return s.errorf("no newline after identifier in heredoc")
+
+SkipWS:
+	for {
+		switch r := s.read(); r {
+		case ' ', '\t', '\r':
+			b.WriteRune(r)
+		case '\n':
+			s.unread()
+			break SkipWS
+		default:
+			s.unread()
+			return s.errorf("unexpected %q after heredoc identifier, expecting newline", r)
+		}
 	}
-	b.WriteString(ws.Text)
+
 	for {
 		// TODO: Check escape characters for heredoc.
 		r := s.read()
