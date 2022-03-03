@@ -45,6 +45,10 @@ func TestSyntaxErrors(t *testing.T) {
 		"missing default",
 		`<?php function a($x=,`,
 		`syntax:1:21: unexpected ,, expecting lit`,
+	}, {
+		"missing if cond",
+		`<?php if () echo;`,
+		`syntax:1:11: unexpected empty expression`,
 	}}
 
 	for _, tt := range tests {

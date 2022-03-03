@@ -228,9 +228,7 @@ func (p *printer) print(args ...interface{}) {
 			p.print(p.indent-1, token.Rbrace)
 		case *IfStmt:
 			p.print(token.If, ' ', token.Lparen)
-			if arg.Cond != nil {
-				p.print(arg.Cond)
-			}
+			p.print(arg.Cond)
 			p.print(token.Rparen, ' ', arg.Body)
 			if arg.Else != nil {
 				p.print(' ', token.Else)

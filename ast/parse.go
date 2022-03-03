@@ -499,15 +499,13 @@ func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	}
 }
 
-// IfStmt = "if" "(" [ Expr ]  ")" Stmt [ "else" Stmt ] .
+// IfStmt = "if" "(" Expr ")" Stmt [ "else" Stmt ] .
 func (p *parser) parseIfStmt() Stmt {
 	i := new(IfStmt)
 	p.expect(token.If)
 	p.expect(token.Lparen)
-	if !p.got(token.Rparen) {
-		i.Cond = p.parseExpr()
-		p.expect(token.Rparen)
-	}
+	i.Cond = p.parseExpr()
+	p.expect(token.Rparen)
 	i.Body = p.parseStmt(nil)
 	if p.got(token.Else) {
 		i.Else = p.parseStmt(nil)
