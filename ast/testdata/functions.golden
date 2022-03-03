@@ -25,3 +25,7 @@ function get(?\DateTime $d = Another\Foo::T_BAR)
 function set($v = [0, '1', true])
 {
 }
+
+function eh(callable $phone)
+{
+}

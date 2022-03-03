@@ -96,7 +96,6 @@ const (
 	Abstract   // abstract
 	As         // as
 	Break      // break
-	Callable   // callable
 	Case       // case
 	Catch      // catch
 	Class      // class

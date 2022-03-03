@@ -227,7 +227,7 @@ while
 			{token.Whitespace, "\n", pos("2:12")},
 			{token.Break, "break", pos("3:1")},
 			{token.Whitespace, "\n", pos("3:6")},
-			{token.Callable, "callable", pos("4:1")},
+			{token.Ident, "callable", pos("4:1")},
 			{token.Whitespace, " ", pos("4:9")},
 			{token.Case, "case", pos("4:10")},
 			{token.Whitespace, " ", pos("4:14")},

@@ -32,3 +32,6 @@ function  set ($v =[
 ,         true
 ,         ],       )
 {                  }
+
+
+function eh (callable $phone) {}
