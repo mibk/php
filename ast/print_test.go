@@ -13,7 +13,7 @@ import (
 	"mibk.io/php/ast"
 )
 
-func TestFormatting(t *testing.T) {
+func TestPrinting(t *testing.T) {
 	files, err := filepath.Glob("testdata/*.input")
 	if err != nil {
 		t.Fatal(err)
