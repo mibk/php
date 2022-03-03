@@ -171,6 +171,11 @@ END;	` + `
 <<<"HERE"
 there
 HERE
+
+(<<<XX
+x
+XX,
+)
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
@@ -179,8 +184,14 @@ HERE
 			{token.Semicolon, ";", pos("6:4")},
 			{token.Whitespace, "\t\n", pos("6:5")},
 			{token.String, "<<<\"HERE\"\nthere\nHERE", pos("7:1")},
-			{token.Whitespace, "\n", pos("9:5")},
-			{token.EOF, "", pos("10:1")},
+			{token.Whitespace, "\n\n", pos("9:5")},
+			{token.Lparen, "(", pos("11:1")},
+			{token.String, "<<<XX\nx\nXX", pos("11:2")},
+			{token.Comma, ",", pos("13:3")},
+			{token.Whitespace, "\n", pos("13:4")},
+			{token.Rparen, ")", pos("14:1")},
+			{token.Whitespace, "\n", pos("14:2")},
+			{token.EOF, "", pos("15:1")},
 		},
 	}, {
 		"nowdoc",

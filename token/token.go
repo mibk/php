@@ -592,9 +592,13 @@ func (s *Scanner) scanHereDoc() Token {
 			}
 			// This is a heredoc end candidate. We need to check for a newline.
 			toks := make([]Token, 0, 2)
-			if s.peek() == ';' {
-				// There might be a semicolon after heredoc closing identifier.
-				toks = append(toks, Token{Type: Semicolon, Text: ";", Pos: s.pos()})
+			if sep := s.peek(); sep == ';' || sep == ',' {
+				// There might be a semicolon or comma after heredoc closing identifier.
+				t := Token{Type: Semicolon, Text: string(sep), Pos: s.pos()}
+				if sep == ',' {
+					t.Type = Comma
+				}
+				toks = append(toks, t)
 				s.read()
 			}
 			if pos, ws := s.pos(), s.scanWhitespace(); ws.Text != "" {
