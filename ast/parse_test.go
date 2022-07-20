@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"mibk.io/php/ast"
+	"mibk.dev/php/ast"
 )
 
 func TestSyntaxErrors(t *testing.T) {

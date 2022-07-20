@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/mibk/diff"
-	"mibk.io/php/ast"
+	"mibk.dev/php/ast"
 )
 
 func TestPrinting(t *testing.T) {

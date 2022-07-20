@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"mibk.io/php/ast"
+	"mibk.dev/php/ast"
 )
 
 var inPlace = flag.Bool("w", false, "write to file")

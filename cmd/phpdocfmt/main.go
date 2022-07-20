@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
+	"mibk.dev/php/token"
 	"mibk.dev/phpdoc"
-	"mibk.io/php/token"
 )
 
 var inPlace = flag.Bool("w", false, "write to file")

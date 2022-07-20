@@ -5,8 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"mibk.dev/php/token"
 	"mibk.dev/phpdoc"
-	"mibk.io/php/token"
 )
 
 // SyntaxError records an error and the position it occured on.
