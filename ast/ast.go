@@ -1,8 +1,6 @@
 package ast
 
-import (
-	"mibk.io/phpdoc"
-)
+import "mibk.dev/phpdoc"
 
 type File struct {
 	Pragmas   []*Pragma
