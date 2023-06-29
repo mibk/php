@@ -5,5 +5,5 @@ github.com/mibk/diff v0.1.0/go.mod h1:dckVDIoxQsm8eqcrUgdtAPdLG9TcoGOMYhi/v+hGim
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 h1:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
 golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
-mibk.dev/phpdoc v0.2.1-0.20220720130022-1457aa3d5a70 h1:+b2AJUTHSLA3SU6N8yt3tOzhtJfq7ubXkl7Cki8qVsU=
-mibk.dev/phpdoc v0.2.1-0.20220720130022-1457aa3d5a70/go.mod h1:LILOdIoK+BuBHrr3L3Ge11NFYjgZa19dgq9tegEo6y8=
+mibk.dev/phpdoc v0.2.1-0.20230629060202-6c724e69528f h1:MsI6voB9mgwTVhaPkzTXxLSYPrV3Lsm6619WD2VlhvE=
+mibk.dev/phpdoc v0.2.1-0.20230629060202-6c724e69528f/go.mod h1:LILOdIoK+BuBHrr3L3Ge11NFYjgZa19dgq9tegEo6y8=
