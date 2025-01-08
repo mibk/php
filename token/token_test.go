@@ -183,6 +183,31 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.EOF, "", pos("1:47")},
 		},
 	}, {
+		"op assign",
+		`<?php =+=-=*=/=%=**=&=|=^=<<=>>=.=??=`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Whitespace, " ", pos("1:6")},
+
+			{token.Assign, "=", pos("1:7")},
+			{token.AddAssign, "+=", pos("1:8")},
+			{token.SubAssign, "-=", pos("1:10")},
+			{token.MulAssign, "*=", pos("1:12")},
+			{token.QuoAssign, "/=", pos("1:14")},
+			{token.RemAssign, "%=", pos("1:16")},
+			{token.PowAssign, "**=", pos("1:18")},
+			{token.AndAssign, "&=", pos("1:21")},
+			{token.OrAssign, "|=", pos("1:23")},
+			{token.XorAssign, "^=", pos("1:25")},
+
+			{token.ShlAssign, "<<=", pos("1:27")},
+			{token.ShrAssign, ">>=", pos("1:30")},
+			{token.ConcatAssign, ".=", pos("1:33")},
+			{token.CoalesceAssign, "??=", pos("1:35")},
+
+			{token.EOF, "", pos("1:38")},
+		},
+	}, {
 		"heredoc",
 		`<?php <<<	 END ` + `
 buffalo

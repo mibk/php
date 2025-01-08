@@ -87,6 +87,20 @@ const (
 	Concat   // .
 	Coalesce // ??
 
+	AddAssign      // +=
+	SubAssign      // -=
+	MulAssign      // *=
+	QuoAssign      // /=
+	RemAssign      // %=
+	PowAssign      // **=
+	AndAssign      // &=
+	OrAssign       // |=
+	XorAssign      // ^=
+	ShlAssign      // <<=
+	ShrAssign      // >>=
+	ConcatAssign   // .=
+	CoalesceAssign // ??=
+
 	Land        // &&
 	Lor         // ||
 	Inc         // ++
@@ -282,6 +296,12 @@ func (s *Scanner) peek() rune {
 }
 
 func (s *Scanner) scanAny() (tok Token) {
+	defer func() {
+		if Add <= tok.Type && tok.Type <= Coalesce && s.peek() == '=' {
+			s.read()
+			tok.Type += AddAssign - Add
+		}
+	}()
 	switch r := s.read(); r {
 	case eof:
 		return Token{Type: EOF}
