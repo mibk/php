@@ -226,7 +226,7 @@ return
 self static switch
 throw trait try
 use
-while
+while enum global readonly yield from match
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
@@ -317,7 +317,19 @@ while
 			{token.Use, "use", pos("15:1")},
 			{token.Whitespace, "\n", pos("15:4")},
 			{token.While, "while", pos("16:1")},
-			{token.Whitespace, "\n", pos("16:6")},
+			{token.Whitespace, " ", pos("16:6")},
+			{token.Enum, "enum", pos("16:7")},
+			{token.Whitespace, " ", pos("16:11")},
+			{token.Global, "global", pos("16:12")},
+			{token.Whitespace, " ", pos("16:18")},
+			{token.Readonly, "readonly", pos("16:19")},
+			{token.Whitespace, " ", pos("16:27")},
+			{token.Yield, "yield", pos("16:28")},
+			{token.Whitespace, " ", pos("16:33")},
+			{token.From, "from", pos("16:34")},
+			{token.Whitespace, " ", pos("16:38")},
+			{token.Match, "match", pos("16:39")},
+			{token.Whitespace, "\n", pos("16:44")},
 			{token.EOF, "", pos("17:1")},
 		},
 	}, {

@@ -106,24 +106,29 @@ const (
 	Default    // default
 	Do         // do
 	Else       // else
+	Enum       // enum
 	Extends    // extends
 	Final      // final
 	Finally    // finally
 	Fn         // fn
 	For        // for
 	Foreach    // foreach
+	From       // from
 	Function   // function
+	Global     // global
 	Goto       // goto
 	If         // if
 	Implements // implements
 	Instanceof // instanceof
 	Insteadof  // insteadof
 	Interface  // interface
+	Match      // match
 	Namespace  // namespace
 	New        // new
 	Private    // private
 	Protected  // protected
 	Public     // public
+	Readonly   // readonly
 	Return     // return
 	Static     // static
 	Switch     // switch
@@ -132,6 +137,7 @@ const (
 	Try        // try
 	Use        // use
 	While      // while
+	Yield      // yield
 	keywordEnd
 )
 
