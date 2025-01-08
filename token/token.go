@@ -595,6 +595,11 @@ SkipWS:
 		b.WriteRune(r)
 		switch r {
 		case '\n':
+			// As of PHP 7.3, skip WS.
+			// TODO: Check the indentation is the same for all Heredoc lines.
+			ws := s.scanWhitespace()
+			b.WriteString(ws.Text)
+
 			id := s.scanIdent()
 			b.WriteString(id)
 			if id == delim {
