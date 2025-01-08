@@ -61,33 +61,39 @@ const (
 	InlineHTML
 
 	symbolStart
-	OpenTag     // <?php
-	CloseTag    // ?>
-	Dollar      // $
-	Backslash   // \
-	Qmark       // ?
-	Lparen      // (
-	Rparen      // )
-	Lbrack      // [
-	Rbrack      // ]
-	Lbrace      // {
-	Rbrace      // }
-	Add         // +
-	Sub         // -
+	OpenTag   // <?php
+	CloseTag  // ?>
+	Dollar    // $
+	Backslash // \
+	Qmark     // ?
+	Lparen    // (
+	Rparen    // )
+	Lbrack    // [
+	Rbrack    // ]
+	Lbrace    // {
+	Rbrace    // }
+
+	Add    // +
+	Sub    // -
+	Mul    // *
+	Quo    // /
+	Rem    // %
+	Pow    // **
+	And    // &
+	Or     // |
+	Xor    // ^
+	Shl    // <<
+	Shr    // >>
+	Concat // .
+
 	Assign      // =
 	Lt          // <
 	Gt          // >
-	Concat      // .
 	Comma       // ,
 	Colon       // :
 	DoubleColon // ::
 	Semicolon   // ;
 	Ellipsis    // ...
-	Or          // |
-	And         // &
-	Quo         // /
-	Shl         // <<
-	Shr         // >>
 	Arrow       // ->
 	DoubleArrow // =>
 	symbolEnd
@@ -316,6 +322,14 @@ func (s *Scanner) scanAny() (tok Token) {
 			return Token{Type: Arrow}
 		}
 		return Token{Type: Sub}
+	case '*':
+		if s.peek() == '*' {
+			s.read()
+			return Token{Type: Pow}
+		}
+		return Token{Type: Mul}
+	case '%':
+		return Token{Type: Rem}
 	case '<':
 		if s.peek() == r {
 			s.read()
@@ -362,6 +376,8 @@ func (s *Scanner) scanAny() (tok Token) {
 		return Token{Type: Or}
 	case '&':
 		return Token{Type: And}
+	case '^':
+		return Token{Type: Xor}
 	case ' ', '\t', '\r', '\n':
 		s.unread()
 		return s.scanWhitespace()

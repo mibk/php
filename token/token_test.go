@@ -150,7 +150,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 		},
 	}, {
 		"binary operators",
-		`<?php <><<>>`,
+		`<?php <><<>>***%^`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -158,7 +158,11 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.Gt, ">", pos("1:8")},
 			{token.Shl, "<<", pos("1:9")},
 			{token.Shr, ">>", pos("1:11")},
-			{token.EOF, "", pos("1:13")},
+			{token.Pow, "**", pos("1:13")},
+			{token.Mul, "*", pos("1:15")},
+			{token.Rem, "%", pos("1:16")},
+			{token.Xor, "^", pos("1:17")},
+			{token.EOF, "", pos("1:18")},
 		},
 	}, {
 		"heredoc",
