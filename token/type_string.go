@@ -36,7 +36,7 @@ func _() {
 	_ = x[Assign-25]
 	_ = x[Lt-26]
 	_ = x[Gt-27]
-	_ = x[Period-28]
+	_ = x[Concat-28]
 	_ = x[Comma-29]
 	_ = x[Colon-30]
 	_ = x[DoubleColon-31]

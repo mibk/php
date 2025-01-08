@@ -77,7 +77,7 @@ const (
 	Assign      // =
 	Lt          // <
 	Gt          // >
-	Period      // .
+	Concat      // .
 	Comma       // ,
 	Colon       // :
 	DoubleColon // ::
@@ -346,7 +346,7 @@ func (s *Scanner) scanAny() (tok Token) {
 			b.WriteRune(r)
 			return s.scanFloat(b)
 		default:
-			return Token{Type: Period}
+			return Token{Type: Concat}
 		}
 	case ',':
 		return Token{Type: Comma}

@@ -93,7 +93,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.Whitespace, " ", pos("1:6")},
 			{token.And, "&", pos("1:7")},
 			{token.Ellipsis, "...", pos("1:8")},
-			{token.Period, ".", pos("1:11")},
+			{token.Concat, ".", pos("1:11")},
 			{token.Or, "|", pos("1:12")},
 			{token.Illegal, "..", pos("1:13")},
 			{token.EOF, "", pos("1:15")},
