@@ -87,7 +87,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 		},
 	}, {
 		"misc",
-		`<?php &....|..`,
+		`<?php &....|..?-.?->`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -96,7 +96,11 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.Concat, ".", pos("1:11")},
 			{token.Or, "|", pos("1:12")},
 			{token.Illegal, "..", pos("1:13")},
-			{token.EOF, "", pos("1:15")},
+			{token.Qmark, "?", pos("1:15")},
+			{token.Sub, "-", pos("1:16")},
+			{token.Concat, ".", pos("1:17")},
+			{token.QmarkArrow, "?->", pos("1:18")},
+			{token.EOF, "", pos("1:21")},
 		},
 	}, {
 		"single quoted strings",

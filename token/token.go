@@ -107,6 +107,7 @@ const (
 	Semicolon   // ;
 	Ellipsis    // ...
 	Arrow       // ->
+	QmarkArrow  // ?->
 	DoubleArrow // =>
 	Spaceship   // <=>
 	symbolEnd
@@ -311,6 +312,17 @@ func (s *Scanner) scanAny() (tok Token) {
 		case '?':
 			s.read()
 			return Token{Type: Coalesce}
+		case '-':
+			s.read()
+			if s.peek() == '>' {
+				s.read()
+				return Token{Type: QmarkArrow}
+			}
+			sub := Token{Type: Sub, Text: Sub.String()}
+			sub.Pos = s.pos()
+			sub.Pos.Column -= 1
+			s.queue = append(s.queue, sub)
+			return Token{Type: Qmark}
 		default:
 			return Token{Type: Qmark}
 		}
