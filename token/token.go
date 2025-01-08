@@ -73,22 +73,34 @@ const (
 	Lbrace    // {
 	Rbrace    // }
 
-	Add    // +
-	Sub    // -
-	Mul    // *
-	Quo    // /
-	Rem    // %
-	Pow    // **
-	And    // &
-	Or     // |
-	Xor    // ^
-	Shl    // <<
-	Shr    // >>
-	Concat // .
+	Add      // +
+	Sub      // -
+	Mul      // *
+	Quo      // /
+	Rem      // %
+	Pow      // **
+	And      // &
+	Or       // |
+	Xor      // ^
+	Shl      // <<
+	Shr      // >>
+	Concat   // .
+	Coalesce // ??
 
+	Land        // &&
+	Lor         // ||
+	Inc         // ++
+	Dec         // --
 	Assign      // =
+	Not         // !
 	Lt          // <
 	Gt          // >
+	Leq         // <=
+	Geq         // >=
+	Eq          // ==
+	Neq         // !=
+	Identical   // ===
+	Nidentical  // !==
 	Comma       // ,
 	Colon       // :
 	DoubleColon // ::
@@ -96,6 +108,7 @@ const (
 	Ellipsis    // ...
 	Arrow       // ->
 	DoubleArrow // =>
+	Spaceship   // <=>
 	symbolEnd
 
 	keywordStart
@@ -291,11 +304,16 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '\\':
 		return Token{Type: Backslash}
 	case '?':
-		if s.peek() == '>' {
+		switch r2 := s.peek(); r2 {
+		case '>':
 			s.read()
 			return Token{Type: CloseTag}
+		case '?':
+			s.read()
+			return Token{Type: Coalesce}
+		default:
+			return Token{Type: Qmark}
 		}
-		return Token{Type: Qmark}
 	case '(':
 		return Token{Type: Lparen}
 	case ')':
@@ -309,19 +327,49 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '}':
 		return Token{Type: Rbrace}
 	case '=':
-		if s.peek() == '>' {
+		switch r2 := s.peek(); r2 {
+		case '>':
 			s.read()
 			return Token{Type: DoubleArrow}
+		case '=':
+			s.read()
+			if s.peek() == '=' {
+				s.read()
+				return Token{Type: Identical}
+			}
+			return Token{Type: Eq}
+		default:
+			return Token{Type: Assign}
 		}
-		return Token{Type: Assign}
+	case '!':
+		switch r2 := s.peek(); r2 {
+		case '=':
+			s.read()
+			if s.peek() == '=' {
+				s.read()
+				return Token{Type: Nidentical}
+			}
+			return Token{Type: Neq}
+		default:
+			return Token{Type: Not}
+		}
 	case '+':
+		if s.peek() == '+' {
+			s.read()
+			return Token{Type: Inc}
+		}
 		return Token{Type: Add}
 	case '-':
-		if s.peek() == '>' {
+		switch r2 := s.peek(); r2 {
+		case '-':
+			s.read()
+			return Token{Type: Dec}
+		case '>':
 			s.read()
 			return Token{Type: Arrow}
+		default:
+			return Token{Type: Sub}
 		}
-		return Token{Type: Sub}
 	case '*':
 		if s.peek() == '*' {
 			s.read()
@@ -331,19 +379,31 @@ func (s *Scanner) scanAny() (tok Token) {
 	case '%':
 		return Token{Type: Rem}
 	case '<':
-		if s.peek() == r {
+		switch r2 := s.peek(); r2 {
+		case r:
 			s.read()
 			if s.peek() == r {
 				s.read()
 				return s.scanHereDoc()
 			}
 			return Token{Type: Shl}
+		case '=':
+			s.read()
+			if s.peek() == '>' {
+				s.read()
+				return Token{Type: Spaceship}
+			}
+			return Token{Type: Leq}
 		}
 		return Token{Type: Lt}
 	case '>':
-		if s.peek() == r {
+		switch r2 := s.peek(); r2 {
+		case r:
 			s.read()
 			return Token{Type: Shr}
+		case '=':
+			s.read()
+			return Token{Type: Geq}
 		}
 		return Token{Type: Gt}
 	case '.':
@@ -373,8 +433,16 @@ func (s *Scanner) scanAny() (tok Token) {
 	case ';':
 		return Token{Type: Semicolon}
 	case '|':
+		if s.peek() == '|' {
+			s.read()
+			return Token{Type: Lor}
+		}
 		return Token{Type: Or}
 	case '&':
+		if s.peek() == '&' {
+			s.read()
+			return Token{Type: Land}
+		}
 		return Token{Type: And}
 	case '^':
 		return Token{Type: Xor}
