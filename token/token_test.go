@@ -165,8 +165,8 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 		`<?php <<<	 END ` + `
 buffalo
   END
-END:
-END;nic
+xEND:
+END_;nic
 END;	` + `
 <<<"HERE"
 there
@@ -179,7 +179,7 @@ XX,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
-			{token.String, "<<<\t END \nbuffalo\n  END\nEND:\nEND;nic\nEND", pos("1:7")},
+			{token.String, "<<<\t END \nbuffalo\n  END\nxEND:\nEND_;nic\nEND", pos("1:7")},
 			{token.Semicolon, ";", pos("6:4")},
 			{token.Whitespace, "\t\n", pos("6:5")},
 			{token.String, "<<<\"HERE\"\nthere\nHERE", pos("7:1")},
@@ -197,14 +197,14 @@ XX,
 		`<?php	<<<	 'NOWdoc' ` + `
 weather
   NOWdoc
-NOWdoc:
-NOWdoc;nada
+xNOWdoc:
+NOWdoc_;nada
 NOWdoc;	` + `
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, "\t", pos("1:6")},
-			{token.String, "<<<\t 'NOWdoc' \nweather\n  NOWdoc\nNOWdoc:\nNOWdoc;nada\nNOWdoc", pos("1:7")},
+			{token.String, "<<<\t 'NOWdoc' \nweather\n  NOWdoc\nxNOWdoc:\nNOWdoc_;nada\nNOWdoc", pos("1:7")},
 			{token.Semicolon, ";", pos("6:7")},
 			{token.Whitespace, "\t\n", pos("6:8")},
 			{token.EOF, "", pos("7:1")},
@@ -431,7 +431,7 @@ nic
 	}, {
 		"invalid heredoc #4",
 		`<?php <<< HERE
-HERE ;
+ HERE ;
 `,
 		"line:3:1: heredoc not terminated",
 	}, {

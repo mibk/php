@@ -597,32 +597,8 @@ SkipWS:
 		case '\n':
 			id := s.scanIdent()
 			b.WriteString(id)
-			if id != delim {
-				continue
-			}
-			// This is a heredoc end candidate. We need to check for a newline.
-			toks := make([]Token, 0, 2)
-			if sep := s.peek(); sep == ';' || sep == ',' {
-				// There might be a semicolon or comma after heredoc closing identifier.
-				t := Token{Type: Semicolon, Text: string(sep), Pos: s.pos()}
-				if sep == ',' {
-					t.Type = Comma
-				}
-				toks = append(toks, t)
-				s.read()
-			}
-			if pos, ws := s.pos(), s.scanWhitespace(); ws.Text != "" {
-				ws.Pos = pos
-				toks = append(toks, ws)
-				if strings.ContainsRune(ws.Text, '\n') {
-					s.queue = append(s.queue, toks...)
-					return Token{Type: String, Text: "<<<" + b.String()}
-				}
-			} else {
-				// It wasn't a closing identifier after all.
-				for _, t := range toks {
-					b.WriteString(t.Text)
-				}
+			if id == delim {
+				return Token{Type: String, Text: "<<<" + b.String()}
 			}
 		case eof:
 			return s.errorf("heredoc not terminated")
