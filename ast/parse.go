@@ -132,10 +132,11 @@ func (p *parser) errorf(format string, args ...interface{}) {
 // https://golang.org/ref/spec#Notation.
 
 // File = "<?php"
-//        { Pragma }
-//        [ "namespace" Name ";" ]
-//        { UseStmt }
-//        { TopLevelStmt } .
+//
+//	{ Pragma }
+//	[ "namespace" Name ";" ]
+//	{ UseStmt }
+//	{ TopLevelStmt } .
 func (p *parser) parseFile() *File {
 	file := new(File)
 	p.expect(token.OpenTag)
@@ -184,10 +185,11 @@ func (p *parser) parseUseStmt() *UseStmt {
 }
 
 // TopLevelStmt = ConstDecl |
-//                FuncDecl |
-//                ClassDecl |
-//                InterfaceDecl |
-//                Stmt .
+//
+//	FuncDecl |
+//	ClassDecl |
+//	InterfaceDecl |
+//	Stmt .
 func (p *parser) parseTopLevelStmt() Stmt {
 	doc := p.parsePHPDoc()
 	switch p.tok.Type {
@@ -292,15 +294,17 @@ func (p *parser) parseParamList() []*Param {
 }
 
 // ClassDecl = [ "abstract" ] "class" ident [ "extends" Name ]
-//             [ "implements" Name { "," Name } ]
-//             "{" { UseStmt } { ClassMember } "}" .
+//
+//	[ "implements" Name { "," Name } ]
+//	"{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseClassDecl(doc *phpdoc.Block) *ClassDecl {
 	return p.parseClassDeclaration(doc, false)
 }
 
 // AnonymClassDecl = "class" [ "extends" Name ]
-//                   [ "implements" Name { "," Name } ]
-//                   "{" { UseStmt } { ClassMember } "}" .
+//
+//	[ "implements" Name { "," Name } ]
+//	"{" { UseStmt } { ClassMember } "}" .
 func (p *parser) parseAnonymClassDecl() *ClassDecl {
 	return p.parseClassDeclaration(nil, true)
 }
@@ -373,8 +377,9 @@ func (p *parser) parseTraitDecl(doc *phpdoc.Block) *TraitDecl {
 }
 
 // ClassMember = comment |
-//               [ PHPDoc ] [ Visibility ]
-//               ( ConstDecl | [ "static" ] VarDecl | [ "static" ] FuncDecl ) .
+//
+//	[ PHPDoc ] [ Visibility ]
+//	( ConstDecl | [ "static" ] VarDecl | [ "static" ] FuncDecl ) .
 func (p *parser) parseMember() Member {
 	if p.tok.Type == token.Comment {
 		c := &CommentStmt{Text: p.tok.Text}
@@ -462,12 +467,13 @@ func (p *parser) parseBlockStmt() *BlockStmt {
 }
 
 // Stmt = CommentStmt |
-//        BlockStmt |
-//        IfStmt |
-//        SwitchStmt |
-//        ForStmt |
-//        TryStmt |
-//        UnknownStmt .
+//
+//	BlockStmt |
+//	IfStmt |
+//	SwitchStmt |
+//	ForStmt |
+//	TryStmt |
+//	UnknownStmt .
 func (p *parser) parseStmt(doc *phpdoc.Block) Stmt {
 	switch p.tok.Type {
 	case token.Comment:

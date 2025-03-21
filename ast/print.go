@@ -396,7 +396,6 @@ func (p *printer) print(args ...interface{}) {
 // and vtab characters into newlines and htabs (in case no tabwriter
 // is used). Text bracketed by tabwriter.Escape characters is passed
 // through unchanged.
-//
 type trimmer struct {
 	output io.Writer
 	state  int
