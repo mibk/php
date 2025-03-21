@@ -69,3 +69,13 @@ comment*/
 
 	/*last comment*/
 }
+
+class Yoo
+{
+	private const trait = 'trait';
+
+	private function function(int $a): string
+	{
+		return 'b';
+	}
+}

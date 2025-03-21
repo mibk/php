@@ -46,6 +46,8 @@ func (t Token) String() string {
 
 type Type uint
 
+func (t Type) IsKeyword() bool { return keywordStart < t && t < keywordEnd }
+
 const (
 	Illegal Type = iota
 	EOF

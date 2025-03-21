@@ -51,3 +51,9 @@ $a ='property'
 ;// with comment
 const A = 'b' ;     // or C?
 /*last comment*/}
+
+
+class Yoo{
+private const trait='trait' ;
+private  function  function  ( int $a )  : string {
+	return 'b' ; }     }

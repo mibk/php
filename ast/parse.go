@@ -213,7 +213,12 @@ func (p *parser) parseConstDecl(doc *phpdoc.Block) *ConstDecl {
 	c := new(ConstDecl)
 	c.Doc = doc
 	p.expect(token.Const)
-	c.Name = p.expect(token.Ident)
+	if p.tok.Type.IsKeyword() {
+		c.Name = p.tok.Text
+		p.next()
+	} else {
+		c.Name = p.expect(token.Ident)
+	}
 	p.expect(token.Assign)
 	c.X = p.parseExpr()
 	p.expect0(token.Semicolon)
@@ -255,7 +260,12 @@ func (p *parser) parseFuncDecl(doc *phpdoc.Block, static bool) *FuncDecl {
 	fn.Doc = doc
 	fn.Static = static
 	p.expect(token.Function)
-	fn.Name = p.expect(token.Ident)
+	if p.tok.Type.IsKeyword() {
+		fn.Name = p.tok.Text
+		p.next()
+	} else {
+		fn.Name = p.expect(token.Ident)
+	}
 	fn.Params = p.parseParamList()
 	if p.got(token.Colon) {
 		fn.Result = p.parseType()
