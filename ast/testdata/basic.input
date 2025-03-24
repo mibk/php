@@ -3,7 +3,7 @@ Foo;use\
 DateTime  ;use\This
 \Awesome\  Use\Statement;const
 AA = 'tuzkovy'. 'baterky'
-;/**@var    string*/$bb    =
+;/** @var    string*/$bb    =
   'auto'
 ;$cc
 

@@ -587,8 +587,11 @@ func (s *Scanner) scanBlockComment() Token {
 		case r == '*' && s.peek() == '/':
 			s.read()
 			tok := Token{Type: Comment, Text: "/*" + b.String() + "*/"}
-			if strings.HasPrefix(tok.Text, "/**") {
-				tok.Type = DocComment
+			if rest, ok := strings.CutPrefix(tok.Text, "/**"); ok {
+				switch rest[0] {
+				case ' ', '\t', '\r', '\n':
+					tok.Type = DocComment
+				}
 			}
 			return tok
 		case r == eof:

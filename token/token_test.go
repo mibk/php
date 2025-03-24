@@ -436,6 +436,19 @@ while enum global readonly yield from match
 			{token.Comma, ",", pos("1:24")},
 			{token.EOF, "", pos("1:25")},
 		},
+	}, {
+		"doc comment vs comment",
+		`<?php /** doc */ /****/ /**/`,
+		[]token.Token{
+			{token.OpenTag, "<?php", pos("1:1")},
+			{token.Whitespace, " ", pos("1:6")},
+			{token.DocComment, "/** doc */", pos("1:7")},
+			{token.Whitespace, " ", pos("1:17")},
+			{token.Comment, "/****/", pos("1:18")},
+			{token.Whitespace, " ", pos("1:24")},
+			{token.Comment, "/**/", pos("1:25")},
+			{token.EOF, "", pos("1:29")},
+		},
 	}}
 
 	for _, tt := range tests {
