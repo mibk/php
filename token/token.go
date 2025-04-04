@@ -184,12 +184,12 @@ func init() {
 	keywords = make(map[string]Token)
 	for typ := keywordStart + 1; typ < keywordEnd; typ++ {
 		s := typ.String()
-		keywords[s] = Token{Type: typ, Text: s}
+		keywords[s] = Token{Type: typ}
 	}
 
 	// Special keywords: aliases for logical operators.
-	keywords["and"] = Token{Type: Land, Text: "and"}
-	keywords["or"] = Token{Type: Lor, Text: "or"}
+	keywords["and"] = Token{Type: Land}
+	keywords["or"] = Token{Type: Lor}
 }
 
 const eof = -1
@@ -498,16 +498,18 @@ func (s *Scanner) scanAny() (tok Token) {
 		}
 		s.unread()
 		if id := s.scanIdent(); id != "" {
-			if tok, ok := keywords[id]; ok {
+			k := strings.ToLower(id)
+			if tok, ok := keywords[k]; ok {
+				tok.Text = id
 				return tok
 			}
-			if id == "elseif" {
+			if k == "elseif" {
 				// Ugly special case.
-				t := keywords["if"]
+				t := Token{Type: If, Text: id[4:]}
 				t.Pos = s.pos()
 				t.Pos.Column -= 2
 				s.queue = append(s.queue, t)
-				return keywords["else"]
+				return Token{Type: Else, Text: id[:4]}
 			}
 			return Token{Type: Ident, Text: id}
 		}

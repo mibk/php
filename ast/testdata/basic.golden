@@ -3,7 +3,7 @@
 namespace Dubax\Foo;
 
 use DateTime;
-use This\Awesome\Use\Statement;
+use This\Awesome\User\Statement;
 
 const AA = 'tuzkovy'. 'baterky';
 

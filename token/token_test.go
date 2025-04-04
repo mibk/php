@@ -266,18 +266,18 @@ NOWdoc;	` + `
 		"keywords",
 		`<?php
 abstract as
-break
+Break
 callable case catch class clone const continue
 declare default do
-else elseif extends
+else Elseif extends
 final finally fn for foreach function
 goto
-if implements instanceof insteadof interface
+IF implements instanceof insteadof interface
 namespace new
 parent private protected public
 return
 self static switch
-throw trait try
+throw trait Try
 use
 while enum global readonly yield from match
 `,
@@ -288,7 +288,7 @@ while enum global readonly yield from match
 			{token.Whitespace, " ", pos("2:9")},
 			{token.As, "as", pos("2:10")},
 			{token.Whitespace, "\n", pos("2:12")},
-			{token.Break, "break", pos("3:1")},
+			{token.Break, "Break", pos("3:1")},
 			{token.Whitespace, "\n", pos("3:6")},
 			{token.Ident, "callable", pos("4:1")},
 			{token.Whitespace, " ", pos("4:9")},
@@ -312,7 +312,7 @@ while enum global readonly yield from match
 			{token.Whitespace, "\n", pos("5:19")},
 			{token.Else, "else", pos("6:1")},
 			{token.Whitespace, " ", pos("6:5")},
-			{token.Else, "else", pos("6:6")},
+			{token.Else, "Else", pos("6:6")},
 			{token.If, "if", pos("6:10")},
 			{token.Whitespace, " ", pos("6:12")},
 			{token.Extends, "extends", pos("6:13")},
@@ -331,7 +331,7 @@ while enum global readonly yield from match
 			{token.Whitespace, "\n", pos("7:38")},
 			{token.Goto, "goto", pos("8:1")},
 			{token.Whitespace, "\n", pos("8:5")},
-			{token.If, "if", pos("9:1")},
+			{token.If, "IF", pos("9:1")},
 			{token.Whitespace, " ", pos("9:3")},
 			{token.Implements, "implements", pos("9:4")},
 			{token.Whitespace, " ", pos("9:14")},
@@ -365,7 +365,7 @@ while enum global readonly yield from match
 			{token.Whitespace, " ", pos("14:6")},
 			{token.Trait, "trait", pos("14:7")},
 			{token.Whitespace, " ", pos("14:12")},
-			{token.Try, "try", pos("14:13")},
+			{token.Try, "Try", pos("14:13")},
 			{token.Whitespace, "\n", pos("14:16")},
 			{token.Use, "use", pos("15:1")},
 			{token.Whitespace, "\n", pos("15:4")},

@@ -1,7 +1,7 @@
 <?php   namespace \Dubax \
 Foo;use\
 DateTime  ;use\This
-\Awesome\  Use\Statement;const
+\Awesome\  User\Statement;const
 AA = 'tuzkovy'. 'baterky'
 ;/** @var    string*/$bb    =
   'auto'
