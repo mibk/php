@@ -125,14 +125,15 @@ func _() {
 	_ = x[Trait-114]
 	_ = x[Try-115]
 	_ = x[Use-116]
-	_ = x[While-117]
-	_ = x[Yield-118]
-	_ = x[keywordEnd-119]
+	_ = x[Lxor-117]
+	_ = x[While-118]
+	_ = x[Yield-119]
+	_ = x[keywordEnd-120]
 }
 
-const _Type_name = "IllegalEOFWhitespaceCommentDocCommentIdentIntFloatStringVarInlineHTMLsymbolStart<?php?>$\\?()[]{}+-*/%**&|^<<>>.??+=-=*=/=%=**=&=|=^=<<=>>=.=??=&&||++--=!<><=>===!====!==,:::;...->?->=><=>symbolEndkeywordStartabstractasbreakcasecatchclasscloneconstcontinuedeclaredefaultdoelseenumextendsfinalfinallyfnforforeachfromfunctionglobalgotoifimplementsinstanceofinsteadofinterfacematchnamespacenewprivateprotectedpublicreadonlyreturnstaticswitchthrowtraittryusewhileyieldkeywordEnd"
+const _Type_name = "IllegalEOFWhitespaceCommentDocCommentIdentIntFloatStringVarInlineHTMLsymbolStart<?php?>$\\?()[]{}+-*/%**&|^<<>>.??+=-=*=/=%=**=&=|=^=<<=>>=.=??=&&||++--=!<><=>===!====!==,:::;...->?->=><=>symbolEndkeywordStartabstractasbreakcasecatchclasscloneconstcontinuedeclaredefaultdoelseenumextendsfinalfinallyfnforforeachfromfunctionglobalgotoifimplementsinstanceofinsteadofinterfacematchnamespacenewprivateprotectedpublicreadonlyreturnstaticswitchthrowtraittryusexorwhileyieldkeywordEnd"
 
-var _Type_index = [...]uint16{0, 7, 10, 20, 27, 37, 42, 45, 50, 56, 59, 69, 80, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 103, 104, 105, 106, 108, 110, 111, 113, 115, 117, 119, 121, 123, 126, 128, 130, 132, 135, 138, 140, 143, 145, 147, 149, 151, 152, 153, 154, 155, 157, 159, 161, 163, 166, 169, 170, 171, 173, 174, 177, 179, 182, 184, 187, 196, 208, 216, 218, 223, 227, 232, 237, 242, 247, 255, 262, 269, 271, 275, 279, 286, 291, 298, 300, 303, 310, 314, 322, 328, 332, 334, 344, 354, 363, 372, 377, 386, 389, 396, 405, 411, 419, 425, 431, 437, 442, 447, 450, 453, 458, 463, 473}
+var _Type_index = [...]uint16{0, 7, 10, 20, 27, 37, 42, 45, 50, 56, 59, 69, 80, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 103, 104, 105, 106, 108, 110, 111, 113, 115, 117, 119, 121, 123, 126, 128, 130, 132, 135, 138, 140, 143, 145, 147, 149, 151, 152, 153, 154, 155, 157, 159, 161, 163, 166, 169, 170, 171, 173, 174, 177, 179, 182, 184, 187, 196, 208, 216, 218, 223, 227, 232, 237, 242, 247, 255, 262, 269, 271, 275, 279, 286, 291, 298, 300, 303, 310, 314, 322, 328, 332, 334, 344, 354, 363, 372, 377, 386, 389, 396, 405, 411, 419, 425, 431, 437, 442, 447, 450, 453, 456, 461, 466, 476}
 
 func (i Type) String() string {
 	if i >= Type(len(_Type_index)-1) {

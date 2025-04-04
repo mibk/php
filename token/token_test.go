@@ -154,7 +154,7 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 		},
 	}, {
 		"binary operators",
-		`<?php <><<>>***%^ ??&&||++--!<===>=!=!=====<=>`,
+		`<?php <><<>>***%^ ??&&||++--!<===>=!=!=====<=> and or xor`,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
 			{token.Whitespace, " ", pos("1:6")},
@@ -180,7 +180,13 @@ namespace /*block ?> */ DateTime/** comments*/;# another line comm? or?
 			{token.Nidentical, "!==", pos("1:38")},
 			{token.Identical, "===", pos("1:41")},
 			{token.Spaceship, "<=>", pos("1:44")},
-			{token.EOF, "", pos("1:47")},
+			{token.Whitespace, " ", pos("1:47")},
+			{token.Land, "and", pos("1:48")},
+			{token.Whitespace, " ", pos("1:51")},
+			{token.Lor, "or", pos("1:52")},
+			{token.Whitespace, " ", pos("1:54")},
+			{token.Lxor, "xor", pos("1:55")},
+			{token.EOF, "", pos("1:58")},
 		},
 	}, {
 		"op assign",

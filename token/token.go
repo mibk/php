@@ -172,6 +172,7 @@ const (
 	Trait      // trait
 	Try        // try
 	Use        // use
+	Lxor       // xor
 	While      // while
 	Yield      // yield
 	keywordEnd
@@ -185,6 +186,10 @@ func init() {
 		s := typ.String()
 		keywords[s] = Token{Type: typ, Text: s}
 	}
+
+	// Special keywords: aliases for logical operators.
+	keywords["and"] = Token{Type: Land, Text: "and"}
+	keywords["or"] = Token{Type: Lor, Text: "or"}
 }
 
 const eof = -1
@@ -236,7 +241,7 @@ func (s *Scanner) Next() (tok Token) {
 		tok = s.scanInlineHTML()
 	case inPHP:
 		tok = s.scanAny()
-		if typ := tok.Type; symbolStart < typ && typ < symbolEnd {
+		if typ := tok.Type; tok.Text == "" && symbolStart < typ && typ < symbolEnd {
 			tok.Text = typ.String()
 		}
 	}
