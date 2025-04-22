@@ -389,7 +389,7 @@ while enum global readonly yield from match
 		"numbers",
 		`<?php
 0 07 007 34487908803190 0xff 0XFA 0b10
-3.14 0.09 -0.0014e-13-.14
+3.14 0.09 -0.0014e-13-.14 = 1e-10
 `,
 		[]token.Token{
 			{token.OpenTag, "<?php", pos("1:1")},
@@ -416,7 +416,11 @@ while enum global readonly yield from match
 			{token.Float, "0.0014e-13", pos("3:12")},
 			{token.Sub, "-", pos("3:22")},
 			{token.Float, ".14", pos("3:23")},
-			{token.Whitespace, "\n", pos("3:26")},
+			{token.Whitespace, " ", pos("3:26")},
+			{token.Assign, "=", pos("3:27")},
+			{token.Whitespace, " ", pos("3:28")},
+			{token.Float, "1e-10", pos("3:29")},
+			{token.Whitespace, "\n", pos("3:34")},
 			{token.EOF, "", pos("4:1")},
 		},
 	}, {

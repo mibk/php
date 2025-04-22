@@ -760,7 +760,11 @@ func (s *Scanner) scanNumber(r rune) Token {
 	b := new(strings.Builder)
 	b.WriteRune(r)
 	s.scanDecimal(b)
-	if s.peek() == '.' {
+	switch s.peek() {
+	case '.':
+		b.WriteRune(s.read())
+		fallthrough
+	case 'e', 'E':
 		return s.scanFloat(b)
 	}
 	return Token{Type: Int, Text: b.String()}
@@ -811,7 +815,6 @@ func (s *Scanner) scanBinary(delim rune) Token {
 }
 
 func (s *Scanner) scanFloat(b *strings.Builder) Token {
-	b.WriteRune(s.read())
 	s.scanDecimal(b)
 	if r := s.peek(); r == 'e' || r == 'E' {
 		b.WriteRune(s.read())
