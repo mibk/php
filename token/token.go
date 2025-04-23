@@ -746,7 +746,6 @@ SkipWS:
 }
 
 func (s *Scanner) scanNumber(r rune) Token {
-	// TODO: Add support for _
 	if r == '0' {
 		switch r := s.peek(); {
 		case isDigit(r):
@@ -759,13 +758,17 @@ func (s *Scanner) scanNumber(r rune) Token {
 	}
 	b := new(strings.Builder)
 	b.WriteRune(r)
-	s.scanDecimal(b)
+	if !s.scanDecimal(b) {
+		return Token{Type: Illegal, Text: b.String()}
+	}
 	tok := Token{Type: Int}
 	if s.peek() == '.' {
 		s.read()
 		if isDigit(s.peek()) {
 			b.WriteRune('.')
-			s.scanDecimal(b)
+			if !s.scanDecimal(b) {
+				return Token{Type: Illegal, Text: b.String()}
+			}
 			tok.Type = Float
 		} else {
 			cat := Token{Type: Concat, Text: "."}
@@ -783,10 +786,22 @@ func (s *Scanner) scanNumber(r rune) Token {
 	return tok
 }
 
-func (s *Scanner) scanDecimal(b *strings.Builder) {
-	for isDigit(s.peek()) {
+func (s *Scanner) scanDecimal(b *strings.Builder) bool {
+	for {
+		if b.Len() > 0 && s.peek() == '_' {
+			b.WriteRune(s.read())
+			if !isDigit(s.peek()) {
+				b.WriteRune(s.read())
+				return false
+			}
+		}
+		if !isDigit(s.peek()) {
+			break
+		}
 		b.WriteRune(s.read())
+
 	}
+	return b.Len() > 0
 }
 
 func (s *Scanner) scanOctal() Token {
@@ -828,13 +843,17 @@ func (s *Scanner) scanBinary(delim rune) Token {
 }
 
 func (s *Scanner) scanFloat(b *strings.Builder) Token {
-	s.scanDecimal(b)
+	if !s.scanDecimal(b) {
+		return Token{Type: Illegal, Text: b.String()}
+	}
 	if r := s.peek(); r == 'e' || r == 'E' {
 		b.WriteRune(s.read())
 		if r := s.peek(); r == '+' || r == '-' {
 			b.WriteRune(s.read())
 		}
-		s.scanDecimal(b)
+		if !s.scanDecimal(b) {
+			return Token{Type: Illegal, Text: b.String()}
+		}
 	}
 	return Token{Type: Float, Text: b.String()}
 }
