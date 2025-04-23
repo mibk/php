@@ -760,14 +760,27 @@ func (s *Scanner) scanNumber(r rune) Token {
 	b := new(strings.Builder)
 	b.WriteRune(r)
 	s.scanDecimal(b)
+	tok := Token{Type: Int}
+	if s.peek() == '.' {
+		s.read()
+		if isDigit(s.peek()) {
+			b.WriteRune('.')
+			s.scanDecimal(b)
+			tok.Type = Float
+		} else {
+			cat := Token{Type: Concat, Text: "."}
+			cat.Pos = s.pos()
+			cat.Pos.Column -= 1
+			s.queue = append(s.queue, cat)
+			return Token{Type: Int, Text: b.String()}
+		}
+	}
 	switch s.peek() {
-	case '.':
-		b.WriteRune(s.read())
-		fallthrough
 	case 'e', 'E':
 		return s.scanFloat(b)
 	}
-	return Token{Type: Int, Text: b.String()}
+	tok.Text = b.String()
+	return tok
 }
 
 func (s *Scanner) scanDecimal(b *strings.Builder) {
